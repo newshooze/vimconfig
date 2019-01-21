@@ -12,9 +12,10 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-map <buffer> <S-K> <C-W>q
-" map escape to close the window since its read only
-map <buffer> <ESC> <C-W>q
+" map Shift + k to close the help buffer using next mapping <ESC>:bd<CR>
+map <buffer> <S-K> <ESC>
+" map escape to close the help buffer
+map <buffer> <ESC> <ESC>:bd<CR>
 " Don't load another plugin for this buffer
 let b:did_ftplugin = 1
 
