@@ -7,6 +7,7 @@ vmap <S-E> $
 
 set nobackup
 set noswapfile
+let loaded_matchparen=1
 " Turn on syntax highlighting
 syntax on
 "
@@ -18,6 +19,7 @@ set shiftwidth=2
 " Turn of word wrap 
 set nowrap
 
+set noshowmatch
 "set laststatus=2
 " autoread files modified outside vim
 set autoread
@@ -49,3 +51,9 @@ autocmd bufenter c,cpp,c,cxx,cc,h,hpp,hxx set dict=/home/vinny/.vim/dict/c
 autocmd BufEnter c,cpp,c,cxx,cc,h,hpp,hxx set tags=~/.vim/tags/c
 "autocmd FileType cpp,c,cxx,cc,h,hpp,hxx set path+=/usr/include/**
 
+" Disable parentheses matching depends on system. This way we should address
+" " NoMatchParen " This doesnt work as it belongs to a plugin, which is only
+" loaded _after_ all files are.
+" " Trying disable MatchParen after loading all plugins
+" "
+let g:loaded_matchparen=1
