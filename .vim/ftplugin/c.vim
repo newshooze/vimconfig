@@ -1,19 +1,18 @@
 set autowriteall
 
 
-imap <buffer> <F5> <ESC>:!gcc -c -lm -lX11 -lXpm -lXrender -I/usr/include -o %:r %<CR>
-nmap <buffer> <F5> <ESC>:!gcc -c -lm -lX11 -lXpm -lXrender -I/usr/include -o %:r %<CR>
-
-imap <buffer> <F6> <ESC>:!g++ -c -lm -lX11 -lXpm -lXrender -I/usr/include -o %:r.o %<CR>
-map <buffer> <F6> <ESC>:!g++ -c -lm -lX11 -lXpm -lXrender -I/usr/include -o %:r.o %<CR>
-
-map <buffer> <F8> <ESC>:make<CR>
+" Compile current filename.c and link to executable
+nmap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
+imap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
+" Run 
+nmap <buffer> <S-F5> <ESC>:!./%:r<CR>
+imap <buffer> <S-F5> <ESC>:!./%:r<CR>
+" Make
+nmap <buffer> <F8> <ESC>:make<CR>
 imap <buffer> <F8> <ESC>:make<CR>
-map <buffer> <S-F8> <ESC>:make test<CR>
-imap <buffer> <S-F8> <ESC>:make test<CR>
-
-map <buffer> <F10> <ESC>:make run<CR>
-imap <buffer> <F10> <ESC>:make run<CR>
+" Make Clean
+nmap <buffer> <S-F8> <ESC>:make clean<CR>
+imap <buffer> <S-F8> <ESC>:make clean<CR>
 
 command! Template execute "source ~/.vim/template/c.vim"
 map <buffer> <F12> :Template<CR>
@@ -25,13 +24,10 @@ imap <buffer> <C-L> <C-X><C-L>
 "
 iabbrev <buffer> pthread_create pthread_create(pthread_t*,pthread_attr_t*,void*start_routine,void *arg); // int<ESC>:normal 0f(<CR>
 iabbrev <buffer> pthread_exit pthread_exit(void *retval); // void<ESC>:normal 0f(<CR>
-" std c++ defs
-iabbrev <buffer> cout cout << "" << "" << std::endl;<ESC>:normal 0f"<CR>
-iabbrev <buffer> ifstream ifstream filestream("".c_str());<CR>if(filestream.is_open())<CR>{<CR>std::string textline;<CR>while(filestream.good())<CR>{<CR>std::getline(filestream,textline,'\n');<CR>}<CR>}<CR>}<ESC>:normal 9k4w<CR>
-iabbrev <buffer> find( find(haystack.begin(),haystack.end(),needle)==haystack.end());<ESC>:normal 12b<CR>
+
+
+
 " XRender defs
-
-
 iabbrev <buffer> XRenderAddGlyphs XRenderAddGlyphs(display,GlyphSet	glyphset,_Xconst Glyph *gids,_Xconst XGlyphInfo	*glyphs,int nglyphs,_Xconst char*images,int nbyte_images); // void<ESC>:normal 0f(<CR> 
 iabbrev <buffer> XRenderAddTraps XRenderAddTraps(display,picture,xOff,yOff,XTrap*,ntrap); // void<ESC>:normal 0f(<CR>
 iabbrev <buffer> XRenderChangePicture XRenderChangePicture(display,picture,CP,XRenderPictureAttributes*); // void<ESC>:normal 0f(<CR>
