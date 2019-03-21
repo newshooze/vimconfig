@@ -55,7 +55,7 @@ int main(int argc,char **argv)
 	currenttime = time(NULL);
 	if(currenttime != ((time_t)-1) && (timestring = ctime(&currenttime)))
 	{
-		fprintf(outfile,"\" Last modified: %s",timestring); 
+		fprintf(outfile,"\" Created: %s",timestring); 
 		fprintf(outfile,"\n");
 	}
 	fprintf(outfile,"\n");
