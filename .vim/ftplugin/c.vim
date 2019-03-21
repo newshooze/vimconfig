@@ -1,25 +1,32 @@
 set autowriteall
 
 " Compile current filename.c and link to executable
-nmap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
-imap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
+map <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 " Run 
-nmap <buffer> <F6> <ESC>:make run<CR>
-imap <buffer> <F6> <ESC>:make run<CR>
+map <buffer> <F6> <ESC>:make run<CR>
 " Make
-nmap <buffer> <F8> <ESC>:make<CR>
-imap <buffer> <F8> <ESC>:make<CR>
+map <buffer> <F8> <ESC>:make<CR>
 " Make Clean
-nmap <buffer> <S-F8> <ESC>:make clean<CR>
-imap <buffer> <S-F8> <ESC>:make clean<CR>
+map <buffer> <S-F8> <ESC>:make clean<CR>
 
 map <buffer> <F12> :source ~/.vim/template/c.vim<CR>gg^
 
-imap <buffer> <C-F> <C-X><C-F>
+" Complete file name
+imap <buffer> <C-F> <C-X><C-F> 
+" Complete line
 imap <buffer> <C-L> <C-X><C-L>
-" c defs
 
-"
+" stdio.h
+iabbrev <buffer> fopen fopen("filename","r"); // FILE*<ESC>:normal 0f(<CR>
+iabbrev <buffer> fclose fclose(FILE); // int<ESC>:normal 0f(<CR>
+iabbrev <buffer> fseek fseek(FILE,offset,wence); // int - wence is SEEK_SET,SEEK_CUR,SEEK_END<ESC>:normal 0f(<CR>
+iabbrev <buffer> ftell ftell(FILE); // long<ESC>:normal 0f(<CR>
+iabbrev <buffer> rewind rewind(FILE); // void<ESC>:normal 0f(<CR>
+iabbrev <buffer> fprintf fprintf(FILE,format); // int<ESC>:normal 0f(<CR>
+iabbrev <buffer> sprintf sprintf(buffer,format); // int<ESC>:normal 0f(<CR>
+iabbrev <buffer> snprintf snprintf(buffer,size_t,format); // int<ESC>:normal 0f(<CR>
+
+" stdlib.h
 
 " XRender defs
 iabbrev <buffer> XRenderAddGlyphs XRenderAddGlyphs(display,GlyphSet	glyphset,_Xconst Glyph *gids,_Xconst XGlyphInfo	*glyphs,int nglyphs,_Xconst char*images,int nbyte_images); // void<ESC>:normal 0f(<CR> 
