@@ -41,19 +41,38 @@ echo "Fixing broken links..."
 sed -i 's/Real-time_Audio/Real_time_Audio/g' $HELPFILE
 sed -i 's/\*CommandFlags\*/*Command_Line_Flags*/g' $HELPFILE
 sed -i 's/\*OrchKvar\*/*global_variable* *OrchKvar*/g' $HELPFILE
+sed -i 's/\*ScoreGenRef\*/*GEN* *ScoreGenRef* *GEN_routine_overview*/g' $HELPFILE
 sed -i 's/\*UsingRealTime\*/*Real_time_Audio*/g' $HELPFILE
 sed -i 's/\*Zerodbfs\*/*0dbfs* *Zerodbfs*/g' $HELPFILE
 sed -i 's/\*ampdbfs\*/*ampdbfs* *ampdbfs()*/g' $HELPFILE
 sed -i 's/\*assign\*/*assignments*/g' $HELPFILE
-sed -i 's/\*instr\*/*instr_statement* *instr*/g' $HELPFILE
+sed -i 's/\*instr\*/*instr* *instr_statement*/g' $HELPFILE
 
-#delete the line referencing xxx.csd file + 1 more line	
+# skip these if they conflict with some single letter tags
+sed -i 's/\*f\*/*f* *f_statement*/g' $HELPFILE
+sed -i 's/\*m\*/*m* *m_statement*/g' $HELPFILE
+sed -i 's/\*n\*/*n* *n_statement*/g' $HELPFILE
+sed -i 's/\*r\*/*r* *r_statement*/g' $HELPFILE
+sed -i 's/\*s\*/*s* *s_statement*/g' $HELPFILE
+sed -i 's/\*t\*/*t* *t_statement*/g' $HELPFILE
+sed -i 's/\*greaterthan\*/*>* *greaterthan*/g' $HELPFILE
+sed -i 's/\*greaterequal\*/*>=* *greaterequal*/g' $HELPFILE
+sed -i 's/\*lessethan\*/*<* *lessthan*/g' $HELPFILE
+sed -i 's/\*lessequal\*/*<=* *lessequal*/g' $HELPFILE
+sed -i 's/\*equals\*/*==* *equals*/g' $HELPFILE
+sed -i 's/\*notequal\*/*!=* *notequal*/g' $HELPFILE
+
+# delete the line referencing xxx.csd file + 1 more line	
 sed -i -e '/Here is an example.*It uses the file.*$/,+1d' $HELPFILE
+# delete additional references to xxx.csd + 1 more line
+sed -i -e '/Here is another example.*$/,+1d' $HELPFILE
+# delete some embedded xml
+sed -i -e '/<?xml version=.*$/,+21d' $HELPFILE
 
 # This places csound code blocks between '>' and '<'. vim will syntax highlight this block
-sed -i '/<CsoundSynthesizer>/,/<\/CsoundSynthesizer>/s/^/ /g' $HELPFILE
-sed -i 's/^ <CsoundSynthesizer>/>\n <CsoundSynthesizer>/g' $HELPFILE 
-sed -i 's/^ <\/CsoundSynthesizer>$/ <\/CsoundSynthesizer>\n</g' $HELPFILE
+sed -i '/<CsoundSynthesizer>/,/<\/CsoundSynthesizer>/s/^/ /g' $HELPFILE # code blocks require white space at the beginning of each line
+sed -i 's/^ <CsoundSynthesizer>/>\n <CsoundSynthesizer>/g' $HELPFILE # add '>' and a newline to lines before <Csou...
+sed -i 's/^ <\/CsoundSynthesizer>$/ <\/CsoundSynthesizer>\n</g' $HELPFILE # add '<' after </Csou..
 
 echo "Writing file $HELPFILE."
 echo "Writing file $TAGFILE."

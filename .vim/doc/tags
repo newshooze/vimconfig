@@ -1,4 +1,9 @@
+!=	csound.txt	/*!=*
 0dbfs	csound.txt	/*0dbfs*
+<=	csound.txt	/*<=*
+==	csound.txt	/*==*
+>	csound.txt	/*>*
+>=	csound.txt	/*>=*
 ATSadd	csound.txt	/*ATSadd*
 ATSaddnz	csound.txt	/*ATSaddnz*
 ATSbufread	csound.txt	/*ATSbufread*
@@ -115,6 +120,7 @@ FLvkeybd	csound.txt	/*FLvkeybd*
 FLvslidBnk	csound.txt	/*FLvslidBnk*
 FLvslidBnk2	csound.txt	/*FLvslidBnk2*
 FLxyin	csound.txt	/*FLxyin*
+GEN	csound.txt	/*GEN*
 GEN01	csound.txt	/*GEN01*
 GEN02	csound.txt	/*GEN02*
 GEN03	csound.txt	/*GEN03*
@@ -154,6 +160,7 @@ GEN43	csound.txt	/*GEN43*
 GEN49	csound.txt	/*GEN49*
 GEN51	csound.txt	/*GEN51*
 GEN52	csound.txt	/*GEN52*
+GEN_routine_overview	csound.txt	/*GEN_routine_overview*
 GENexp	csound.txt	/*GENexp*
 GENfarey	csound.txt	/*GENfarey*
 GENsone	csound.txt	/*GENsone*
@@ -556,6 +563,7 @@ expsegba	csound.txt	/*expsegba*
 expsegr	csound.txt	/*expsegr*
 extractor	csound.txt	/*extractor*
 f	csound.txt	/*f*
+f_statement	csound.txt	/*f_statement*
 fareylen	csound.txt	/*fareylen*
 fareyleni	csound.txt	/*fareyleni*
 faustaudio	csound.txt	/*faustaudio*
@@ -851,6 +859,7 @@ lua_exec	csound.txt	/*lua_exec*
 lua_opcall	csound.txt	/*lua_opcall*
 lua_opdef	csound.txt	/*lua_opdef*
 m	csound.txt	/*m*
+m_statement	csound.txt	/*m_statement*
 mac	csound.txt	/*mac*
 maca	csound.txt	/*maca*
 madsr	csound.txt	/*madsr*
@@ -924,6 +933,7 @@ must	csound.txt	/*must*
 mute	csound.txt	/*mute*
 mxadsr	csound.txt	/*mxadsr*
 n	csound.txt	/*n*
+n_statement	csound.txt	/*n_statement*
 nchnls	csound.txt	/*nchnls*
 nchnls_i	csound.txt	/*nchnls_i*
 nestedap	csound.txt	/*nestedap*
@@ -1131,6 +1141,7 @@ q	csound.txt	/*q*
 qinf	csound.txt	/*qinf*
 qnan	csound.txt	/*qnan*
 r	csound.txt	/*r*
+r_statement	csound.txt	/*r_statement*
 raises	csound.txt	/*raises*
 rand	csound.txt	/*rand*
 randh	csound.txt	/*randh*
@@ -1179,6 +1190,7 @@ rtclock	csound.txt	/*rtclock*
 s	csound.txt	/*s*
 s16b14	csound.txt	/*s16b14*
 s32b14	csound.txt	/*s32b14*
+s_statement	csound.txt	/*s_statement*
 samphold	csound.txt	/*samphold*
 sandpaper	csound.txt	/*sandpaper*
 scale	csound.txt	/*scale*
@@ -1325,6 +1337,7 @@ syncloop	csound.txt	/*syncloop*
 syncphasor	csound.txt	/*syncphasor*
 system	csound.txt	/*system*
 t	csound.txt	/*t*
+t_statement	csound.txt	/*t_statement*
 tab	csound.txt	/*tab*
 tab2pvs	csound.txt	/*tab2pvs*
 table	csound.txt	/*table*
