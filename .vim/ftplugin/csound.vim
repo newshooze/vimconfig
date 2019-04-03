@@ -6,29 +6,179 @@
 
 " Only do this when not done yet for this buffer
 if exists("b:did_ftplugin")
-"  finish
+  finish
 endif
-
-let maplocalleader = ","
-
-inoremap <buffer> <F5> <ESC>:!csound %<CR>
-nnoremap <buffer> <F5> <ESC>:!csound %<CR>
-inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR>
-nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR>
-
-noremap <buffer> <F12> <ESC>:source ~/.vim/template/csd.vim<CR>gg^
-noremap <buffer> <LocalLeader>t <ESC>:source ~/.vim/template/csound.vim<CR>gg^
-
-" Opens Help window for word at cursor
-" <C-r><C-W> pastes the word under cursor into command line
-map <buffer> <S-K> :help <C-r><C-W><CR>0
 
 set tags=~/.vim/doc/tags
 set helpfile=~/.vim/doc/csound.txt
 set dict=~/.vim/ftplugin/csd.vim
 set complete+=k
 set hidden
+let maplocalleader = ","
 
+inoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
+nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
+inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
+nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
+noremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
+noremap <buffer> <LocalLeader>t <ESC>gg:source ~/.vim/template/csound.vim<CR>gg^
+noremap <buffer> <LocalLeader>f :<C-U>FormatScore<CR>
+
+            " leading blank i       p1        p2           p3
+let s:score_regex = "^[ \t]*i[ \t]*[0-9\. ]*[0-9\.]+[ \t]+[0-9\.]+" 
+
+command! -range=% SplitInstrumentNumber <line1>,<line2>s/^[ \t]*i\([0-9]\)/i \1/g
+command! -range=% JoinInstrumentNumber <line1>,<line2>s/^[ \t]*i[ \t]*\([0-9]\)/i\1/g
+
+command! -range=% -nargs=+ SetColumnValue <line1>,<line2> call SetColumnValueFunction(<f-args>)
+command! -range=% -nargs=+ ShiftColumnValue <line1>,<line2> call ShiftColumnValueFunction(<f-args>)
+
+command! -range=% -nargs=* -complete=custom,FormatScoreCompletionFunction FormatScore <line1>,<line2> call FormatScoreFunction(<args>)
+
+function! SetColumnValueFunction(col,val)
+	"echo a:col . "   " . a:val
+	exe ":.!awk '{VAL=" . a:val . "}" . s:score_regex . "{$" . a:col . "=VAL} {print}'"
+endfunction
+
+function! ShiftColumnValueFunction(col,howmuch) 
+	exe ":.!awk '{SHIFT=" . a:howmuch . "}" . s:score_regex . "{$" . a:col . "+=SHIFT} {print}'"
+endfunction
+
+function! FormatScoreCompletionFunction(A,L,P)
+	let l:ret = ""
+	let l:index = 1
+	while l:index < 10
+		let l:ret = l:ret . l:index . "\n"
+		let l:index = l:index + 1
+	endwhile
+	return l:ret
+endfunction
+
+function! RepeatCharsFunction(char,number)
+	let l:n = 1
+	let l:ret = a:char
+	while l:n < a:number
+		let l:ret = l:ret . a:char
+		let l:n = l:n + 1
+	endwhile
+	return l:ret
+endfunction
+
+function! IsScoreStatement(textline)
+	if a:textline =~# "^[ \t]*i[ \t]*[0-9]"
+		return 1
+	endif
+	return 0
+endfunction
+
+function! FormatScoreFunction(...) range
+	let l:columnspacing = " " 
+	if a:0 > 0
+		if a:1 =~ "[0-9]"
+			let l:columnspacing = RepeatCharsFunction(" ",a:1)
+		endif
+	endif
+	let l:maxintpartwidth = []
+	let l:maxdotpartwidth = []
+	let l:maxfractionalpartwidth = []
+	let l:maxcolumnwidth = []
+	for l:linenum in range(a:firstline,a:lastline)
+		let l:textline = getline(l:linenum)
+		if IsScoreStatement(l:textline)
+			let l:tokenlist = split(l:textline)
+			while len(l:tokenlist) > len(l:maxcolumnwidth)
+				call add(l:maxintpartwidth,0)
+				call add(l:maxdotpartwidth,0)
+				call add(l:maxfractionalpartwidth,0)
+				call add(l:maxcolumnwidth,0)
+			endwhile
+			let l:tokenindex = 0
+			for l:token in l:tokenlist
+				let l:intpartwidth = 0
+				let l:dotpartwidth = 0
+				let l:fractionalpartwidth = 0
+				let l:columnwidth = 0
+				let l:dotposition = stridx(l:token,".")
+				if l:dotposition > -1
+					let l:intpartwidth = l:dotposition
+					let l:dotpartwidth = 1 
+					let l:fractionalpartwidth = strlen(l:token) - l:dotposition - 1
+				else
+					let l:intpartwidth = len(l:token)
+				endif
+				if l:intpartwidth > get(l:maxintpartwidth,l:tokenindex)	
+					let l:maxintpartwidth[l:tokenindex] = l:intpartwidth
+				endif
+				if l:dotpartwidth > get(l:maxdotpartwidth,l:tokenindex)
+					let l:maxdotpartwidth[l:tokenindex] = l:dotpartwidth
+				endif
+				if l:fractionalpartwidth > get(l:maxfractionalpartwidth,l:tokenindex)
+					let l:maxfractionalpartwidth[l:tokenindex] = l:fractionalpartwidth
+				endif
+				let l:columnwidth = l:intpartwidth + l:dotpartwidth + l:fractionalpartwidth 
+				if l:columnwidth > get(l:maxcolumnwidth,l:tokenindex)
+					let l:maxcolumnwidth[l:tokenindex] = l:columnwidth
+				endif	
+				let l:tokenindex = l:tokenindex + 1
+			endfor
+		endif
+	endfor
+	for l:linenum in range(a:firstline,a:lastline)
+		let l:textline = getline(l:linenum)
+		if IsScoreStatement(l:textline)
+			let l:tokenlist = split(l:textline)
+			let l:tokenindex = 0
+			let l:newline = ""
+			for l:token in l:tokenlist
+				let l:intpartwidth = 0
+				let l:dotpartwidth = 0
+				let l:fractionalpartwidth = 0
+				let l:columnwidth = 0
+				let l:dotposition = stridx(l:token,".")
+				if l:dotposition > -1
+					let l:intpartwidth = l:dotposition
+					let l:dotpartwidth = 1
+					let l:fractionalpartwidth = strlen(l:token) - l:dotposition - 1
+				else
+					let l:intpartwidth = len(l:token)
+				endif
+				let l:newtoken = ""
+				let l:intdiff = l:maxintpartwidth[l:tokenindex] - l:intpartwidth
+				let l:dotdiff = l:maxdotpartwidth[l:tokenindex] - l:dotpartwidth		
+				let l:fracdiff = l:maxfractionalpartwidth[l:tokenindex] - l:fractionalpartwidth
+				let l:coldiff = l:maxcolumnwidth[l:tokenindex] - strlen(l:token)
+				let l:padlength = 0
+				while l:padlength < l:intdiff
+					let l:newtoken = l:newtoken . " "	
+					let l:padlength = l:padlength + 1
+				endwhile
+				let l:newtoken = l:newtoken . l:token
+				let l:padlength = 0
+				while l:padlength < l:dotdiff
+					let l:newtoken = l:newtoken . "."
+					let l:padlength = l:padlength + 1
+				endwhile
+				let l:padlength = 0
+				while l:padlength < l:fracdiff
+					let l:newtoken = l:newtoken . "0"	
+					let l:padlength = l:padlength + 1
+				endwhile
+				if l:tokenindex < len(tokenlist) - 1
+					let l:newtoken = l:newtoken . l:columnspacing
+				endif
+				let l:newline = l:newline . l:newtoken	
+				let l:tokenindex = l:tokenindex + 1
+			endfor
+			exe ":" . l:linenum . "s/^.*$/" . l:newline . "/g"	
+		endif
+	endfor
+endfunction
+
+
+
+" Opens Help window for word at cursor
+" <C-r><C-W> pastes the word under cursor into command line
+map <buffer> <S-K> :help <C-r><C-W><CR>0
 
 "abbr <buffer>  Template1 ;vim:ts=2<CR><CsoundSynthesizer><CR>  <CsOptions><CR>    ;-o test.wav           ; Output to wav file<CR>    -odac -+rtaudio=jack   ; Output to jack<CR>    -odac:system:playback_ ; Output to system<CR>    -b 256                 ; Sample frames (or -kprds) per software sound I/O buffer<CR>     ;-8                    ;  8 bit<CR>    -3                     ; 24 bit<CR>    ;-f                    ; 32 bit<CR>    -B 1024                ; Samples per hardware sound I/O buffer<CR>    -d                     ; Supress all graphical displays<CR>    ;-g                    ; Use ascii graphical function plotters<CR>    ;-G                    ; Use postscript graphical function plotters<CR>    ;-Z                    ; Dither output<CR>  </CsOptions><CR>  <CsInstruments><CR>    sr = 44100            ; Samplerate<CR>    kr = 4410             ; Control rate<CR>    ksmps = 10            ; ...<CR>    nchnls = 2            ; Number of audio channels<CR>    0dbfs=1               ; Maximum amplitude is 1.0 ,minimum is 0.0<CR>    <CR>    instr 1,Sine<CR>      itable=1            ; sine,sawup,sawdown,square,pulse<CR>      iamp=p4<CR>      ifreq=cpsmidinn(p5)<CR>      aenv madsr .001,p3,0,0<CR>      asig poscil iamp,ifreq,itable<CR>      asig=asig*aenv;<CR>      outs asig,asig<CR>    endin<CR>  </CsInstruments><CR>  <CsScore><CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Instruments use midi note numbers for frequency (0-128)  <CR>    ; Command | Instrument | Start |  Duration | Amp | Freq | p6 | p7 | p8 | p9 |<CR>         i          1          0          1       .8    60  <CR>         i          1          1          1       .8    60  <CR>         i          1          2          1       .8    60  <CR>         i          1          3          .5      .8    60  <CR>         i          1          3.5        .5      .8    61  <CR>         i          1          4          1       .8    60  <CR><CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Tempo<CR>    ; Command | Zero | BPM<CR>         t       0      60<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 1 Sine<CR>    ; str1,str2... Relative strength of fixed harmonic partials 1,2,3, etc.<CR>    ; Command | Table# | Start | Size | GEN# | str1 | str2 | str3 | str4 | str5<CR>         f        1        0     32768   10     2<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 2 Saw (up)<CR>    ;           .<CR>    ;         . .<CR>    ;      .    .<CR>    ;   .       .<CR>    ;.          .         .<CR>    ;           .       .<CR>    ;           .     .<CR>    ;           .  .<CR>    ;           .  <CR>    ; a,b,c Ordinate values. n1,n2,n3,etc. Length of segment<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d <CR>         f        2        0      256     7    0   128  1   0   -1   128  0<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 3 Saw (Down)<CR>    ;           .<CR>    ;           .  .<CR>    ;           .     .<CR>    ;           .        .<CR>    ;.          .           .<CR>    ;   .       .       <CR>    ;      .    .    <CR>    ;         . .<CR>    ;           .<CR>    ; a,b,c Ordinate values. n1,n2,n3,etc. Length of segment<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d <CR>         f        3        0      256     7    0   128  -1  0    1   128  0<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 4 Square<CR>    ; _______<CR>    ;|       |<CR>    ;|       |<CR>    ;|       |      <CR>    ; - - - -|- - - -| <CR>    ;        |       |<CR>    ;        |       |<CR>    ;        |_______|<CR>    ;         <CR>    ; a,b,c Ordinate values. n1,n2,n3,etc. Length of segment<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d <CR>         f        4        0      256     7    1   128  1   0   -1   128 -1<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; <CR>    ; Function Table 5 Pulse<CR>    ; _______  <CR>    ;|       |<CR>    ;|       |<CR>    ;|       |<CR>    ;|       |_________<CR>    ;<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d | n4 | e |<CR>         f        5        0      256     7    0   0    1   128  1   0    0   128  0<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 6 Triangle<CR>    ;<CR>    ;           .<CR>    ;         .   .<CR>    ;       .       .<CR>    ;     .           .<CR>    ;   .               .<CR>    ; .                   .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2  | c<CR>        f         6        0      256    7     0   128  1   128   0<CR>    <CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 7 Ramp Up<CR>    ;<CR>    ;                   .<CR>    ;                .  .<CR>    ;             .     .<CR>    ;          .        .<CR>    ;       .           .<CR>    ;    .              .<CR>    ; .                 .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b <CR>         f        7        0     4096    7     0  4096  1 <CR><CR>     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 8 Ramp Down<CR>    ;<CR>    ; .<CR>    ; .  .<CR>    ; .     .   <CR>    ; .        .<CR>    ; .           .<CR>    ; .              .<CR>    ; .                 .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b <CR>         f        8        0     4096    7     1   4096 0 <CR>     <CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 9 Exponential Ramp Up<CR>    ;<CR>    ;                  .<CR>    ;                  .<CR>    ;                 ..<CR>    ;               .  .<CR>    ;           .      .<CR>    ;      .           .<CR>    ; .                .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b    <CR>         f        9        0     4096     5  .0001 4096  1 <CR>  <CR>     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 10 Exponential Ramp Down<CR>    ;<CR>    ; .<CR>    ; .<CR>    ; . .   <CR>    ; .   .<CR>    ; .     .<CR>    ; .        .<CR>    ; .            .<CR>    ; Command | Table# | Start | Size | GEN# | a  | n1 | b <CR>         f        10       0     4096    5     1   4096 .001<CR><CR>  </CsScore><CR></CsoundSynthesizer><CR>
 " csound Template
@@ -252,7 +402,7 @@ abbr <buffer> BLocrian ;B Locrian (midi #) Frequency <CR>;B (11)15.434 (23)30.86
 abbr <buffer> BAugmented ;B Augmented (midi #) Frequency <CR>;B (11)15.434 (23)30.868 (35)61.735 (47)123.471 (59)246.942 (71)493.883 (83)987.767 (95)1975.533 (107)3951.067 (119)7902.132 <CR>;D (14)18.354 (26)36.708 (38)73.416 (50)146.832 (62)293.665 (74)587.330 (86)1174.659 (98)2349.318 (110)4698.637 (122)9397.271 <CR>;Eb (15)19.445 (27)38.891 (39)77.782 (51)155.563 (63)311.127 (75)622.254 (87)1244.508 (99)2489.016 (111)4978.032 (123)9956.063 <CR>;Gb (18)23.125 (30)46.249 (42)92.499 (54)184.997 (66)369.994 (78)739.989 (90)1479.978 (102)2959.955 (114)5919.911 (126)11839.821 <CR>;G (19)24.500 (31)48.999 (43)97.999 (55)195.998 (67)391.995 (79)783.991 (91)1567.982 (103)3135.963 (115)6271.926 (127)12543.855 <CR>;Bb (22)29.135 (34)58.270 (46)116.541 (58)233.082 (70)466.164 (82)932.328 (94)1864.655 (106)3729.310 (118)7458.622 <CR>
 
 
-"let b:did_ftplugin = 1
+let b:did_ftplugin = 1
 let b:undo_ftplugin = "setl com<"
 
 
