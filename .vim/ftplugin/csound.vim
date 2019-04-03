@@ -37,11 +37,11 @@ command! -range=% -nargs=* -complete=custom,FormatScoreCompletionFunction Format
 
 function! SetColumnValueFunction(col,val)
 	"echo a:col . "   " . a:val
-	exe ":.!awk '{VAL=" . a:val . "}" . s:score_regex . "{$" . a:col . "=VAL} {print}'"
+	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:score_regex . "/" . "{$" . a:col . "=VAL} {print}'"
 endfunction
 
 function! ShiftColumnValueFunction(col,howmuch) 
-	exe ":.!awk '{SHIFT=" . a:howmuch . "}" . s:score_regex . "{$" . a:col . "+=SHIFT} {print}'"
+	exe ":.!awk '{SHIFT=" . a:howmuch . "}" . "/" . s:score_regex . "/" . "{$" . a:col . "+=SHIFT} {print}'"
 endfunction
 
 function! FormatScoreCompletionFunction(A,L,P)
