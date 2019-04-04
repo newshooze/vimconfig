@@ -16,32 +16,54 @@ set complete+=k
 set hidden
 let maplocalleader = ","
 
+" Opens Help window for word at cursor
+" <C-r><C-W> pastes the word under cursor into command line
+nnoremap <buffer> <S-K> :help <C-r><C-W><CR>0
+
 inoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
-noremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
-noremap <buffer> <LocalLeader>t <ESC>gg:source ~/.vim/template/csound.vim<CR>gg^
-noremap <buffer> <LocalLeader>f :<C-U>FormatScore<CR>
+nnoremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
+nnoremap <buffer> <LocalLeader>t <ESC>gg:source ~/.vim/template/csound.vim<CR>gg^
+nnoremap <buffer> <LocalLeader>f :<C-U>FormatScore<CR>
+
+let s:formatscoreindex = 1
+while s:formatscoreindex < 10
+	exe "nnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :<C-U>FormatScore " . s:formatscoreindex . "<CR>"
+	let s:formatscoreindex = s:formatscoreindex + 1
+endwhile
 
             " leading blank i       p1        p2           p3
-let s:score_regex = "^[ \t]*i[ \t]*[0-9\. ]*[0-9\.]+[ \t]+[0-9\.]+" 
+let s:score_regex = "^[ \t]*i[ \t]*[\-0-9\. ]*[\-0-9\.]+[ \t]+[\-0-9\.]+" 
+let g:current_format_spaces = 1
 
-command! -range=% SplitInstrumentNumber <line1>,<line2>s/^[ \t]*i\([0-9]\)/i \1/g
-command! -range=% JoinInstrumentNumber <line1>,<line2>s/^[ \t]*i[ \t]*\([0-9]\)/i\1/g
+command! -range=% SplitInstrumentNumber <line1>,<line2>s/^[ \t]*i\([\.\-0-9]\)/i \1/g
+command! -range=% JoinInstrumentNumber <line1>,<line2>s/^[ \t]*i[ \t]*\([\.\-0-9]\)/i\1/g
 
 command! -range=% -nargs=+ SetColumnValue <line1>,<line2> call SetColumnValueFunction(<f-args>)
+
+command! -range=% -nargs=+ AddColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"+")
+command! -range=% -nargs=+ SubtractColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"-")
+command! -range=% -nargs=+ DivideColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"/")
+command! -range=% -nargs=+ MultiplyColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"*")
 command! -range=% -nargs=+ ShiftColumnValue <line1>,<line2> call ShiftColumnValueFunction(<f-args>)
 
 command! -range=% -nargs=* -complete=custom,FormatScoreCompletionFunction FormatScore <line1>,<line2> call FormatScoreFunction(<args>)
 
+function! InsertScoreBlock()
+	call append(line('.'),'i 1 1 1 1')
+	call append(line('.'),'i 1 2 1 1')
+	call append(line('.'),'i 1 3 1 1')
+	call append(line('.'),'i 1 4 1 1')
+endfunction
+
 function! SetColumnValueFunction(col,val)
-	"echo a:col . "   " . a:val
 	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:score_regex . "/" . "{$" . a:col . "=VAL} {print}'"
 endfunction
 
-function! ShiftColumnValueFunction(col,howmuch) 
-	exe ":.!awk '{SHIFT=" . a:howmuch . "}" . "/" . s:score_regex . "/" . "{$" . a:col . "+=SHIFT} {print}'"
+function! MutateColumnValueFunction(col,val,op)
+	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:score_regex . "/" . "{$" . a:col . a:op . "=VAL} {print}'"
 endfunction
 
 function! FormatScoreCompletionFunction(A,L,P)
@@ -65,7 +87,7 @@ function! RepeatCharsFunction(char,number)
 endfunction
 
 function! IsScoreStatement(textline)
-	if a:textline =~# "^[ \t]*i[ \t]*[0-9]"
+	if a:textline =~# "^[ \t]*i[ \t]*[0-9\-\.]"
 		return 1
 	endif
 	return 0
@@ -176,9 +198,6 @@ endfunction
 
 
 
-" Opens Help window for word at cursor
-" <C-r><C-W> pastes the word under cursor into command line
-map <buffer> <S-K> :help <C-r><C-W><CR>0
 
 "abbr <buffer>  Template1 ;vim:ts=2<CR><CsoundSynthesizer><CR>  <CsOptions><CR>    ;-o test.wav           ; Output to wav file<CR>    -odac -+rtaudio=jack   ; Output to jack<CR>    -odac:system:playback_ ; Output to system<CR>    -b 256                 ; Sample frames (or -kprds) per software sound I/O buffer<CR>     ;-8                    ;  8 bit<CR>    -3                     ; 24 bit<CR>    ;-f                    ; 32 bit<CR>    -B 1024                ; Samples per hardware sound I/O buffer<CR>    -d                     ; Supress all graphical displays<CR>    ;-g                    ; Use ascii graphical function plotters<CR>    ;-G                    ; Use postscript graphical function plotters<CR>    ;-Z                    ; Dither output<CR>  </CsOptions><CR>  <CsInstruments><CR>    sr = 44100            ; Samplerate<CR>    kr = 4410             ; Control rate<CR>    ksmps = 10            ; ...<CR>    nchnls = 2            ; Number of audio channels<CR>    0dbfs=1               ; Maximum amplitude is 1.0 ,minimum is 0.0<CR>    <CR>    instr 1,Sine<CR>      itable=1            ; sine,sawup,sawdown,square,pulse<CR>      iamp=p4<CR>      ifreq=cpsmidinn(p5)<CR>      aenv madsr .001,p3,0,0<CR>      asig poscil iamp,ifreq,itable<CR>      asig=asig*aenv;<CR>      outs asig,asig<CR>    endin<CR>  </CsInstruments><CR>  <CsScore><CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Instruments use midi note numbers for frequency (0-128)  <CR>    ; Command | Instrument | Start |  Duration | Amp | Freq | p6 | p7 | p8 | p9 |<CR>         i          1          0          1       .8    60  <CR>         i          1          1          1       .8    60  <CR>         i          1          2          1       .8    60  <CR>         i          1          3          .5      .8    60  <CR>         i          1          3.5        .5      .8    61  <CR>         i          1          4          1       .8    60  <CR><CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Tempo<CR>    ; Command | Zero | BPM<CR>         t       0      60<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 1 Sine<CR>    ; str1,str2... Relative strength of fixed harmonic partials 1,2,3, etc.<CR>    ; Command | Table# | Start | Size | GEN# | str1 | str2 | str3 | str4 | str5<CR>         f        1        0     32768   10     2<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 2 Saw (up)<CR>    ;           .<CR>    ;         . .<CR>    ;      .    .<CR>    ;   .       .<CR>    ;.          .         .<CR>    ;           .       .<CR>    ;           .     .<CR>    ;           .  .<CR>    ;           .  <CR>    ; a,b,c Ordinate values. n1,n2,n3,etc. Length of segment<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d <CR>         f        2        0      256     7    0   128  1   0   -1   128  0<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 3 Saw (Down)<CR>    ;           .<CR>    ;           .  .<CR>    ;           .     .<CR>    ;           .        .<CR>    ;.          .           .<CR>    ;   .       .       <CR>    ;      .    .    <CR>    ;         . .<CR>    ;           .<CR>    ; a,b,c Ordinate values. n1,n2,n3,etc. Length of segment<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d <CR>         f        3        0      256     7    0   128  -1  0    1   128  0<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 4 Square<CR>    ; _______<CR>    ;|       |<CR>    ;|       |<CR>    ;|       |      <CR>    ; - - - -|- - - -| <CR>    ;        |       |<CR>    ;        |       |<CR>    ;        |_______|<CR>    ;         <CR>    ; a,b,c Ordinate values. n1,n2,n3,etc. Length of segment<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d <CR>         f        4        0      256     7    1   128  1   0   -1   128 -1<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; <CR>    ; Function Table 5 Pulse<CR>    ; _______  <CR>    ;|       |<CR>    ;|       |<CR>    ;|       |<CR>    ;|       |_________<CR>    ;<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2 | c | n3 | d | n4 | e |<CR>         f        5        0      256     7    0   0    1   128  1   0    0   128  0<CR><CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 6 Triangle<CR>    ;<CR>    ;           .<CR>    ;         .   .<CR>    ;       .       .<CR>    ;     .           .<CR>    ;   .               .<CR>    ; .                   .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b | n2  | c<CR>        f         6        0      256    7     0   128  1   128   0<CR>    <CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 7 Ramp Up<CR>    ;<CR>    ;                   .<CR>    ;                .  .<CR>    ;             .     .<CR>    ;          .        .<CR>    ;       .           .<CR>    ;    .              .<CR>    ; .                 .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b <CR>         f        7        0     4096    7     0  4096  1 <CR><CR>     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 8 Ramp Down<CR>    ;<CR>    ; .<CR>    ; .  .<CR>    ; .     .   <CR>    ; .        .<CR>    ; .           .<CR>    ; .              .<CR>    ; .                 .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b <CR>         f        8        0     4096    7     1   4096 0 <CR>     <CR>    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ; Function Table 9 Exponential Ramp Up<CR>    ;<CR>    ;                  .<CR>    ;                  .<CR>    ;                 ..<CR>    ;               .  .<CR>    ;           .      .<CR>    ;      .           .<CR>    ; .                .<CR>    ; Command | Table# | Start | Size | GEN# | a | n1 | b    <CR>         f        9        0     4096     5  .0001 4096  1 <CR>  <CR>     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<CR>    ;  Function Table 10 Exponential Ramp Down<CR>    ;<CR>    ; .<CR>    ; .<CR>    ; . .   <CR>    ; .   .<CR>    ; .     .<CR>    ; .        .<CR>    ; .            .<CR>    ; Command | Table# | Start | Size | GEN# | a  | n1 | b <CR>         f        10       0     4096    5     1   4096 .001<CR><CR>  </CsScore><CR></CsoundSynthesizer><CR>
 " csound Template
@@ -194,19 +213,6 @@ abbr <buffer>  ftgenrampdown girampdown ftgen 8,0,gitablesize,7,1,gitablesize,0<
 abbr <buffer>  ftgenexprampup giexprampup ftgen 9,0,gitablesize,5,.001,gitablesize,1<ESC>:normal^
 abbr <buffer>  ftgenexprampdown giexprampdown ftgen 10,0,gitablesize,5,1,gitablesize,.001<ESC>:normal^
 abbr <buffer>  ftgenexptriangle giexptriangle ftgen 11,0,gitablesize,5,.001,gitablesize*.5,1,gitablesize*.5,.001<ESC>:normal^
-" OpCodes
-abbr <buffer>  freeverb freeverb ainL,ainR,.3,.4,88200<ESC>2B
-" Comment Block
-abbr <buffer>  CB ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;<ESC>0
-" Envelope
-abbr <buffer>  Env aenv linseg .001,.001,1,p3-.002,.001<ESC>0
-" High Hat 1
-abbr <buffer>  Hihat instr 99 HighHat ; High hat <CR>	iamp=p4<CR>	aenvhit linseg 1,.05,.001<CR>	aenvshh expseg 1,.4,.001<CR>	aenvhss expseg 1,.9,.001<CR>	anoisehit noise iamp,0<CR>	anoiseshh noise iamp,0<CR>	anoisehss noise iamp,0<CR>	anoisehit=anoisehit*aenvhit<CR>	anoiseshh=anoiseshh*aenvshh<CR>	anoisehss=anoisehss*aenvhss<CR>	abutterhit butterbp anoisehit,4000,100<CR>	abuttershh butterbp anoiseshh,8000,300<CR>	abutterhss butterbp anoisehss,21000,800<CR>	anoisehit=anoisehit+abutterhit<CR>	anoiseshh=anoiseshh+abuttershh<CR>	anoisehss=anoisehss+abutterhss<CR>	arvbhit reverb anoisehit,.01<CR>	arvbshh reverb anoiseshh,.005<CR>	arvbhss reverb anoisehss,.001<CR>	anoisehit=arvbhit<CR>	anoiseshh=arvbshh<CR>	anoisehss=arvbhss<CR>	aout=anoisehit+anoiseshh+anoisehss<CR>	aout=aout*.3 ; reduce gain here<CR>	asigL,asigR pan2 aout,.35,1 ; pan slightly left<CR>	outs asigL,asigR<CR>endin<CR><ESC>:normal^
-" Snare
-abbr <buffer>  Snare instr 99 Snare<CR>	idur=p3<CR>	idynamic=p4<CR>	atri oscil3 1,111+idynamic*5,7<CR>	areal,aimg hilbert atri<CR>	ifshift=175<CR>	asin oscil3 1,ifshift,1<CR>	acos oscil3 1,ifshift,1,.25<CR>	amod1=areal*acos<CR>	amod2=aimg*asin<CR>	ashift1=(amod1+amod2)*.7<CR>	ifshift2=224<CR>	asin oscil3 1,ifshift2,1<CR>	acos oscil3 1,ifshift2,1,.25<CR>	amod1=areal*acos<CR>	amod2=aimg*asin<CR>	ashift2=(amod1+amod2)*.7<CR>	aenv1 linseg 1,.15,0,idur-.15,0<CR>	ashiftmix=(ashift1+ashift2)*aenv1<CR>	aosc1 oscil3 1,180,1<CR>	aosc2 oscil3 1,330,1<CR>	aenv2 linseg 1,.08,0,idur-.08,0<CR>	aoscmix=(aosc1+aosc2)*aenv2<CR>	anoise gauss 1<CR>	anoise butterhp anoise,2000<CR>	anoise butterlp anoise,3000+idynamic*3000<CR>	anoise butterbr anoise,4000,200<CR>	aenv3 expseg 2,.15,1,idur-.15,1<CR>	anoise=anoise*(aenv3-1)<CR>	amix=aoscmix+ashiftmix+anoise*4<CR>	a1=amix*idynamic<CR>	outs a1,a1<CR>endin<CR><ESC>:normal^
-" Supersaw
-abbr <buffer>  Supersaw instr 99 Supersaw<CR>  iamp = p4<CR>  ifreq = p5<CR>  itune=p6 <CR>  itable = 2<CR>  aenv madsr .001,p3,0,0<CR>  as1 oscil iamp,ifreq-itune*3,itable<CR>  as2 oscil iamp,ifreq-itune*2,itable<CR>  as3 oscil iamp,ifreq-itune,itable<CR>  as4 oscil iamp,ifreq,itable<CR>  as5 oscil iamp,ifreq+itune,itable<CR>  as6 oscil iamp,ifreq+itune*2,itable<CR>  as7 oscil iamp,ifreq+itune*3,itable<CR>  apan1L,apan1R pan2 as1,0<CR>  apan2L,apan2R pan2 as2,.165<CR>  apan3L,apan3R pan2 as3,.333<CR>  apan4L,apan4R pan2 as4,.5<CR>  apan5L,apan5R pan2 as5,.66<CR>  apan6L,apan6R pan2 as6,.83<CR>  apan7L,apan7R pan2 as6,1<CR>  aoutL=aenv*((apan1L+apan2L+apan3L+apan4L+apan5L+apan6L+apan7L)/7)<CR>  aoutR=aenv*((apan1R+apan2R+apan3R+apan4R+apan5R+apan6R+apan7R)/7)<CR>  outs aoutL,aoutR<CR>endin<CR><ESC>:normal^
-
 
 abbr <buffer> CMajor ;C Major (midi #) Frequency <CR>;C (0)8.176 (12)16.352 (24)32.703 (36)65.406 (48)130.813 (60)261.626 (72)523.251 (84)1046.502 (96)2093.004 (108)4186.009 <CR>;D (2)9.177 (14)18.354 (26)36.708 (38)73.416 (50)146.832 (62)293.665 (74)587.330 (86)1174.659 (98)2349.318 (110)4698.637 <CR>;E (4)10.301 (16)20.602 (28)41.203 (40)82.407 (52)164.814 (64)329.628 (76)659.255 (88)1318.510 (100)2637.020 (112)5274.041 <CR>;F (5)10.913 (17)21.827 (29)43.654 (41)87.307 (53)174.614 (65)349.228 (77)698.456 (89)1396.913 (101)2793.826 (113)5587.652 <CR>;G (7)12.250 (19)24.500 (31)48.999 (43)97.999 (55)195.998 (67)391.995 (79)783.991 (91)1567.982 (103)3135.963 (115)6271.926 <CR>;A (9)13.750 (21)27.500 (33)55.000 (45)110.000 (57)220.000 (69)440.000 (81)880.000 (93)1760.000 (105)3520.000 (117)7040.000 <CR>;B (11)15.434 (23)30.868 (35)61.735 (47)123.471 (59)246.942 (71)493.883 (83)987.767 (95)1975.533 (107)3951.067 (119)7902.132 <CR>
 abbr <buffer> CMinor ;C Minor (midi #) Frequency <CR>;C (0)8.176 (12)16.352 (24)32.703 (36)65.406 (48)130.813 (60)261.626 (72)523.251 (84)1046.502 (96)2093.004 (108)4186.009 <CR>;D (2)9.177 (14)18.354 (26)36.708 (38)73.416 (50)146.832 (62)293.665 (74)587.330 (86)1174.659 (98)2349.318 (110)4698.637 <CR>;Eb (3)9.723 (15)19.445 (27)38.891 (39)77.782 (51)155.563 (63)311.127 (75)622.254 (87)1244.508 (99)2489.016 (111)4978.032 <CR>;F (5)10.913 (17)21.827 (29)43.654 (41)87.307 (53)174.614 (65)349.228 (77)698.456 (89)1396.913 (101)2793.826 (113)5587.652 <CR>;G (7)12.250 (19)24.500 (31)48.999 (43)97.999 (55)195.998 (67)391.995 (79)783.991 (91)1567.982 (103)3135.963 (115)6271.926 <CR>;A (9)13.750 (21)27.500 (33)55.000 (45)110.000 (57)220.000 (69)440.000 (81)880.000 (93)1760.000 (105)3520.000 (117)7040.000 <CR>;B (11)15.434 (23)30.868 (35)61.735 (47)123.471 (59)246.942 (71)493.883 (83)987.767 (95)1975.533 (107)3951.067 (119)7902.132 <CR>
