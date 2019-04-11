@@ -11,7 +11,7 @@ endif
 
 set tags=~/.vim/doc/tags
 set helpfile=~/.vim/doc/csound.txt
-set dict=~/.vim/ftplugin/csd.vim
+set dict=~/.vim/ftplugin/csound.vim
 set complete+=k
 set hidden
 let maplocalleader = ","
@@ -25,48 +25,65 @@ nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
-nnoremap <buffer> <LocalLeader>t <ESC>gg:source ~/.vim/template/csound.vim<CR>gg^
-nnoremap <buffer> <LocalLeader>f :<C-U>FormatScore<CR>
+nnoremap <buffer> <LocalLeader>b :<C-U>InsertScoreBlock<CR>
+nnoremap <buffer> <LocalLeader>f :<C-U>AlignColumns<CR>
+vnoremap <buffer> <LocalLeader>f :<C-U>'<,'>AlignColumns<CR>
+nnoremap <buffer> <LocalLeader>i :<C-U>InsertScoreBlock<CR>
+nnoremap <buffer> <LocalLeader>t :<C-U>AddColumnValue 3 1<CR>
+vnoremap <buffer> <LocalLeader>t :<C-U>'<,'>AddColumnValue 3 1<CR>
 
 let s:formatscoreindex = 1
 while s:formatscoreindex < 10
-	exe "nnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :<C-U>FormatScore " . s:formatscoreindex . "<CR>"
+	exe "nnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :<C-U>AlignColumns " . s:formatscoreindex . "<CR>"
+	exe "vnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :<C-U>'<,'>AlignColumns " . s:formatscoreindex . "<CR>"
 	let s:formatscoreindex = s:formatscoreindex + 1
 endwhile
-
-            " leading blank i       p1        p2           p3
-let s:score_regex = "^[ \t]*i[ \t]*[\-0-9\. ]*[\-0-9\.]+[ \t]+[\-0-9\.]+" 
+                      " leading blank i        p1               p2                p3
+let s:vim_magic_score_regex = '^[ \t]*i[ \t]*[0-9]\+[ \t]\+[\.\-0-9]\+[ \t]\+[\.\-0-9]\+.*'
+let s:awk_score_regex = '^[ \t]*i[ \t]*[0-9]+[ \t]+[\.\-0-9]+[ \t]+[\.\-0-9]+.*'
 let g:current_format_spaces = 1
 
 command! -range=% SplitInstrumentNumber <line1>,<line2>s/^[ \t]*i\([\.\-0-9]\)/i \1/g
 command! -range=% JoinInstrumentNumber <line1>,<line2>s/^[ \t]*i[ \t]*\([\.\-0-9]\)/i\1/g
+command! -nargs=* InsertScoreBlock call InsertScoreBlockFunction(<f-args>)
 
 command! -range=% -nargs=+ SetColumnValue <line1>,<line2> call SetColumnValueFunction(<f-args>)
+command! -range=% -nargs=+ SwapColumns <line1>,<line2> call SwapColumnsFunction(<f-args>)
 
-command! -range=% -nargs=+ AddColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"+")
-command! -range=% -nargs=+ SubtractColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"-")
-command! -range=% -nargs=+ DivideColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"/")
-command! -range=% -nargs=+ MultiplyColumnValue <line1>,<line2> call MutateColumnValueFunction(<f-args>,"*")
+command! -range=% -nargs=+ AddColumnValue <line1>,<line2> call ModifyColumnValueFunction(<f-args>,"+")
+command! -range=% -nargs=+ SubtractColumnValue <line1>,<line2> call ModifyColumnValueFunction(<f-args>,"-")
+command! -range=% -nargs=+ DivideColumnValue <line1>,<line2> call ModifyColumnValueFunction(<f-args>,"/")
+command! -range=% -nargs=+ MultiplyColumnValue <line1>,<line2> call ModifyColumnValueFunction(<f-args>,"*")
 command! -range=% -nargs=+ ShiftColumnValue <line1>,<line2> call ShiftColumnValueFunction(<f-args>)
+command! -range=% -nargs=* -complete=custom,AlignColumnsCompletionFunction AlignColumns <line1>,<line2> call AlignColumnsFunction(<args>)
 
-command! -range=% -nargs=* -complete=custom,FormatScoreCompletionFunction FormatScore <line1>,<line2> call FormatScoreFunction(<args>)
+function! InsertScoreBlockFunction(...)
+	if a:0 > 0 && a:1 =~ "[0-9]" && a:1 > 0
+		let l:starttime = a:1 - 1
+	else
+		let l:starttime = 15
+	endif
+	while l:starttime > -1
+                          " p1      p2   p3   p4   p5   p6   p7  p8   p9
+                          "i n     start dur amp midinn pan lpf hpf reverb
+		call append(line('.'),'i 1 ' . l:starttime . ' 1 1 43 .5 200 8000 .5')
+		let l:starttime = l:starttime - 1
+	endwhile
+endfunction
 
-function! InsertScoreBlock()
-	call append(line('.'),'i 1 1 1 1')
-	call append(line('.'),'i 1 2 1 1')
-	call append(line('.'),'i 1 3 1 1')
-	call append(line('.'),'i 1 4 1 1')
+function! SwapColumnsFunction(col1,col2)
+	exe ":.!awk '/" . s:awk_score_regex . "/" . "{TMP=$" . a:col1 . ";$" . a:col1 . "=$" . a:col2 . ";$" . a:col2 . "=TMP} {print}'"
 endfunction
 
 function! SetColumnValueFunction(col,val)
-	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:score_regex . "/" . "{$" . a:col . "=VAL} {print}'"
+	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:awk_score_regex . "/" . "{$" . a:col . "=VAL} {print}'"
 endfunction
 
-function! MutateColumnValueFunction(col,val,op)
-	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:score_regex . "/" . "{$" . a:col . a:op . "=VAL} {print}'"
+function! ModifyColumnValueFunction(col,val,op) 
+	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:awk_score_regex . "/" . "{$" . a:col . a:op . "=VAL} {print}'"
 endfunction
 
-function! FormatScoreCompletionFunction(A,L,P)
+function! AlignColumnsCompletionFunction(A,L,P)
 	let l:ret = ""
 	let l:index = 1
 	while l:index < 10
@@ -87,13 +104,13 @@ function! RepeatCharsFunction(char,number)
 endfunction
 
 function! IsScoreStatement(textline)
-	if a:textline =~# "^[ \t]*i[ \t]*[0-9\-\.]"
+	if a:textline =~ s:vim_magic_score_regex 
 		return 1
 	endif
 	return 0
 endfunction
 
-function! FormatScoreFunction(...) range
+function! AlignColumnsFunction(...) range
 	let l:columnspacing = " " 
 	if a:0 > 0
 		if a:1 =~ "[0-9]"
