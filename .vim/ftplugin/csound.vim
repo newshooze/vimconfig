@@ -93,16 +93,6 @@ function! AlignColumnsCompletionFunction(A,L,P)
 	return l:ret
 endfunction
 
-function! RepeatCharsFunction(char,number)
-	let l:n = 1
-	let l:ret = a:char
-	while l:n < a:number
-		let l:ret = l:ret . a:char
-		let l:n = l:n + 1
-	endwhile
-	return l:ret
-endfunction
-
 function! IsScoreStatement(textline)
 	if a:textline =~ s:vim_magic_score_regex 
 		return 1
@@ -114,7 +104,7 @@ function! AlignColumnsFunction(...) range
 	let l:columnspacing = " " 
 	if a:0 > 0
 		if a:1 =~ "[0-9]"
-			let l:columnspacing = RepeatCharsFunction(" ",a:1)
+			let l:columnspacing = repeat(" ",a:1)
 		endif
 	endif
 	let l:maxintpartwidth = []

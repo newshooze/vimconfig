@@ -1,20 +1,20 @@
 set autowriteall
 
 " Compile current filename.c and link to executable
-map <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
+nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
+inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 " Run 
-map <buffer> <F6> <ESC>:make run<CR>
+inoremap <buffer> <F6> <ESC>:make run<CR>
+nnoremap <buffer> <F6> <ESC>:make run<CR>
 " Make
-map <buffer> <F8> <ESC>:make<CR>
+inoremap <buffer> <F8> <ESC>:make<CR>
+nnoremap <buffer> <F8> <ESC>:make<CR>
 " Make Clean
-map <buffer> <S-F8> <ESC>:make clean<CR>
+inoremap <buffer> <S-F8> <ESC>:make clean<CR>
+nnoremap <buffer> <S-F8> <ESC>:make clean<CR>
 
-map <buffer> <F12> :source ~/.vim/template/c.vim<CR>gg^
+nnoremap <buffer> <F12> :source ~/.vim/template/c.vim<CR>gg^
 
-" Complete file name
-imap <buffer> <C-F> <C-X><C-F> 
-" Complete line
-imap <buffer> <C-L> <C-X><C-L>
 
 " stdio.h
 iabbrev <buffer> fopen fopen("filename","r"); // FILE*<ESC>:normal 0f(<CR>
