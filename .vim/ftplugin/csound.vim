@@ -34,12 +34,12 @@ vnoremap <buffer> <LocalLeader>t :<C-U>'<,'>AddColumnValue 3 1<CR>
 
 let s:formatscoreindex = 1
 while s:formatscoreindex < 10
-	exe "nnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :<C-U>AlignColumns " . s:formatscoreindex . "<CR>"
-	exe "vnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :<C-U>'<,'>AlignColumns " . s:formatscoreindex . "<CR>"
+	exe "nnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :let originalview=winsaveview()<CR>:<C-U>AlignColumns " . s:formatscoreindex . "<CR>:call winrestview(originalview)<CR>"
+	exe "vnoremap <buffer> <LocalLeader>" . s:formatscoreindex . " :let originalview=winsaveview()<CR>:<C-U>'<,'>AlignColumns " . s:formatscoreindex . "<CR>:call winrestview(originalview)<CR>"
 	let s:formatscoreindex = s:formatscoreindex + 1
 endwhile
                       " leading blank i        p1               p2                p3
-let s:vim_magic_score_regex = '^[ \t]*i[ \t]*[0-9]\+[ \t]\+[\.\-0-9]\+[ \t]\+[\.\-0-9]\+.*'
+let s:vim_magic_score_regex = '^[ \t]*i[ \t]*[+.0-9]\+[ \t]\+[+<>.0-9]\+[ \t]\+[-+<>.0-9]\+.*'
 let s:awk_score_regex = '^[ \t]*i[ \t]*[0-9]+[ \t]+[\.\-0-9]+[ \t]+[\.\-0-9]+.*'
 let g:current_format_spaces = 1
 
@@ -59,15 +59,15 @@ command! -range=% -nargs=* -complete=custom,AlignColumnsCompletionFunction Align
 
 function! InsertScoreBlockFunction(...)
 	if a:0 > 0 && a:1 =~ "[0-9]" && a:1 > 0
-		let l:starttime = a:1 - 1
+		let starttime = a:1 - 1
 	else
-		let l:starttime = 15
+		let starttime = 15
 	endif
-	while l:starttime > -1
+	while starttime > -1
                           " p1      p2   p3   p4   p5   p6   p7  p8   p9
                           "i n     start dur amp midinn pan lpf hpf reverb
-		call append(line('.'),'i 1 ' . l:starttime . ' 1 1 43 .5 200 8000 .5')
-		let l:starttime = l:starttime - 1
+		call append(line('.'),'i 1 ' . starttime . ' 1 1 43 .5 200 8000 .5')
+		let starttime = starttime - 1
 	endwhile
 endfunction
 
@@ -101,104 +101,105 @@ function! IsScoreStatement(textline)
 endfunction
 
 function! AlignColumnsFunction(...) range
-	let l:columnspacing = " " 
+	let columnspacing = " " 
 	if a:0 > 0
 		if a:1 =~ "[0-9]"
-			let l:columnspacing = repeat(" ",a:1)
+			let columnspacing = repeat(" ",a:1)
 		endif
 	endif
-	let l:maxintpartwidth = []
-	let l:maxdotpartwidth = []
-	let l:maxfractionalpartwidth = []
-	let l:maxcolumnwidth = []
-	for l:linenum in range(a:firstline,a:lastline)
-		let l:textline = getline(l:linenum)
-		if IsScoreStatement(l:textline)
-			let l:tokenlist = split(l:textline)
-			while len(l:tokenlist) > len(l:maxcolumnwidth)
-				call add(l:maxintpartwidth,0)
-				call add(l:maxdotpartwidth,0)
-				call add(l:maxfractionalpartwidth,0)
-				call add(l:maxcolumnwidth,0)
+	let maxintpartwidth = []
+	let maxdotpartwidth = []
+	let maxfractionalpartwidth = []
+	let maxcolumnwidth = []
+	for linenum in range(a:firstline,a:lastline)
+		let textline = getline(linenum)
+		if IsScoreStatement(textline)
+			let tokenlist = split(textline)
+			while len(tokenlist) > len(maxcolumnwidth)
+				call add(maxintpartwidth,0)
+				call add(maxdotpartwidth,0)
+				call add(maxfractionalpartwidth,0)
+				call add(maxcolumnwidth,0)
 			endwhile
-			let l:tokenindex = 0
-			for l:token in l:tokenlist
-				let l:intpartwidth = 0
-				let l:dotpartwidth = 0
-				let l:fractionalpartwidth = 0
-				let l:columnwidth = 0
-				let l:dotposition = stridx(l:token,".")
-				if l:dotposition > -1
-					let l:intpartwidth = l:dotposition
-					let l:dotpartwidth = 1 
-					let l:fractionalpartwidth = strlen(l:token) - l:dotposition - 1
+			let tokenindex = 0
+			for token in tokenlist
+				let intpartwidth = 0
+				let dotpartwidth = 0
+				let fractionalpartwidth = 0
+				let columnwidth = 0
+				let dotposition = stridx(token,".")
+				if dotposition > -1
+					let intpartwidth = dotposition
+					let dotpartwidth = 1 
+					let fractionalpartwidth = strlen(token) - dotposition - 1
 				else
-					let l:intpartwidth = len(l:token)
+					let intpartwidth = len(token)
 				endif
-				if l:intpartwidth > get(l:maxintpartwidth,l:tokenindex)	
-					let l:maxintpartwidth[l:tokenindex] = l:intpartwidth
+				if intpartwidth > get(maxintpartwidth,tokenindex)	
+					let maxintpartwidth[tokenindex] = intpartwidth
 				endif
-				if l:dotpartwidth > get(l:maxdotpartwidth,l:tokenindex)
-					let l:maxdotpartwidth[l:tokenindex] = l:dotpartwidth
+				if dotpartwidth > get(maxdotpartwidth,tokenindex)
+					let maxdotpartwidth[tokenindex] = dotpartwidth
 				endif
-				if l:fractionalpartwidth > get(l:maxfractionalpartwidth,l:tokenindex)
-					let l:maxfractionalpartwidth[l:tokenindex] = l:fractionalpartwidth
+				if fractionalpartwidth > get(maxfractionalpartwidth,tokenindex)
+					let maxfractionalpartwidth[tokenindex] = fractionalpartwidth
 				endif
-				let l:columnwidth = l:intpartwidth + l:dotpartwidth + l:fractionalpartwidth 
-				if l:columnwidth > get(l:maxcolumnwidth,l:tokenindex)
-					let l:maxcolumnwidth[l:tokenindex] = l:columnwidth
+				let columnwidth = intpartwidth + dotpartwidth + fractionalpartwidth 
+				if columnwidth > get(maxcolumnwidth,tokenindex)
+					let maxcolumnwidth[tokenindex] = columnwidth
 				endif	
-				let l:tokenindex = l:tokenindex + 1
+				let tokenindex = tokenindex + 1
 			endfor
 		endif
 	endfor
-	for l:linenum in range(a:firstline,a:lastline)
-		let l:textline = getline(l:linenum)
-		if IsScoreStatement(l:textline)
-			let l:tokenlist = split(l:textline)
-			let l:tokenindex = 0
-			let l:newline = ""
-			for l:token in l:tokenlist
-				let l:intpartwidth = 0
-				let l:dotpartwidth = 0
-				let l:fractionalpartwidth = 0
-				let l:columnwidth = 0
-				let l:dotposition = stridx(l:token,".")
-				if l:dotposition > -1
-					let l:intpartwidth = l:dotposition
-					let l:dotpartwidth = 1
-					let l:fractionalpartwidth = strlen(l:token) - l:dotposition - 1
+	for linenum in range(a:firstline,a:lastline)
+		let textline = getline(linenum)
+		if IsScoreStatement(textline)
+			let tokenlist = split(textline)
+			let tokenlistlength = len(tokenlist)
+			let tokenindex = 0
+			let newline = ""
+			for token in tokenlist
+				let intpartwidth = 0
+				let dotpartwidth = 0
+				let fractionalpartwidth = 0
+				let columnwidth = 0
+				let dotposition = stridx(token,".")
+				if dotposition > -1
+					let intpartwidth = dotposition
+					let dotpartwidth = 1
+					let fractionalpartwidth = strlen(token) - dotposition - 1
 				else
-					let l:intpartwidth = len(l:token)
+					let intpartwidth = len(token)
 				endif
-				let l:newtoken = ""
-				let l:intdiff = l:maxintpartwidth[l:tokenindex] - l:intpartwidth
-				let l:dotdiff = l:maxdotpartwidth[l:tokenindex] - l:dotpartwidth		
-				let l:fracdiff = l:maxfractionalpartwidth[l:tokenindex] - l:fractionalpartwidth
-				let l:coldiff = l:maxcolumnwidth[l:tokenindex] - strlen(l:token)
-				let l:padlength = 0
-				while l:padlength < l:intdiff
-					let l:newtoken = l:newtoken . " "	
-					let l:padlength = l:padlength + 1
+				let newtoken = ""
+				let intdiff = maxintpartwidth[tokenindex] - intpartwidth
+				let dotdiff = maxdotpartwidth[tokenindex] - dotpartwidth		
+				let fracdiff = maxfractionalpartwidth[tokenindex] - fractionalpartwidth
+				let coldiff = maxcolumnwidth[tokenindex] - strlen(token)
+				let padlength = 0
+				while padlength < intdiff
+					let newtoken = newtoken . " "	
+					let padlength = padlength + 1
 				endwhile
-				let l:newtoken = l:newtoken . l:token
-				let l:padlength = 0
-				while l:padlength < l:dotdiff
-					let l:newtoken = l:newtoken . "."
-					let l:padlength = l:padlength + 1
+				let newtoken = newtoken . token
+				let padlength = 0
+				while padlength < dotdiff
+					let newtoken = newtoken . "."
+					let padlength = padlength + 1
 				endwhile
-				let l:padlength = 0
-				while l:padlength < l:fracdiff
-					let l:newtoken = l:newtoken . "0"	
-					let l:padlength = l:padlength + 1
+				let padlength = 0
+				while padlength < fracdiff 
+					let newtoken = newtoken . "0"
+					let padlength = padlength + 1
 				endwhile
-				if l:tokenindex < len(tokenlist) - 1
-					let l:newtoken = l:newtoken . l:columnspacing
+				if tokenindex < len(tokenlist) - 1
+					let newtoken = newtoken . columnspacing
 				endif
-				let l:newline = l:newline . l:newtoken	
-				let l:tokenindex = l:tokenindex + 1
+				let newline = newline . newtoken	
+				let tokenindex = tokenindex + 1
 			endfor
-			exe ":" . l:linenum . "s/^.*$/" . l:newline . "/g"	
+			exe ":" . linenum . "s/^.*$/" . newline . "/g"	
 		endif
 	endfor
 endfunction
