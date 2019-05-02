@@ -1,12 +1,11 @@
 #!/bin/bash
 # html2text is required
 # Run this file inside vim's doc directory. It's usually ~/.vim/doc
-# Change the variable DOCPATH below to the csound html documentation 
+# Change the variable DOCFILES below to the csound html documentation 
 
 command -v html2text >/dev/null 2>&1 || { echo >&2 "html2text is required. Exiting."; exit 1; }
 
-DOCPATH=/usr/share/doc/csound-doc/html
-DOCFILES=$(ls -1 $DOCPATH/*.html)
+DOCFILES=/usr/share/doc/csound-doc/html/*.html
 VIMVERSION=7.4
 HELPFILE=csound.txt
 TAGFILE=tags
