@@ -15,7 +15,7 @@ set noshowmatch
 set autoread
 set autowriteall
 set incsearch
-
+set nofoldenable
 filetype plugin on
 
 let g:loaded_matchparen=1
