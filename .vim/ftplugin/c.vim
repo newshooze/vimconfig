@@ -1,5 +1,31 @@
-set autowriteall
+if exists("b:did_ftplugin")
+  finish
+endif
 
+set errorformat^=%-GIn\ file\ included\ from\ %f:%l:%c:,%-GIn\ file
+				 \\ included\ from\ %f:%l:%c\\,,%-GIn\ file\ included\ from\ %f
+				 \:%l:%c,%-GIn\ file\ included\ from\ %f:%l
+
+map <F2> lbi<bar><ESC>ea<bar><ESC>
+setlocal dict=~/.vim/ftplugin/c.vim
+setlocal complete+=k
+setlocal tags+=~/.vim/doc/c/Xlib/tags
+setlocal tags+=~/.vim/doc/c/SDL2/tags
+
+let maplocalleader = ","
+
+map <buffer> ( <Nop>
+map <buffer> ) <Nop>
+
+nnoremap <buffer> <localleader>c :edit ~/.vim/ftplugin/c.vim<CR>
+nnoremap <buffer> <localleader>x :edit /usr/include/X11/Xlib.h<CR>
+
+nnoremap <buffer> <S-K> :tag <C-R><C-W><CR> 
+nnoremap <buffer> <C-K> :!man <C-R><C-W><CR> 
+
+nnoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/c.vim<CR>
+
+nnoremap <buffer> <F4> <ESC>:e %:r.h<CR>
 " Compile current filename.c and link to executable
 nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
@@ -15,758 +41,1878 @@ nnoremap <buffer> <S-F8> <ESC>:make clean<CR>
 
 nnoremap <buffer> <F12> :source ~/.vim/template/c.vim<CR>gg^
 
-
 " stdio.h
-iabbrev <buffer> fopen fopen("filename","r"); // FILE*<ESC>:normal 0f(<CR>
-iabbrev <buffer> fclose fclose(FILE); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> fseek fseek(FILE,offset,wence); // int - wence is SEEK_SET,SEEK_CUR,SEEK_END<ESC>:normal 0f(<CR>
-iabbrev <buffer> ftell ftell(FILE); // long<ESC>:normal 0f(<CR>
-iabbrev <buffer> rewind rewind(FILE); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> fprintf fprintf(FILE,format); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> sprintf sprintf(buffer,format); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> snprintf snprintf(buffer,size_t,format); // int<ESC>:normal 0f(<CR>
+iabbrev <buffer> fgetc fgetc(FILE); /* int */<ESC>:normal 0(<CR>
+iabbrev <buffer> fopen fopen("filename","r"); /* FILE* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fread fread(buffer,size,n,FILE); / *size_t */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fwrite fwrite(buffer,size,n,FILE); / *size_t */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fclose fclose(FILE); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fseek fseek(FILE,offset,wence); /* int - wence is SEEK_SET,SEEK_CUR,SEEK_END */<ESC>:normal 0f(<CR>
+iabbrev <buffer> ftell ftell(FILE); /* long */<ESC>:normal 0f(<CR>
+iabbrev <buffer> rewind rewind(FILE); / *void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> popen popen("command --args","r"); /* FILE* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> pclose pclose(FILE); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> rewind rewind(FILE); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fprintf fprintf(FILE,format); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> sprintf sprintf(buffer,format); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> snprintf snprintf(buffer,size_t,format); /* int */<ESC>:normal 0f(<CR>
+
+" sys/mman.h memory mapping mmap
+iabbrev <buffer> mmap mmap(void *addr,size_t len,int prot,int flags,int fd,off_t offset); /* void* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> mmap64 mmap64(void *addr,size_t len,int prot,int flags,int fd,off64_t offset); /* void* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> munmap munmap(void *addr,size_t len); /* 0(success) -1(error) */<ESC>:normal 0f(<CR>
+iabbrev <buffer> mlock mlock(const void *addr,size_t len); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> mprotect mprotect(void *addr,size_t len,int prot); /* 0(success) -1(error) */<ESC>:normal 0f(<CR>
+iabbrev <buffer> msync msync(void *addr,size_t len,int flags); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> madvise madvise(void *addr,size_t len,int advice); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> posix_madvise posix_madvise(void *addr,size_t len,int advice); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> munlock munlock(const void *addr,size_t len); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> mlockall mlockall(int flags); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> munlockall munlockall(); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> mincore mincore(void *start,size_t len,unsigned char *vec); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> mremap mremap (void *addr,size_t old_len,size_t new_len,int flags, ...); /* int */<ESC>:normal 0f(<CR> 
+iabbrev <buffer> shm_open shm_open (const char *name,int oflag,mode_t mode); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> shm_unlink shm_unlink(const char *name); /* int */<ESC>:normal 0f(<CR>
+
+" sys/ioctl.h
+iabbrev <buffer> ioctl ioctl(int fd,unsigned long int request, void *data); /* int */<ESC>:normal 0f(<CR>
 
 " stdlib.h
-
+"
 " XRender defs
-iabbrev <buffer> XRenderAddGlyphs XRenderAddGlyphs(display,GlyphSet	glyphset,_Xconst Glyph *gids,_Xconst XGlyphInfo	*glyphs,int nglyphs,_Xconst char*images,int nbyte_images); // void<ESC>:normal 0f(<CR> 
-iabbrev <buffer> XRenderAddTraps XRenderAddTraps(display,picture,xOff,yOff,XTrap*,ntrap); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderChangePicture XRenderChangePicture(display,picture,CP,XRenderPictureAttributes*); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeDoublePoly XRenderCompositeDoublePoly(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,xDst,yDst,XPointDouble*,npoint,int winding); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeString16 XRenderCompositeString16(display,PictOp,src,dst,*maskFormat,GlyphSet glyphset,int xSrc,int ySrc,int xDst,int yDst,_Xconst unsigned short *string,int nchar); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeString32 XRenderCompositeString32(display,int op,Picture src,Picture dst,*maskFormat,GlyphSet glyphset,int xSrc,int ySrc,int xDst,int yDst,_Xconst unsigned int *string,int nchar); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeString8 XRenderCompositeString8(display,int op,Picture src,Picture dst,*maskFormat,GlyphSet glyphset,int xSrc,int ySrc,int xDst,int yDst,_Xconst char *string,int nchar); // void<ESC>:normal 175<CR> 
-iabbrev <buffer> XRenderCompositeText16 XRenderCompositeText16(display,int op,Picture src,Picture dst,*maskFormat,int xSrc,int ySrc,int xDst,int yDst,_Xconst XGlyphElt16 *elts,int nelt); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeText32 XRenderCompositeText32(display,int op,Picture src,Picture dst,*maskFormat,int xSrc,int ySrc,int xDst,int yDst,_Xconst XGlyphElt32 *elts,int nelt); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeText8 XRenderCompositeText8(display,int op,Picture src,Picture dst,*maskFormat,int xSrc,int ySrc,int xDst,int yDst,_Xconst XGlyphElt8 *elts,int nelt); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeTrapezoids XRenderCompositeTrapezoids(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,XTrapezoid*,ntrap); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeTriangles XRenderCompositeTriangles(display,PictOp,src,dest,XRenderPictFormat*,xsrc,ysrc,XTriangle*,ntriangle); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCompositeTriFan XRenderCompositeTriFan(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,XPointFixed*,npoint); // void<ESC>:normal 0f(<CR> 
-iabbrev <buffer> XRenderCompositeTriStrip XRenderCompositeTriStrip(display,PictOp,src,dest,XRenderPictFormat*,xSrc,ySrc,XPointFixed*,npoint); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderComposite XRenderComposite(display,PictOp,src,mask,dst,src_x,src_y,mask_x,mask_y,dst_x,dst_y,width,height); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateAnimCursor XRenderCreateAnimCursor(display,int ncursor,XAnimCursor*cursors); // Cursor<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateConicalGradient XRenderCreateConicalGradient(display,XConicalGradient*,XFixed *stops,XRenderColor *colors,int nstops); // Picture<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateCursor XRenderCreateCursor(display,Picture source,unsigned int x,unsigned int y); // Cursor<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateGlyphSet XRenderCreateGlyphSet(display,*format); // GlyphSet<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateLinearGradient XRenderCreateLinearGradient(display,XLinearGradient*,XFixed *stops,XRenderColor* colors,int nstops); // Picture<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreatePicture XRenderCreatePicture(display,Drawable,XRenderPictFormat,valuemask,XRenderPictureAttributes*); // Picture<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateRadialGradient XRenderCreateRadialGradient(display,XRadialGradient*,XFixed *stops,XRenderColor *colors,int nstops); // Picture<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderCreateSolidFill XRenderCreateSolidFill(display,XRenderColor*); // Picture<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFillRectangles XRenderFillRectangles(display,PictOp,dst,XRenderColor*,XRectangle*,n_rects); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFillRectangle XRenderFillRectangle(display,PictOp,dst,XRenderColor*,x,y,width,height); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFindFormat XRenderFindFormat(display,unsigned long mask,*templ,int count); // XRenderPictFormat*<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFindStandardFormat XRenderFindStandardFormat(display,PictStandardFormat); // XRenderPictFormat*<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFindVisualFormat XRenderFindVisualFormat(display,Visual*); // XRenderPictFormat*<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFreeGlyphSet XRenderFreeGlyphSet(display,GlyphSet glyphset); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderFreeGlyphs XRenderFreeGlyphs(display,GlyphSet glyphset,_Xconst Glyph *gids,int nglyphs); // void<ESC>:normal 0f(<CR> 
-iabbrev <buffer> XRenderFreePicture XRenderFreePicture(display,picture); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderParseColor XRenderParseColor(display,char *,XRenderColor*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderQueryExtension XRenderQueryExtension(display,int *event_basep,int *error_basep); // Bool<ESC>:normal 0f(<CR> 
-iabbrev <buffer> XRenderQueryFilters XRenderQueryFilters(display,drawable); // XFilters*<ESC>:normal 0f(<CR> 
-iabbrev <buffer> XRenderQueryFormats XRenderQueryFormats(display); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderQueryPictIndexValues XRenderQueryPictIndexValues(display,	*format,int *num); // XIndexValue*<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderQuerySubpixelOrder XRenderQuerySubpixelOrder(display,int screen); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderQueryVersion XRenderQueryVersion(display,int *major_versionp, int *minor_versionp); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderReferenceGlyphSet XRenderReferenceGlyphSet(display,GlyphSet existing); // GlyphSet<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderSetPictureClipRectangles XRenderSetPictureClipRectangles(display,Picture picture,int xOrigin,int yOrigin,_Xconst XRectangle *rects,int n); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderSetPictureClipRegion XRenderSetPictureClipRegion(display,Picture picture,Region r); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderSetPictureFilter XRenderSetPictureFilter(display,picture,char* filter,XFixed *params,int nparams); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderSetPictureTransform XRenderSetPictureTransform(display,picture,XTransform*); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRenderSetSubpixelOrder XRenderSetSubpixelOrder(display,screen,int subpixel); // Bool<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderAddGlyphs XRenderAddGlyphs(display,GlyphSet	glyphset,_Xconst Glyph *gids,_Xconst XGlyphInfo	*glyphs,int nglyphs,_Xconst char*images,int nbyte_images); /* void */<ESC>:normal 0f(<CR> 
+iabbrev <buffer> XRenderAddTraps XRenderAddTraps(display,picture,xOff,yOff,XTrap*,ntrap); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderChangePicture XRenderChangePicture(display,picture,CP,XRenderPictureAttributes*); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeDoublePoly XRenderCompositeDoublePoly(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,xDst,yDst,XPointDouble*,npoint,int winding); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeString16 XRenderCompositeString16(display,PictOp,src,dst,*maskFormat,GlyphSet glyphset,int xSrc,int ySrc,int xDst,int yDst,_Xconst unsigned short *string,int nchar); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeString32 XRenderCompositeString32(display,int op,Picture src,Picture dst,*maskFormat,GlyphSet glyphset,int xSrc,int ySrc,int xDst,int yDst,_Xconst unsigned int *string,int nchar); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeString8 XRenderCompositeString8(display,int op,Picture src,Picture dst,*maskFormat,GlyphSet glyphset,int xSrc,int ySrc,int xDst,int yDst,_Xconst char *string,int nchar); /* void */<ESC>175<CR> 
+iabbrev <buffer> XRenderCompositeText16 XRenderCompositeText16(display,int op,Picture src,Picture dst,*maskFormat,int xSrc,int ySrc,int xDst,int yDst,_Xconst XGlyphElt16 *elts,int nelt); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeText32 XRenderCompositeText32(display,int op,Picture src,Picture dst,*maskFormat,int xSrc,int ySrc,int xDst,int yDst,_Xconst XGlyphElt32 *elts,int nelt); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeText8 XRenderCompositeText8(display,int op,Picture src,Picture dst,*maskFormat,int xSrc,int ySrc,int xDst,int yDst,_Xconst XGlyphElt8 *elts,int nelt); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeTrapezoids XRenderCompositeTrapezoids(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,XTrapezoid*,ntrap); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeTriangles XRenderCompositeTriangles(display,PictOp,src,dest,XRenderPictFormat*,xsrc,ysrc,XTriangle*,ntriangle); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCompositeTriFan XRenderCompositeTriFan(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,XPointFixed*,npoint); /* void */<ESC>:normal 0f(<CR> 
+iabbrev <buffer> XRenderCompositeTriStrip XRenderCompositeTriStrip(display,PictOp,src,dest,XRenderPictFormat*,xSrc,ySrc,XPointFixed*,npoint); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderComposite XRenderComposite(display,PictOp,src,mask,dst,src_x,src_y,mask_x,mask_y,dst_x,dst_y,width,height); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateAnimCursor XRenderCreateAnimCursor(display,int ncursor,XAnimCursor*cursors); /* Cursor */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateConicalGradient XRenderCreateConicalGradient(display,XConicalGradient*,XFixed *stops,XRenderColor *colors,int nstops); /* Picture */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateCursor XRenderCreateCursor(display,Picture source,unsigned int x,unsigned int y); /* Cursor */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateGlyphSet XRenderCreateGlyphSet(display,*format); /* GlyphSet */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateLinearGradient XRenderCreateLinearGradient(display,XLinearGradient*,XFixed *stops,XRenderColor* colors,int nstops); /* Picture */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreatePicture XRenderCreatePicture(display,Drawable,XRenderPictFormat,valuemask,XRenderPictureAttributes*); /* Picture */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateRadialGradient XRenderCreateRadialGradient(display,XRadialGradient*,XFixed *stops,XRenderColor *colors,int nstops); /* Picture */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderCreateSolidFill XRenderCreateSolidFill(display,XRenderColor*); /* Picture */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFillRectangles XRenderFillRectangles(display,PictOp,dst,XRenderColor*,XRectangle*,n_rects); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFillRectangle XRenderFillRectangle(display,PictOp,dst,XRenderColor*,x,y,width,height); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFindFormat XRenderFindFormat(display,unsigned long mask,*templ,int count); /* XRenderPictFormat* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFindStandardFormat XRenderFindStandardFormat(display,PictStandardFormat); /* XRenderPictFormat* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFindVisualFormat XRenderFindVisualFormat(display,Visual*); /* XRenderPictFormat* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFreeGlyphSet XRenderFreeGlyphSet(display,GlyphSet glyphset); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderFreeGlyphs XRenderFreeGlyphs(display,GlyphSet glyphset,_Xconst Glyph *gids,int nglyphs); /* void */<ESC>:normal 0f(<CR> 
+iabbrev <buffer> XRenderFreePicture XRenderFreePicture(display,picture); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderParseColor XRenderParseColor(display,char *,XRenderColor*); /* Status */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderQueryExtension XRenderQueryExtension(display,int *event_basep,int *error_basep); /* Bool */<ESC>:normal 0f(<CR> 
+iabbrev <buffer> XRenderQueryFilters XRenderQueryFilters(display,drawable); /* XFilters* */<ESC>:normal 0f(<CR> 
+iabbrev <buffer> XRenderQueryFormats XRenderQueryFormats(display); /* Status */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderQueryPictIndexValues XRenderQueryPictIndexValues(display,	*format,int *num); /* XIndexValue* */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderQuerySubpixelOrder XRenderQuerySubpixelOrder(display,int screen); /* int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderQueryVersion XRenderQueryVersion(display,int *major_versionp, int *minor_versionp); /* Status */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderReferenceGlyphSet XRenderReferenceGlyphSet(display,GlyphSet existing); /* GlyphSet */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderSetPictureClipRectangles XRenderSetPictureClipRectangles(display,Picture picture,int xOrigin,int yOrigin,_Xconst XRectangle *rects,int n); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderSetPictureClipRegion XRenderSetPictureClipRegion(display,Picture picture,Region r); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderSetPictureFilter XRenderSetPictureFilter(display,picture,char* filter,XFixed *params,int nparams); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderSetPictureTransform XRenderSetPictureTransform(display,picture,XTransform*); /* void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRenderSetSubpixelOrder XRenderSetSubpixelOrder(display,screen,int subpixel); /* Bool */<ESC>:normal 0f(<CR>
 
 " Xft.h
-iabbrev <buffer> XftCharExists XftCharExists(display,XftFont*pub,FcChar32ucs4); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftCharFontSpecRender XftCharFontSpecRender(display,intop,Picturesrc,Picturedst,intsrcx,intsrcy,_XconstXftCharFontSpec*chars,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftCharSpecRender XftCharSpecRender(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,_XconstXftCharSpec*chars,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftColorAllocName XftColorAllocName(display,_XconstVisual*visual,Colormapcmap,_Xconstchar*name,XftColor*result); // Bool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftColorAllocValue XftColorAllocValue(display,Visual*visual,Colormapcmap,_XconstXRenderColor*color,XftColor*result); // Bool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftColorFree XftColorFree(display,Visual*visual,Colormapcmap,XftColor*color); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDefaultHasRender XftDefaultHasRender(display); // Bool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDefaultSet XftDefaultSet(display,FcPattern*defaults); // Bool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDefaultSubstitute XftDefaultSubstitute(display,intscreen,FcPattern*pattern); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDirSave XftDirSave(FcFontSet*set,_Xconstchar*dir); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDirScan XftDirScan(FcFontSet*set,_Xconstchar*dir,FcBoolforce); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawChange XftDrawChange(XftDraw*draw,Drawabledrawable); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawCharFontSpec XftDrawCharFontSpec(XftDraw*draw,_XconstXftColor*color,_XconstXftCharFontSpec*chars,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawCharSpec XftDrawCharSpec(XftDraw*draw,_XconstXftColor*color,XftFont*pub,_XconstXftCharSpec*chars,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawColormap XftDrawColormap(XftDraw*draw); // Colormap <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawCreateAlpha XftDrawCreateAlpha(display,Pixmappixmap,intdepth); // XftDraw * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawCreateBitmap XftDrawCreateBitmap(display,Pixmapbitmap); // XftDraw * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawCreate XftDrawCreate(display,Drawabledrawable,Visual*visual,Colormapcolormap); // XftDraw * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawDestroy XftDrawDestroy(XftDraw*draw); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawDisplay XftDrawDisplay(XftDraw*draw); // Display * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawDrawable XftDrawDrawable(XftDraw*draw); // Drawable <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawGlyphFontSpec XftDrawGlyphFontSpec(XftDraw*draw,_XconstXftColor*color,_XconstXftGlyphFontSpec*glyphs,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawGlyphSpec XftDrawGlyphSpec(XftDraw*draw,_XconstXftColor*color,XftFont*pub,_XconstXftGlyphSpec*glyphs,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawGlyphs XftDrawGlyphs(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFT_UInt*glyphs,intnglyphs); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawPicture XftDrawPicture(XftDraw*draw); // Picture <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawRect XftDrawRect(XftDraw*draw,_XconstXftColor*color,intx,inty,unsignedintwidth,unsignedintheight); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawSetClipRectangles XftDrawSetClipRectangles(XftDraw*draw,intxOrigin,intyOrigin,_XconstXRectangle*rects,intn); // Bool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawSetClip XftDrawSetClip(XftDraw*draw,Regionr); // Bool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawSetSubwindowMode XftDrawSetSubwindowMode(XftDraw*draw,intmode); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawSrcPicture XftDrawSrcPicture(XftDraw*draw,_XconstXftColor*color); // Picture <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawString16 XftDrawString16(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar16*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawString32 XftDrawString32(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar32*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawString8 XftDrawString8(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawStringUtf16 XftDrawStringUtf16(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar8*string,FcEndianendian,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawStringUtf8 XftDrawStringUtf8(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftDrawVisual XftDrawVisual(XftDraw*draw); // Visual * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontCheckGlyph XftFontCheckGlyph(display,XftFont*pub,FcBoolneed_bitmaps,FT_UIntglyph,FT_UInt*missing,int*nmissing); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontClose XftFontClose(display,XftFont*pub); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontCopy XftFontCopy(display,XftFont*pub); // XftFont * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontInfoCreate XftFontInfoCreate(display,_XconstFcPattern*pattern); // XftFontInfo * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontInfoDestroy XftFontInfoDestroy(display,XftFontInfo*fi); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontInfoEqual XftFontInfoEqual(_XconstXftFontInfo*a,_XconstXftFontInfo*b); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontInfoHash XftFontInfoHash(_XconstXftFontInfo*fi); // FcChar32 <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontLoadGlyphs XftFontLoadGlyphs(display,XftFont*pub,FcBoolneed_bitmaps,_XconstFT_UInt*glyphs,intnglyph); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontMatch XftFontMatch(display,intscreen,_XconstFcPattern*pattern,FcResult*result); // FcPattern * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontOpenInfo XftFontOpenInfo(display,FcPattern*pattern,XftFontInfo*fi); // XftFont * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontOpenName XftFontOpenName(display,intscreen,_Xconstchar*name); // XftFont * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontOpenPattern XftFontOpenPattern(display,FcPattern*pattern); // XftFont * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontOpen XftFontOpen(display,intscreen,...)_X_SENTINEL(0); // XftFont * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontOpenXlfd XftFontOpenXlfd(display,intscreen,_Xconstchar*xlfd); // XftFont * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftFontUnloadGlyphs XftFontUnloadGlyphs(display,XftFont*pub,_XconstFT_UInt*glyphs,intnglyph); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftGlyphExtents XftGlyphExtents(display,XftFont*pub,_XconstFT_UInt*glyphs,intnglyphs,XGlyphInfo*extents); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftGlyphFontSpecRender XftGlyphFontSpecRender(display,intop,Picturesrc,Picturedst,intsrcx,intsrcy,_XconstXftGlyphFontSpec*glyphs,intnglyphs); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftGlyphRender XftGlyphRender(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFT_UInt*glyphs,intnglyphs); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftGlyphSpecRender XftGlyphSpecRender(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,_XconstXftGlyphSpec*glyphs,intnglyphs); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftInitFtLibrary XftInitFtLibrary(void); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftInit XftInit(_Xconstchar*config); // FcBool <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftListFonts XftListFonts(display,intscreen,...)_X_SENTINEL(0); // FcFontSet * <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftLockFace XftLockFace(XftFont*pub); // FT_Face <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextExtents16 XftTextExtents16(display,XftFont*pub,_XconstFcChar16*string,intlen,XGlyphInfo*extents); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextExtents32 XftTextExtents32(display,XftFont*pub,_XconstFcChar32*string,intlen,XGlyphInfo*extents); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextExtents8 XftTextExtents8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextExtentsUtf16 XftTextExtentsUtf16(display,XftFont*pub,_XconstFcChar8*string,FcEndianendian,intlen,XGlyphInfo*extents); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextExtentsUtf8 XftTextExtentsUtf8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender16BE XftTextRender16BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender16LE XftTextRender16LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender16 XftTextRender16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar16*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender32BE XftTextRender32BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender32LE XftTextRender32LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender32 XftTextRender32(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar32*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRender8 XftTextRender8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRenderUtf16 XftTextRenderUtf16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,FcEndianendian,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftTextRenderUtf8 XftTextRenderUtf8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftUnlockFace XftUnlockFace(XftFont*pub); // void <ESC>:normal 0f(<CR>
-iabbrev <buffer> XftXlfdParse XftXlfdParse(_Xconstchar*xlfd_orig,Boolignore_scalable,Boolcomplete); // FcPattern * <ESC>:normal 0f(<CR>
+iabbrev <buffer> XftCharExists XftCharExists(display,XftFont*pub,FcChar32ucs4); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftCharFontSpecRender XftCharFontSpecRender(display,intop,Picturesrc,Picturedst,intsrcx,intsrcy,_XconstXftCharFontSpec*chars,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftCharSpecRender XftCharSpecRender(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,_XconstXftCharSpec*chars,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftColorAllocName XftColorAllocName(display,_XconstVisual*visual,Colormapcmap,_Xconstchar*name,XftColor*result); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftColorAllocValue XftColorAllocValue(display,Visual*visual,Colormapcmap,_XconstXRenderColor*color,XftColor*result); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftColorFree XftColorFree(display,Visual*visual,Colormapcmap,XftColor*color); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDefaultHasRender XftDefaultHasRender(display); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDefaultSet XftDefaultSet(display,FcPattern*defaults); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDefaultSubstitute XftDefaultSubstitute(display,intscreen,FcPattern*pattern); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDirSave XftDirSave(FcFontSet*set,_Xconstchar*dir); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDirScan XftDirScan(FcFontSet*set,_Xconstchar*dir,FcBoolforce); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawChange XftDrawChange(XftDraw*draw,Drawabledrawable); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawCharFontSpec XftDrawCharFontSpec(XftDraw*draw,_XconstXftColor*color,_XconstXftCharFontSpec*chars,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawCharSpec XftDrawCharSpec(XftDraw*draw,_XconstXftColor*color,XftFont*pub,_XconstXftCharSpec*chars,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawColormap XftDrawColormap(XftDraw*draw); /* Colormap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawCreateAlpha XftDrawCreateAlpha(display,Pixmappixmap,intdepth); /* XftDraw *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawCreateBitmap XftDrawCreateBitmap(display,Pixmapbitmap); /* XftDraw *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawCreate XftDrawCreate(display,Drawabledrawable,Visual*visual,Colormapcolormap); /* XftDraw *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawDestroy XftDrawDestroy(XftDraw*draw); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawDisplay XftDrawDisplay(XftDraw*draw); /* Display *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawDrawable XftDrawDrawable(XftDraw*draw); /* Drawable  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawGlyphFontSpec XftDrawGlyphFontSpec(XftDraw*draw,_XconstXftColor*color,_XconstXftGlyphFontSpec*glyphs,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawGlyphSpec XftDrawGlyphSpec(XftDraw*draw,_XconstXftColor*color,XftFont*pub,_XconstXftGlyphSpec*glyphs,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawGlyphs XftDrawGlyphs(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFT_UInt*glyphs,intnglyphs); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawPicture XftDrawPicture(XftDraw*draw); /* Picture  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawRect XftDrawRect(XftDraw*draw,_XconstXftColor*color,intx,inty,unsignedintwidth,unsignedintheight); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawSetClipRectangles XftDrawSetClipRectangles(XftDraw*draw,intxOrigin,intyOrigin,_XconstXRectangle*rects,intn); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawSetClip XftDrawSetClip(XftDraw*draw,Regionr); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawSetSubwindowMode XftDrawSetSubwindowMode(XftDraw*draw,intmode); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawSrcPicture XftDrawSrcPicture(XftDraw*draw,_XconstXftColor*color); /* Picture  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawString16 XftDrawString16(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar16*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawString32 XftDrawString32(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar32*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawString8 XftDrawString8(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawStringUtf16 XftDrawStringUtf16(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar8*string,FcEndianendian,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawStringUtf8 XftDrawStringUtf8(XftDraw*draw,_XconstXftColor*color,XftFont*pub,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftDrawVisual XftDrawVisual(XftDraw*draw); /* Visual *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontCheckGlyph XftFontCheckGlyph(display,XftFont*pub,FcBoolneed_bitmaps,FT_UIntglyph,FT_UInt*missing,int*nmissing); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontClose XftFontClose(display,XftFont*pub); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontCopy XftFontCopy(display,XftFont*pub); /* XftFont *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontInfoCreate XftFontInfoCreate(display,_XconstFcPattern*pattern); /* XftFontInfo *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontInfoDestroy XftFontInfoDestroy(display,XftFontInfo*fi); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontInfoEqual XftFontInfoEqual(_XconstXftFontInfo*a,_XconstXftFontInfo*b); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontInfoHash XftFontInfoHash(_XconstXftFontInfo*fi); /* FcChar32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontLoadGlyphs XftFontLoadGlyphs(display,XftFont*pub,FcBoolneed_bitmaps,_XconstFT_UInt*glyphs,intnglyph); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontMatch XftFontMatch(display,intscreen,_XconstFcPattern*pattern,FcResult*result); /* FcPattern *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontOpenInfo XftFontOpenInfo(display,FcPattern*pattern,XftFontInfo*fi); /* XftFont *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontOpenName XftFontOpenName(display,intscreen,_Xconstchar*name); /* XftFont *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontOpenPattern XftFontOpenPattern(display,FcPattern*pattern); /* XftFont *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontOpen XftFontOpen(display,intscreen,...)_X_SENTINEL(0); /* XftFont *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontOpenXlfd XftFontOpenXlfd(display,intscreen,_Xconstchar*xlfd); /* XftFont *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftFontUnloadGlyphs XftFontUnloadGlyphs(display,XftFont*pub,_XconstFT_UInt*glyphs,intnglyph); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftGlyphExtents XftGlyphExtents(display,XftFont*pub,_XconstFT_UInt*glyphs,intnglyphs,XGlyphInfo*extents); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftGlyphFontSpecRender XftGlyphFontSpecRender(display,intop,Picturesrc,Picturedst,intsrcx,intsrcy,_XconstXftGlyphFontSpec*glyphs,intnglyphs); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftGlyphRender XftGlyphRender(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFT_UInt*glyphs,intnglyphs); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftGlyphSpecRender XftGlyphSpecRender(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,_XconstXftGlyphSpec*glyphs,intnglyphs); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftInitFtLibrary XftInitFtLibrary(); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftInit XftInit(_Xconstchar*config); /* FcBool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftListFonts XftListFonts(display,intscreen,...)_X_SENTINEL(0); /* FcFontSet *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftLockFace XftLockFace(XftFont*pub); /* FT_Face  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextExtents16 XftTextExtents16(display,XftFont*pub,_XconstFcChar16*string,intlen,XGlyphInfo*extents); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextExtents32 XftTextExtents32(display,XftFont*pub,_XconstFcChar32*string,intlen,XGlyphInfo*extents); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextExtents8 XftTextExtents8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextExtentsUtf16 XftTextExtentsUtf16(display,XftFont*pub,_XconstFcChar8*string,FcEndianendian,intlen,XGlyphInfo*extents); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextExtentsUtf8 XftTextExtentsUtf8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender16BE XftTextRender16BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender16LE XftTextRender16LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender16 XftTextRender16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar16*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender32BE XftTextRender32BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender32LE XftTextRender32LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender32 XftTextRender32(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar32*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRender8 XftTextRender8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRenderUtf16 XftTextRenderUtf16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,FcEndianendian,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftTextRenderUtf8 XftTextRenderUtf8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftUnlockFace XftUnlockFace(XftFont*pub); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XftXlfdParse XftXlfdParse(_Xconstchar*xlfd_orig,Boolignore_scalable,Boolcomplete); /* FcPattern *  */<ESC>:normal 0f(<CR>
 
-" Xlib defs
+" Xlib defs X11 x11 xlib
+iabbrev <buffer> XActivateScreenSaver XActivateScreenSaver(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAddConnectionWatch XAddConnectionWatch(Display*,XConnectionWatchProc,XPointer); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAddExtension XAddExtension(Display*); /* XExtCodes * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAddHost XAddHost(Display*,XHostAddress*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAddHosts XAddHosts(Display*,XHostAddress*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAddToExtensionList XAddToExtensionList(struct _XExtData**,XExtData*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAddToSaveSet XAddToSaveSet(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAllPlanes XAllPlanes(); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAllocColor XAllocColor(Display*,Colormap,XColor*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAllocColorCells XAllocColorCells(Display*,Colormap,Bool ,unsigned long*,unsigned int,unsigned long*,unsigned int); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAllocColorPlanes XAllocColorPlanes(Display*,Colormap,Bool,unsigned long*,int,int,int,int,unsigned long*,unsigned long*,unsigned long*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAllocNamedColor XAllocNamedColor(Display*,Colormap,_Xconst char*,XColor*,XColor*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAllowEvents XAllowEvents(Display*,int,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAutoRepeatOff XAutoRepeatOff(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XAutoRepeatOn XAutoRepeatOn(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBaseFontNameListOfFontSet XBaseFontNameListOfFontSet(XFontSet); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBell XBell(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBitmapBitOrder XBitmapBitOrder(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBitmapPad XBitmapPad(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBitmapUnit XBitmapUnit(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBlackPixel XBlackPixel(Display*,int); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XBlackPixelOfScreen XBlackPixelOfScreen(Screen*); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCellsOfScreen XCellsOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeActivePointerGrab XChangeActivePointerGrab(Display*,unsigned int,Cursor,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeGC XChangeGC(Display*,GC,unsigned long,XGCValues*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeKeyboardControl XChangeKeyboardControl(Display*,unsigned long,XKeyboardControl*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeKeyboardMapping XChangeKeyboardMapping(Display*,int,int,KeySym*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangePointerControl XChangePointerControl(Display*,Bool,Bool,int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeProperty XChangeProperty(Display*,Window,Atom,Atom,int,int,_Xconst unsigned char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeSaveSet XChangeSaveSet(Display*,Window,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XChangeWindowAttributes XChangeWindowAttributes(Display*,Window,unsigned long,XSetWindowAttributes*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCheckIfEvent XCheckIfEvent(Display*,XEvent*,Bool(*)(Display*,XEvent*,XPointer),XPointer); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCheckMaskEvent XCheckMaskEvent(Display*,long,XEvent*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCheckTypedEvent XCheckTypedEvent(Display*,int,XEvent*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCheckTypedWindowEvent XCheckTypedWindowEvent(Display*,Window,int,XEvent*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCheckWindowEvent XCheckWindowEvent(Display*,Window,long,XEvent*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCirculateSubwindows XCirculateSubwindows(Display*,Window,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCirculateSubwindowsDown XCirculateSubwindowsDown(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCirculateSubwindowsUp XCirculateSubwindowsUp(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XClearArea XClearArea(Display*,Window,int,int,unsigned int,unsigned int,Bool); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XClearWindow XClearWindow(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCloseDisplay XCloseDisplay(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCloseIM XCloseIM(XIM); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCloseOM XCloseOM(XOM); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XConfigureWindow XConfigureWindow(Display*,Window,unsigned int,XWindowChanges*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XConnectionNumber XConnectionNumber(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XContextDependentDrawing XContextDependentDrawing(XFontSet); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XContextualDrawing XContextualDrawing(XFontSet); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XConvertSelection XConvertSelection(Display*,Atom,Atom ,Atom,Window,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCopyArea XCopyArea(Display*,Drawable,Drawable,GC,int,int,unsigned int,unsigned int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCopyColormapAndFree XCopyColormapAndFree(Display*,Colormap); /* Colormap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCopyGC XCopyGC(Display*,GC,unsigned long,GC); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCopyPlane XCopyPlane(Display*,Drawable,Drawable,GC,int,int,unsigned int,unsigned int,int,int,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateBitmapFromData XCreateBitmapFromData(Display*,Drawable,_Xconst char*,unsigned int,unsigned int); /* Pixmap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateColormap XCreateColormap(Display*,Window,Visual*,int); /* Colormap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateFontCursor XCreateFontCursor(Display*,unsigned int); /* Cursor  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateFontSet XCreateFontSet(Display*,_Xconst char*,char***,int*,char**); /* XFontSet  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateGC XCreateGC(Display*,Drawable,unsigned long,XGCValues*); /* GC  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateGlyphCursor XCreateGlyphCursor(Display*,Font,Font,unsigned int,unsigned int,XColor _Xconst *,XColor _Xconst *); /* Cursor  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateIC XCreateIC(XIM ,...) _X_SENTINEL(0); /* XIC  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateImage XCreateImage(Display*,Visual*,unsigned int,int,int,char*,unsigned int,unsigned int,int,int); /* XImage * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateOC XCreateOC(XOM,...) _X_SENTINEL(0); /* XOC  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreatePixmap XCreatePixmap(Display*,Drawable,unsigned int,unsigned int,unsigned int); /* Pixmap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreatePixmapCursor XCreatePixmapCursor(Display*,Pixmap,Pixmap,XColor*,XColor*,unsigned int,unsigned int); /* Cursor  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreatePixmapFromBitmapData XCreatePixmapFromBitmapData(Display*,Drawable,char*,unsigned int,unsigned int,unsigned long,unsigned long,unsigned int); /* Pixmap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateSimpleWindow XCreateSimpleWindow(Display*,Window,int,int,unsigned int,unsigned int,unsigned int,unsigned long,unsigned long); /* Window  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XCreateWindow XCreateWindow(Display*,Window,int,int,unsigned int,unsigned int,unsigned int,int,unsigned int,Visual*,unsigned long,XSetWindowAttributes*); /* Window  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultColormap XDefaultColormap(Display*,int); /* Colormap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultColormapOfScreen XDefaultColormapOfScreen(Screen*); /* Colormap  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultDepth XDefaultDepth(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultDepthOfScreen XDefaultDepthOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultGC XDefaultGC(Display*,int); /* GC  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultGCOfScreen XDefaultGCOfScreen(Screen*); /* GC  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultRootWindow XDefaultRootWindow(Display*); /* Window  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultScreen XDefaultScreen(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultScreenOfDisplay XDefaultScreenOfDisplay(Display*); /* Screen * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultVisual XDefaultVisual(Display*,int); /* Visual * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefaultVisualOfScreen XDefaultVisualOfScreen(Screen*); /* Visual * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDefineCursor XDefineCursor(Display*,Window,Cursor); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDeleteModifiermapEntry XDeleteModifiermapEntry(XModifierKeymap*,#if NeedWidePrototypes unsigned int,#else KeyCode,#endif int); /* XModifierKeymap * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDeleteProperty XDeleteProperty(Display*,Window,Atom); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDestroyIC XDestroyIC(XIC); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDestroyOC XDestroyOC(XOC); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDestroySubwindows XDestroySubwindows(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDestroyWindow XDestroyWindow(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDirectionalDependentDrawing XDirectionalDependentDrawing(XFontSet); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisableAccessControl XDisableAccessControl(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayCells XDisplayCells(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayHeight XDisplayHeight(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayHeightMM XDisplayHeightMM(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayKeycodes XDisplayKeycodes(Display*,int*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayMotionBufferSize XDisplayMotionBufferSize(Display*); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayName XDisplayName(_Xconst char*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayOfIM XDisplayOfIM(XIM); /* Display * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayOfOM XDisplayOfOM(XOM); /* Display * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayOfScreen XDisplayOfScreen(Screen*); /* Display * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayPlanes XDisplayPlanes(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayString XDisplayString(Display*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayWidth XDisplayWidth(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDisplayWidthMM XDisplayWidthMM(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDoesBackingStore XDoesBackingStore(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDoesSaveUnders XDoesSaveUnders(Screen*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawArc XDrawArc(Display*,Drawable,GC,int,int,unsigned int,unsigned int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawArcs XDrawArcs(Display*,Drawable,GC,XArc*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawImageString XDrawImageString(Display*,Drawable,GC,int,int,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawImageString16 XDrawImageString16(Display*,Drawable,GC,int,int,_Xconst XChar2b*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawLine XDrawLine(Display*,Drawable,GC,int,int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawLines XDrawLines(Display*,Drawable,GC,XPoint*,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawPoint XDrawPoint(Display*,Drawable,GC,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawPoints XDrawPoints(Display*,Drawable,GC,XPoint*,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawRectangle XDrawRectangle(Display*,Drawable,GC,int,int,unsigned int,unsigned int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawRectangles XDrawRectangles(Display*,Drawable,GC,XRectangle*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawSegments XDrawSegments(Display*,Drawable,GC,XSegment*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawString XDrawString(Display*,Drawable,GC,int,int,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawString16 XDrawString16(Display*,Drawable,GC,int,int,_Xconst XChar2b*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawText XDrawText(Display*,Drawable,GC,int,int,XTextItem*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XDrawText16 XDrawText16(Display*,Drawable,GC,int,int,XTextItem16*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XEHeadOfExtensionList XEHeadOfExtensionList(XEDataObject); /* XExtData ** */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XEnableAccessControl XEnableAccessControl(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XEventMaskOfScreen XEventMaskOfScreen(Screen*); /* long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XEventsQueued XEventsQueued(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XExtendedMaxRequestSize XExtendedMaxRequestSize(Display*); /* long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XExtentsOfFontSet XExtentsOfFontSet(XFontSet); /* XFontSetExtents * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFetchBuffer XFetchBuffer(Display*,int*,int); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFetchBytes XFetchBytes(Display*,int*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFetchName XFetchName(Display*,Window,char**); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFillArc XFillArc(Display*,Drawable,GC,int,int,unsigned int,unsigned int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFillArcs XFillArcs(Display*,Drawable,GC,XArc*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFillPolygon XFillPolygon(Display*,Drawable,GC,XPoint*,int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFillRectangle XFillRectangle(Display*,Drawable,GC,int,int,unsigned int,unsigned int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFillRectangles XFillRectangles(Display*,Drawable,GC,XRectangle*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFilterEvent XFilterEvent(XEvent*,Window); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFindOnExtensionList XFindOnExtensionList(XExtData**,int); /* XExtData * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFlush XFlush(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFlushGC XFlushGC(Display*,GC); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFontsOfFontSet XFontsOfFontSet(XFontSet,XFontStruct***,char***); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XForceScreenSaver XForceScreenSaver(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFree XFree(void*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeColormap XFreeColormap(Display*,Colormap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeColors XFreeColors(Display*,Colormap,unsigned long*,int,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeCursor XFreeCursor(Display*,Cursor); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeEventData XFreeEventData(Display*,XGenericEventCookie*); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeExtensionList XFreeExtensionList(char**); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeFont XFreeFont(Display*,XFontStruct*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeFontInfo XFreeFontInfo(char**,XFontStruct*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeFontNames XFreeFontNames(char**); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeFontPath XFreeFontPath(char**); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeFontSet XFreeFontSet(Display*,XFontSet); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeGC XFreeGC(Display*,GC); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeModifiermap XFreeModifiermap(XModifierKeymap*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreePixmap XFreePixmap(Display*,Pixmap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XFreeStringList XFreeStringList(char**); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGContextFromGC XGContextFromGC(GC); /* GContext  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGeometry XGeometry(Display*,int,_Xconst char*,_Xconst char*,unsigned int,unsigned int,unsigned int,int,int,int*,int*,int*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetAtomName XGetAtomName(Display*,Atom); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetAtomNames XGetAtomNames(Display*,Atom*,int,char**); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetCommand XGetCommand(Display*,Window,char***,int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetDefault XGetDefault(Display*,_Xconst char*,_Xconst char*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetErrorDatabaseText XGetErrorDatabaseText(Display*,_Xconst char*,_Xconst char*,_Xconst char*,char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetErrorText XGetErrorText(Display*,int,char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetEventData XGetEventData(Display*,XGenericEventCookie*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetFontPath XGetFontPath(Display*,int*); /* char ** */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetFontProperty XGetFontProperty(XFontStruct*,Atom,unsigned long*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetGCValues XGetGCValues(Display*,GC,unsigned long,XGCValues*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetGeometry XGetGeometry(Display*,Drawable,Window*,int*,int*,unsigned int*,unsigned int*,unsigned int*,unsigned int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetICValues XGetICValues(XIC ,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetIMValues XGetIMValues(XIM ,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetIconName XGetIconName(Display*,Window,char**); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetImage XGetImage(Display*,Drawable,int,int,unsigned int,unsigned int,unsigned long,int); /* XImage * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetInputFocus XGetInputFocus(Display*,Window*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetKeyboardControl XGetKeyboardControl(Display*,XKeyboardState*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetKeyboardMapping XGetKeyboardMapping(Display*,#if NeedWidePrototypes unsigned int,#else KeyCode,#endif int,int*); /* KeySym * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetModifierMapping XGetModifierMapping(Display*); /* XModifierKeymap * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetMotionEvents XGetMotionEvents(Display*,Window,Time,Time,int*); /* XTimeCoord * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetOCValues XGetOCValues(XOC,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetOMValues XGetOMValues(XOM,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetPointerControl XGetPointerControl(Display*,int*,int*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetPointerMapping XGetPointerMapping(Display*,unsigned char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetScreenSaver XGetScreenSaver(Display*,int*,int*,int*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetSelectionOwner XGetSelectionOwner(Display*,Atom); /* Window  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetSubImage XGetSubImage(Display*,Drawable,int,int,unsigned int,unsigned int,unsigned long,int,XImage*,int,int); /* XImage * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetTransientForHint XGetTransientForHint(Display*,Window,Window*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetWMColormapWindows XGetWMColormapWindows(Display*,Window,Window**,int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetWMProtocols XGetWMProtocols(Display*,Window,Atom**,int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetWindowAttributes XGetWindowAttributes(Display*,Window,XWindowAttributes*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGetWindowProperty XGetWindowProperty(Display*,Window,Atom,long,long,Bool,Atom,Atom*,int*,unsigned long*,unsigned long*,unsigned char**); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGrabButton XGrabButton(Display*,unsigned int,unsigned int,Window,Bool,unsigned int,int,int,Window,Cursor); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGrabKey XGrabKey(Display*,int,unsigned int,Window,Bool,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGrabKeyboard XGrabKeyboard(Display*,Window,Bool,int,int,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGrabPointer XGrabPointer(Display*,Window,Bool,unsigned int,int,int,Window,Cursor,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XGrabServer XGrabServer(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XHeightMMOfScreen XHeightMMOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XHeightOfScreen XHeightOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XIMOfIC XIMOfIC(XIC); /* XIM  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XIconifyWindow XIconifyWindow(Display*,Window,int); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XIfEvent XIfEvent(Display*,XEvent*,Bool(*)(Display*,XEvent*,XPointer),XPointer); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XImageByteOrder XImageByteOrder(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInitExtension XInitExtension(Display*,_Xconst char*); /* XExtCodes * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInitImage XInitImage(XImage*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInitThreads XInitThreads(); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInsertModifiermapEntry XInsertModifiermapEntry(XModifierKeymap*,#if NeedWidePrototypes unsigned int,#else KeyCode,#endif int); /* XModifierKeymap * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInstallColormap XInstallColormap(Display*,Colormap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInternAtom XInternAtom(Display*,_Xconst char*,Bool); /* Atom  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInternAtoms XInternAtoms(Display*,char**,int,Bool,Atom*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XInternalConnectionNumbers XInternalConnectionNumbers(Display*,int**,int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XKeycodeToKeysym XKeycodeToKeysym(Display*,#if NeedWidePrototypes unsigned int,#else KeyCode,#endif int); /* KeySym  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XKeysymToKeycode XKeysymToKeycode(Display*,KeySym); /* KeyCode  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XKeysymToString XKeysymToString(KeySym); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XKillClient XKillClient(Display*,XID); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLastKnownRequestProcessed XLastKnownRequestProcessed(Display*); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListDepths XListDepths(Display*,int,int*); /* int * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListExtensions XListExtensions(Display*,int*); /* char ** */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListFonts XListFonts(Display*,_Xconst char*,int,int*); /* char ** */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListFontsWithInfo XListFontsWithInfo(Display*,_Xconst char*,int,int*,XFontStruct**); /* char ** */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListHosts XListHosts(Display*,int*,Bool*); /* XHostAddress * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListInstalledColormaps XListInstalledColormaps(Display*,Window,int*); /* Colormap * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListPixmapFormats XListPixmapFormats(Display*,int*); /* XPixmapFormatValues * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XListProperties XListProperties(Display*,Window,int*); /* Atom * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLoadFont XLoadFont(Display*,_Xconst char*); /* Font  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLoadQueryFont XLoadQueryFont(Display*,_Xconst char*); /* XFontStruct * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLocaleOfFontSet XLocaleOfFontSet(XFontSet); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLocaleOfIM XLocaleOfIM(XIM); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLocaleOfOM XLocaleOfOM(XOM); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLockDisplay XLockDisplay(Display*); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLookupColor XLookupColor(Display*,Colormap,_Xconst char*,XColor*,XColor*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLookupKeysym XLookupKeysym(XKeyEvent*,int); /* KeySym  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XLowerWindow XLowerWindow(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMapRaised XMapRaised(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMapSubwindows XMapSubwindows(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMapWindow XMapWindow(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMaskEvent XMaskEvent(Display*,long,XEvent*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMaxCmapsOfScreen XMaxCmapsOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMaxRequestSize XMaxRequestSize(Display*); /* long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMinCmapsOfScreen XMinCmapsOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMoveResizeWindow XMoveResizeWindow(Display*,Window,int,int,unsigned int,unsigned int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XMoveWindow XMoveWindow(Display*,Window,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XNewModifiermap XNewModifiermap(int); /* XModifierKeymap * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XNextEvent XNextEvent(Display*,XEvent*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XNextRequest XNextRequest(Display*); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XNoOp XNoOp(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XOMOfOC XOMOfOC(XOC); /* XOM  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XOpenDisplay XOpenDisplay(_Xconst char*); /* Display * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XOpenIM XOpenIM(Display*,struct _XrmHashBucketRec*,char*,char*); /* XIM  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XOpenOM XOpenOM(Display*,struct _XrmHashBucketRec*,_Xconst char*,_Xconst char*); /* XOM  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XParseColor XParseColor(Display*,Colormap,_Xconst char*,XColor*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XParseGeometry XParseGeometry(_Xconst char*,int*,int*,unsigned int*,unsigned int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XPeekEvent XPeekEvent(Display*,XEvent*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XPeekIfEvent XPeekIfEvent(Display*,XEvent*,Bool(*)(Display*,XEvent*,XPointer),XPointer); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XPending XPending(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XPlanesOfScreen XPlanesOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XProcessInternalConnection XProcessInternalConnection(Display*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XProtocolRevision XProtocolRevision(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XProtocolVersion XProtocolVersion(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XPutBackEvent XPutBackEvent(Display*,XEvent*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XPutImage XPutImage(Display*,Drawable,GC,XImage*,int,int,int,int,unsigned int,unsigned int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQLength XQLength(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryBestCursor XQueryBestCursor(Display*,Drawable,unsigned int ,unsigned int,unsigned int*,unsigned int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryBestSize XQueryBestSize(Display*,int,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryBestStipple XQueryBestStipple(Display*,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryBestTile XQueryBestTile(Display*,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryColor XQueryColor(Display*,Colormap,XColor*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryColors XQueryColors(Display*,Colormap,XColor*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryExtension XQueryExtension(Display*,_Xconst char*,int*,int*,int*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryFont XQueryFont(Display*,XID); /* XFontStruct * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryKeymap XQueryKeymap(Display*,char [32]); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryPointer XQueryPointer(Display*,Window,Window*,Window*,int*,int*,int*,int*,unsigned int*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryTextExtents XQueryTextExtents(Display*,XID,_Xconst char*,int,int*,int*,int*,XCharStruct*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryTextExtents16 XQueryTextExtents16(Display*,XID,_Xconst XChar2b*,int,int*,int*,int*,XCharStruct*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XQueryTree XQueryTree(Display*,Window,Window*,Window*,Window**,unsigned int*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRaiseWindow XRaiseWindow(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XReadBitmapFile XReadBitmapFile(Display*,Drawable ,_Xconst char*,unsigned int*,unsigned int*,Pixmap*,int*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XReadBitmapFileData XReadBitmapFileData(_Xconst char*,unsigned int*,unsigned int*,unsigned char**,int*,int*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRebindKeysym XRebindKeysym(Display*,KeySym,KeySym*,int,_Xconst unsigned char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRecolorCursor XRecolorCursor(Display*,Cursor,XColor*,XColor*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XReconfigureWMWindow XReconfigureWMWindow(Display*,Window,int,unsigned int,XWindowChanges*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRefreshKeyboardMapping XRefreshKeyboardMapping(XMappingEvent*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRegisterIMInstantiateCallback XRegisterIMInstantiateCallback(Display*,struct _XrmHashBucketRec*,char*,char*,XIDProc,XPointer); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRemoveConnectionWatch XRemoveConnectionWatch(Display*,XConnectionWatchProc,XPointer); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRemoveFromSaveSet XRemoveFromSaveSet(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRemoveHost XRemoveHost(Display*,XHostAddress*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRemoveHosts XRemoveHosts(Display*,XHostAddress*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XReparentWindow XReparentWindow(Display*,Window,Window,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XResetScreenSaver XResetScreenSaver(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XResizeWindow XResizeWindow(Display*,Window,unsigned int,unsigned int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XResourceManagerString XResourceManagerString(Display*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRestackWindows XRestackWindows(Display*,Window*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRootWindow XRootWindow(Display*,int); /* Window  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRootWindowOfScreen XRootWindowOfScreen(Screen*); /* Window  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRotateBuffers XRotateBuffers(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XRotateWindowProperties XRotateWindowProperties(Display*,Window,Atom*,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XScreenCount XScreenCount(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XScreenNumberOfScreen XScreenNumberOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XScreenOfDisplay XScreenOfDisplay(Display*,int); /* Screen * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XScreenResourceString XScreenResourceString(Screen*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSelectInput XSelectInput(Display*,Window,long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSendEvent XSendEvent(Display*,Window,Bool,long,XEvent*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XServerVendor XServerVendor(Display*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetAccessControl XSetAccessControl(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetAfterFunction int(*XSetAfterFunction(Display*,int(*)(Display*)))(Display*);<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetArcMode XSetArcMode(Display*,GC,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetAuthorization XSetAuthorization(char *,int,char *,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetBackground XSetBackground(Display*,GC,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetClipMask XSetClipMask(Display*,GC,Pixmap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetClipOrigin XSetClipOrigin(Display*,GC,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetClipRectangles XSetClipRectangles(Display*,GC,int,int,XRectangle*,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetCloseDownMode XSetCloseDownMode(Display*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetCommand XSetCommand(Display*,Window,char**,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetDashes XSetDashes(Display*,GC,int,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetErrorHandler XSetErrorHandler (XErrorHandler); /* XErrorHandler  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetFillRule XSetFillRule(Display*,GC,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetFillStyle XSetFillStyle(Display*,GC,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetFont XSetFont(Display*,GC,Font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetFontPath XSetFontPath(Display*,char**,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetForeground XSetForeground(Display*,GC,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetFunction XSetFunction(Display*,GC,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetGraphicsExposures XSetGraphicsExposures(Display*,GC,Bool); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetICFocus XSetICFocus(XIC); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetICValues XSetICValues(XIC ,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetIMValues XSetIMValues(XIM ,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetIOErrorExitHandler XSetIOErrorExitHandler (Display*,XIOErrorExitHandler,void*); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetIOErrorHandler XSetIOErrorHandler (XIOErrorHandler); /* XIOErrorHandler  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetIconName XSetIconName(Display*,Window,_Xconst char*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetInputFocus XSetInputFocus(Display*,Window,int,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetLineAttributes XSetLineAttributes(Display*,GC,unsigned int,int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetLocaleModifiers XSetLocaleModifiers(const char*); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetModifierMapping XSetModifierMapping(Display*,XModifierKeymap*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetOCValues XSetOCValues(XOC,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetOMValues XSetOMValues(XOM,...) _X_SENTINEL(0); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetPlaneMask XSetPlaneMask(Display*,GC,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetPointerMapping XSetPointerMapping(Display*,_Xconst unsigned char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetScreenSaver XSetScreenSaver(Display*,int,int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetSelectionOwner XSetSelectionOwner(Display*,Atom ,Window,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetState XSetState(Display*,GC,unsigned long ,unsigned long,int,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetStipple XSetStipple(Display*,GC,Pixmap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetSubwindowMode XSetSubwindowMode(Display*,GC,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetTSOrigin XSetTSOrigin(Display*,GC,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetTile XSetTile(Display*,GC,Pixmap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetTransientForHint XSetTransientForHint(Display*,Window,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWMColormapWindows XSetWMColormapWindows(Display*,Window,Window*,int); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWMProtocols XSetWMProtocols(Display*,Window,Atom*,int); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWindowBackground XSetWindowBackground(Display*,Window,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWindowBackgroundPixmap XSetWindowBackgroundPixmap(Display*,Window,Pixmap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWindowBorder XSetWindowBorder(Display*,Window,unsigned long); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWindowBorderPixmap XSetWindowBorderPixmap(Display*,Window,Pixmap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWindowBorderWidth XSetWindowBorderWidth(Display*,Window,unsigned int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSetWindowColormap XSetWindowColormap(Display*,Window,Colormap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStoreBuffer XStoreBuffer(Display*,_Xconst char*,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStoreBytes XStoreBytes(Display*,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStoreColor XStoreColor(Display*,Colormap,XColor*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStoreColors XStoreColors(Display*,Colormap,XColor*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStoreName XStoreName(Display*,Window,_Xconst char*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStoreNamedColor XStoreNamedColor(Display*,Colormap,_Xconst char*,unsigned long,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XStringToKeysym XStringToKeysym(_Xconst char*); /* KeySym  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSupportsLocale XSupportsLocale (); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSync XSync(Display*,Bool); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XSynchronize int(*XSynchronize(Display*,Bool))(Display*);<ESC>:normal 0f(<CR>
+iabbrev <buffer> XTextExtents XTextExtents(XFontStruct*,_Xconst char*,int,int*,int*,int*,XCharStruct*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XTextExtents16 XTextExtents16(XFontStruct*,_Xconst XChar2b*,int,int*,int*,int*,XCharStruct*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XTextWidth XTextWidth(XFontStruct*,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XTextWidth16 XTextWidth16(XFontStruct*,_Xconst XChar2b*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XTranslateCoordinates XTranslateCoordinates(Display*,Window,Window,int,int,int*,int*,Window*); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUndefineCursor XUndefineCursor(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUngrabButton XUngrabButton(Display*,unsigned int,unsigned int,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUngrabKey XUngrabKey(Display*,int,unsigned int,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUngrabKeyboard XUngrabKeyboard(Display*,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUngrabPointer XUngrabPointer(Display*,Time); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUngrabServer XUngrabServer(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUninstallColormap XUninstallColormap(Display*,Colormap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUnloadFont XUnloadFont(Display*,Font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUnlockDisplay XUnlockDisplay(Display*); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUnmapSubwindows XUnmapSubwindows(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUnmapWindow XUnmapWindow(Display*,Window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUnregisterIMInstantiateCallback XUnregisterIMInstantiateCallback(Display*,struct _XrmHashBucketRec*,char*,char*,XIDProc,XPointer); /* Bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XUnsetICFocus XUnsetICFocus(XIC); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XVaCreateNestedList XVaCreateNestedList(int ,...) _X_SENTINEL(0); /* XVaNestedList  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XVendorRelease XVendorRelease(Display*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XVisualIDFromVisual XVisualIDFromVisual(Visual*); /* VisualID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWarpPointer XWarpPointer(Display*,Window,Window,int,int,unsigned int,unsigned int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWhitePixel XWhitePixel(Display*,int); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWhitePixelOfScreen XWhitePixelOfScreen(Screen*); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWidthMMOfScreen XWidthMMOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWidthOfScreen XWidthOfScreen(Screen*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWindowEvent XWindowEvent(Display*,Window,long,XEvent*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWithdrawWindow XWithdrawWindow(Display*,Window,int); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XWriteBitmapFile XWriteBitmapFile(Display*,_Xconst char*,Pixmap,unsigned int,unsigned int,int,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbDrawImageString XmbDrawImageString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbDrawString XmbDrawString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbDrawText XmbDrawText(Display*,Drawable,GC,int,int,XmbTextItem*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbLookupString XmbLookupString(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbResetIC XmbResetIC(XIC); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbTextEscapement XmbTextEscapement(XFontSet,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbTextExtents XmbTextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XmbTextPerCharExtents XmbTextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XrmInitialize XrmInitialize(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8DrawImageString Xutf8DrawImageString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8DrawString Xutf8DrawString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8DrawText Xutf8DrawText(Display*,Drawable,GC,int,int,XmbTextItem*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8LookupString Xutf8LookupString(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8ResetIC Xutf8ResetIC(XIC); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8TextEscapement Xutf8TextEscapement(XFontSet,_Xconst char*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8TextExtents Xutf8TextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Xutf8TextPerCharExtents Xutf8TextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcDrawImageString XwcDrawImageString(Display*,Drawable,XFontSet,GC,int,int,_Xconst wchar_t*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcDrawString XwcDrawString(Display*,Drawable,XFontSet,GC,int,int,_Xconst wchar_t*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcDrawText XwcDrawText(Display*,Drawable,GC,int,int,XwcTextItem*,int); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcLookupString XwcLookupString(XIC,XKeyPressedEvent*,wchar_t*,int,KeySym*,Status*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcResetIC XwcResetIC(XIC); /* wchar_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcTextEscapement XwcTextEscapement(XFontSet,_Xconst wchar_t*,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcTextExtents XwcTextExtents(XFontSet,_Xconst wchar_t*,int,XRectangle*,XRectangle*); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XwcTextPerCharExtents XwcTextPerCharExtents(XFontSet,_Xconst wchar_t*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); /* Status  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> _Xmblen _Xmblen(char *str,int len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> _Xmbtowc _Xmbtowc(wchar_t *,char *,int); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> _Xwctomb _Xwctomb(char *,wchar_t); /* int  */<ESC>:normal 0f(<CR>
 
-iabbrev <buffer> XActivateScreenSaver XActivateScreenSaver(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAddConnectionWatch XAddConnectionWatch(display,XConnectionWatchProc,XPointer); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAddExtension XAddExtension(display); // XExtCodes *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAddHosts XAddHosts(display,XHostAddress*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAddHost XAddHost(display,XHostAddress*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAddToExtensionList XAddToExtensionList(struct _XExtData**,XExtData*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAddToSaveSet XAddToSaveSet(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAllocColorCells XAllocColorCells(display,Colormap,Bool,unsigned long*,unsigned int,unsigned long*,unsigned int ); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAllocColorPlanes XAllocColorPlanes(display,Colormap,Bool,unsigned long*,int,int,int,int,unsigned long*,unsigned long*,unsigned long*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAllocColor XAllocColor(display,Colormap,XColor*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAllocNamedColor XAllocNamedColor(display,Colormap,_Xconst char*,XColor*,XColor*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAllowEvents XAllowEvents(display,int,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAllPlanes XAllPlanes(void); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAutoRepeatOff XAutoRepeatOff(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XAutoRepeatOn XAutoRepeatOn(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBaseFontNameListOfFontSet XBaseFontNameListOfFontSet(XFontSet); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBell XBell(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBitmapBitOrder XBitmapBitOrder(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBitmapPad XBitmapPad(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBitmapUnit XBitmapUnit(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBlackPixelOfScreen XBlackPixelOfScreen(Screen*); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XBlackPixel XBlackPixel(display,int); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCellsOfScreen XCellsOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeActivePointerGrab XChangeActivePointerGrab(display,unsigned int,Cursor,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeGC XChangeGC(display,GC,unsigned long,XGCValues*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeKeyboardControl XChangeKeyboardControl(display,unsigned long,XKeyboardControl*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeKeyboardMapping XChangeKeyboardMapping(display,int,int,KeySym*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangePointerControl XChangePointerControl(display,Bool,Bool,int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeProperty XChangeProperty(display,Window,Atom,Atom,int,int,_Xconst unsigned char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeSaveSet XChangeSaveSet(display,Window,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XChangeWindowAttributes XChangeWindowAttributes(display,Window,unsigned long,XSetWindowAttributes* ); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCheckMaskEvent XCheckMaskEvent(display,long,XEvent*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCheckTypedEvent XCheckTypedEvent(display,int,XEvent*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCheckTypedWindowEvent XCheckTypedWindowEvent(display,Window,int,XEvent*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCheckWindowEvent XCheckWindowEvent(display,Window,long,XEvent*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCirculateSubwindowsDown XCirculateSubwindowsDown(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCirculateSubwindowsUp XCirculateSubwindowsUp(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCirculateSubwindows XCirculateSubwindows(display,Window,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XClearArea XClearArea(display,Window,int,int,unsigned int,unsigned int,Bool); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XClearWindow XClearWindow(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCloseDisplay XCloseDisplay(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCloseIM XCloseIM(XIM ); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCloseOM XCloseOM(XOM); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XConfigureWindow XConfigureWindow(display,Window,unsigned int,XWindowChanges*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XConnectionNumber XConnectionNumber(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XContextDependentDrawing XContextDependentDrawing(XFontSet); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XContextualDrawing XContextualDrawing(XFontSet); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XConvertSelection XConvertSelection(display,Atom,Atom ,Atom,Window,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCopyArea XCopyArea(display,Drawable,Drawable,GC,int,int,unsigned int,unsigned int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCopyColormapAndFree XCopyColormapAndFree(display,Colormap); // Colormap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCopyGC XCopyGC(display,GC,unsigned long,GC); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCopyPlane XCopyPlane(display,Drawable,Drawable,GC,int,int,unsigned int,unsigned int,int,int,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateBitmapFromData XCreateBitmapFromData(display,Drawable,_Xconst char*,unsigned int,unsigned int); // Pixmap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateColormap XCreateColormap(display,Window,Visual*,int); // Colormap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateFontCursor XCreateFontCursor(display,unsigned int); // Cursor<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateFontSet XCreateFontSet(display,_Xconst char*,char***,int*,char**); // XFontSet<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateGC XCreateGC(display,Drawable,unsigned long,XGCValues*); // GC<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateGlyphCursor XCreateGlyphCursor(display,Font,Font,unsigned int,unsigned int,XColor _Xconst *,XColor _Xconst *); // Cursor<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateImage XCreateImage(display,Visual*,unsigned int,int,int,char*,unsigned int,unsigned int,int,int); // XImage *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreatePixmapCursor XCreatePixmapCursor(display,Pixmap,Pixmap,XColor*,XColor*,unsigned int,unsigned int); // Cursor<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreatePixmapFromBitmapData XCreatePixmapFromBitmapData(display,Drawable,char*,unsigned int,unsigned int,unsigned long,unsigned long,unsigned int); // Pixmap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreatePixmap XCreatePixmap(display,Drawable,unsigned int,unsigned int,unsigned int); // Pixmap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateSimpleWindow XCreateSimpleWindow(display,Window,int,int,unsigned int,unsigned int,unsigned int,unsigned long,unsigned long); // Window<ESC>:normal 0f(<CR>
-iabbrev <buffer> XCreateWindow XCreateWindow(display,Window,int,int,unsigned int,unsigned int,unsigned int,int,unsigned int,Visual*,unsigned long,XSetWindowAttributes*); // Window<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultColormapOfScreen XDefaultColormapOfScreen(Screen*); // Colormap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultColormap XDefaultColormap(display,int); // Colormap<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultDepthOfScreen XDefaultDepthOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultDepth XDefaultDepth(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultGCOfScreen XDefaultGCOfScreen(Screen*); // GC<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultGC XDefaultGC(display,int); // GC<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultRootWindow XDefaultRootWindow(display); // Window<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultScreenOfDisplay XDefaultScreenOfDisplay(display); // Screen *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultScreen XDefaultScreen(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultVisualOfScreen XDefaultVisualOfScreen(Screen*); // Visual *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefaultVisual XDefaultVisual(display,int); // Visual *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDefineCursor XDefineCursor(display,Window,Cursor); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDeleteModifiermapEntry XDeleteModifiermapEntry(XModifierKeymap*,#if NeedWidePrototypesunsigned int,#elseKeyCode,#endifint); // XModifierKeymap *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDeleteProperty XDeleteProperty(display,Window,Atom); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDestroyIC XDestroyIC(XIC ); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDestroyOC XDestroyOC(XOC); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDestroySubwindows XDestroySubwindows(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDestroyWindow XDestroyWindow(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDirectionalDependentDrawing XDirectionalDependentDrawing(XFontSet); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisableAccessControl XDisableAccessControl(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayCells XDisplayCells(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayHeightMM XDisplayHeightMM(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayHeight XDisplayHeight(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayKeycodes XDisplayKeycodes(display,int*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayMotionBufferSize XDisplayMotionBufferSize(display); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayName XDisplayName(_Xconst char*); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayOfIM XDisplayOfIM(XIM ); // Display *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayOfOM XDisplayOfOM(XOM); // Display *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayOfScreen XDisplayOfScreen(Screen*); // Display *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayPlanes XDisplayPlanes(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayString XDisplayString(display); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayWidthMM XDisplayWidthMM(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDisplayWidth XDisplayWidth(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDoesBackingStore XDoesBackingStore(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDoesSaveUnders XDoesSaveUnders(Screen*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawArcs XDrawArcs(display,Drawable,GC,XArc*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawArc XDrawArc(display,Drawable,GC,int,int,unsigned int,unsigned int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawImageString16 XDrawImageString16(display,Drawable,GC,int,int,_Xconst XChar2b*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawImageString XDrawImageString(display,Drawable,GC,int,int,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawLines XDrawLines(display,Drawable,GC,XPoint*,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawLine XDrawLine(display,Drawable,GC,int,int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawPoints XDrawPoints(display,Drawable,GC,XPoint*,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawPoint XDrawPoint(display,Drawable,GC,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawRectangles XDrawRectangles(display,Drawable,GC,XRectangle*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawRectangle XDrawRectangle(display,Drawable,GC,int,int,unsigned int,unsigned int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawSegments XDrawSegments(display,Drawable,GC,XSegment*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawString16 XDrawString16(display,Drawable,GC,int,int,_Xconst XChar2b*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawString XDrawString(display,Drawable,GC,int,int,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawText16 XDrawText16(display,Drawable,GC,int,int,XTextItem16*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XDrawText XDrawText(display,Drawable,GC,int,int,XTextItem*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XEHeadOfExtensionList XEHeadOfExtensionList(XEDataObject); // XExtData **<ESC>:normal 0f(<CR>
-iabbrev <buffer> XEnableAccessControl XEnableAccessControl(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XEventMaskOfScreen XEventMaskOfScreen(Screen*); // long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XEventsQueued XEventsQueued(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XExtendedMaxRequestSize XExtendedMaxRequestSize(display); // long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XExtentsOfFontSet XExtentsOfFontSet(XFontSet); // XFontSetExtents *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFetchBuffer XFetchBuffer(display,int*,int); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFetchBytes XFetchBytes(display,int*); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFetchName XFetchName(display,Window,char**); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFillArcs XFillArcs(display,Drawable,GC,XArc*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFillArc XFillArc(display,Drawable,GC,int,int,unsigned int,unsigned int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFillPolygon XFillPolygon(display,Drawable,GC,XPoint*,int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFillRectangles XFillRectangles(display,Drawable,GC,XRectangle*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFillRectangle XFillRectangle(display,Drawable,GC,int,int,unsigned int,unsigned int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFilterEvent XFilterEvent(XEvent*,Window); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFindOnExtensionList XFindOnExtensionList(XExtData**,int); // XExtData *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFlushGC XFlushGC(display,GC); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFlush XFlush(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFontsOfFontSet XFontsOfFontSet(XFontSet,XFontStruct***,char***); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XForceScreenSaver XForceScreenSaver(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeColormap XFreeColormap(display,Colormap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeColors XFreeColors(display,Colormap,unsigned long*,int,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeCursor XFreeCursor(display,Cursor); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeExtensionList XFreeExtensionList(char**); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeFontInfo XFreeFontInfo(char**,XFontStruct*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeFontNames XFreeFontNames(char**); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeFontPath XFreeFontPath(char**); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeFontSet XFreeFontSet(display,XFontSet); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeFont XFreeFont(display,XFontStruct*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeGC XFreeGC(display,GC); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeModifiermap XFreeModifiermap(XModifierKeymap*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreePixmap XFreePixmap(display,Pixmap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFreeStringList XFreeStringList(char**); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XFree XFree(void*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGContextFromGC XGContextFromGC(GC); // GContext<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGeometry XGeometry(display,int,_Xconst char*,_Xconst char*,unsigned int,unsigned int,unsigned int,int,int,int*,int*,int*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetAtomNames XGetAtomNames(display,Atom*,int,char**); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetAtomName XGetAtomName(display,Atom); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetCommand XGetCommand(display,Window,char***,int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetDefault XGetDefault(display,_Xconst char*,_Xconst char*); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetErrorDatabaseText XGetErrorDatabaseText(display,_Xconst char*,_Xconst char*,_Xconst char*,char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetErrorText XGetErrorText(display,int,char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetFontPath XGetFontPath(display,int*); // char **<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetFontProperty XGetFontProperty(XFontStruct*,Atom,unsigned long*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetGCValues XGetGCValues(display,GC,unsigned long,XGCValues*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetGeometry XGetGeometry(display,Drawable,Window*,int*,int*,unsigned int*,unsigned int*,unsigned int*,unsigned int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetIconName XGetIconName(display,Window,char**); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetICValues XGetICValues(XIC , ...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetImage XGetImage(display,Drawable,int,int,unsigned int,unsigned int,unsigned long,int); // XImage *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetIMValues XGetIMValues(XIM , ...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetInputFocus XGetInputFocus(display,Window*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetKeyboardControl XGetKeyboardControl(display,XKeyboardState*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetKeyboardMapping XGetKeyboardMapping(display,#if NeedWidePrototypesunsigned int,#elseKeyCode,#endifint,int*); // KeySym *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetModifierMapping XGetModifierMapping(display); // XModifierKeymap*<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetMotionEvents XGetMotionEvents(display,Window,Time,Time,int*); // XTimeCoord *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetOCValues XGetOCValues(XOC,...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetOMValues XGetOMValues(XOM,...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetPointerControl XGetPointerControl(display,int*,int*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetPointerMapping XGetPointerMapping(display,unsigned char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetScreenSaver XGetScreenSaver(display,int*,int*,int*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetSelectionOwner XGetSelectionOwner(display,Atom); // Window<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetSubImage XGetSubImage(display,Drawable,int,int,unsigned int,unsigned int,unsigned long,int,XImage*,int,int); // XImage *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetTransientForHint XGetTransientForHint(display,Window,Window*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetWindowAttributes XGetWindowAttributes(display,Window,XWindowAttributes*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetWindowProperty XGetWindowProperty(display,Window,Atom,long,long,Bool,Atom,Atom*,int*,unsigned long*,unsigned long*,unsigned char**); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetWMColormapWindows XGetWMColormapWindows(display,Window,Window**,int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGetWMProtocols XGetWMProtocols(display,Window,Atom**,int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGrabButton XGrabButton(display,unsigned int,unsigned int,Window,Bool,unsigned int,int,int,Window,Cursor); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGrabKeyboard XGrabKeyboard(display,Window,Bool,int,int,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGrabKey XGrabKey(display,int,unsigned int,Window,Bool,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGrabPointer XGrabPointer(display,Window,Bool,unsigned int,int,int,Window,Cursor,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XGrabServer XGrabServer(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XHeightMMOfScreen XHeightMMOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XHeightOfScreen XHeightOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XIconifyWindow XIconifyWindow(display,Window,int); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XImageByteOrder XImageByteOrder(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XIMOfIC XIMOfIC(XIC ); // XIM<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInitExtension XInitExtension(display,_Xconst char*); // XExtCodes *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInitImage XInitImage(XImage*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInitThreads XInitThreads(void); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInsertModifiermapEntry XInsertModifiermapEntry(XModifierKeymap*,#if NeedWidePrototypesunsigned int,#elseKeyCode,#endifint); // XModifierKeymap*<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInstallColormap XInstallColormap(display,Colormap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInternalConnectionNumbers XInternalConnectionNumbers(display,int**,int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInternAtoms XInternAtoms(display,char**,int,Bool,Atom*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XInternAtom XInternAtom(display,_Xconst char*,Bool); // Atom<ESC>:normal 0f(<CR>
-iabbrev <buffer> XKeycodeToKeysym XKeycodeToKeysym(display,#if NeedWidePrototypesunsigned int,#elseKeyCode,#endifint); // KeySym<ESC>:normal 0f(<CR>
-iabbrev <buffer> XKeysymToKeycode XKeysymToKeycode(display,KeySym); // KeyCode<ESC>:normal 0f(<CR>
-iabbrev <buffer> XKeysymToString XKeysymToString(KeySym); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XKillClient XKillClient(display,XID); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLastKnownRequestProcessed XLastKnownRequestProcessed(display); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListDepths XListDepths(display,int,int*); // int *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListExtensions XListExtensions(display,int*); // char **<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListFontsWithInfo XListFontsWithInfo(display,_Xconst char*,int,int*,XFontStruct**); // char **<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListFonts XListFonts(display,_Xconst char*,int,int*); // char **<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListHosts XListHosts(display,int*,Bool*); // XHostAddress *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListInstalledColormaps XListInstalledColormaps(display,Window,int*); // Colormap *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListPixmapFormats XListPixmapFormats(display,int*); // XPixmapFormatValues *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XListProperties XListProperties(display,Window,int*); // Atom *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLoadFont XLoadFont(display,_Xconst char*); // Font<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLoadQueryFont XLoadQueryFont(display,_Xconst char*); // int _Xdebug;extern XFontStruct *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLocaleOfFontSet XLocaleOfFontSet(XFontSet); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLocaleOfIM XLocaleOfIM(XIM ); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLocaleOfOM XLocaleOfOM(XOM); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLockDisplay XLockDisplay(display); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLookupColor XLookupColor(display,Colormap,_Xconst char*,XColor*,XColor*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLookupKeysym XLookupKeysym(XKeyEvent*,int); // KeySym<ESC>:normal 0f(<CR>
-iabbrev <buffer> XLowerWindow XLowerWindow(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMapRaised XMapRaised(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMapSubwindows XMapSubwindows(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMapWindow XMapWindow(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMaskEvent XMaskEvent(display,long,XEvent*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMaxCmapsOfScreen XMaxCmapsOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMaxRequestSize XMaxRequestSize(display); // long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbDrawImageString XmbDrawImageString(display,Drawable,XFontSet,GC,int,int,_Xconst char*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbDrawString XmbDrawString(display,Drawable,XFontSet,GC,int,int,_Xconst char*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbDrawText XmbDrawText(display,Drawable,GC,int,int,XmbTextItem*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbLookupString XmbLookupString(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbResetIC XmbResetIC(XIC ); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbTextEscapement XmbTextEscapement(XFontSet,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbTextExtents XmbTextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XmbTextPerCharExtents XmbTextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> _Xmbtowc _Xmbtowc(wchar_t *,#ifdef ISCchar const *,size_t#elsechar *,int#endif); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMinCmapsOfScreen XMinCmapsOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMoveResizeWindow XMoveResizeWindow(display,Window,int,int,unsigned int,unsigned int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XMoveWindow XMoveWindow(display,Window,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XNewModifiermap XNewModifiermap(int); // XModifierKeymap *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XNextEvent XNextEvent(display,XEvent*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XNextRequest XNextRequest(display); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XNoOp XNoOp(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XOMOfOC XOMOfOC(XOC); // XOM<ESC>:normal 0f(<CR>
-iabbrev <buffer> XOpenDisplay XOpenDisplay(_Xconst char*); // Display *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XOpenIM XOpenIM(display,struct _XrmHashBucketRec*,char*,char*); // XIM<ESC>:normal 0f(<CR>
-iabbrev <buffer> XOpenOM XOpenOM(display,struct _XrmHashBucketRec*,_Xconst char*,_Xconst char*); // XOM<ESC>:normal 0f(<CR>
-iabbrev <buffer> XParseColor XParseColor(display,Colormap,_Xconst char*,XColor*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XParseGeometry XParseGeometry(_Xconst char*,int*,int*,unsigned int*,unsigned int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XPeekEvent XPeekEvent(display,XEvent*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XPending XPending(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XPlanesOfScreen XPlanesOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XProcessInternalConnection XProcessInternalConnection(display,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XProtocolRevision XProtocolRevision(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XProtocolVersion XProtocolVersion(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XPutBackEvent XPutBackEvent(display,XEvent*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XPutImage XPutImage(display,Drawable,GC,XImage*,int,int,int,int,unsigned int,unsigned int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQLength XQLength(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryBestCursor XQueryBestCursor(display,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryBestSize XQueryBestSize(display,int,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryBestStipple XQueryBestStipple(display,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryBestTile XQueryBestTile(display,Drawable,unsigned int,unsigned int,unsigned int*,unsigned int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryColors XQueryColors(display,Colormap,XColor*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryColor XQueryColor(display,Colormap,XColor*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryExtension XQueryExtension(display,_Xconst char*,int*,int*,int*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryFont XQueryFont(display,XID); // XFontStruct *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryKeymap XQueryKeymap(display,char [32]); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryPointer XQueryPointer(display,Window,Window*,Window*,int*,int*,int*,int*,unsigned int* ); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryTextExtents16 XQueryTextExtents16(display,XID,_Xconst XChar2b*,int,int*,int*,int*,XCharStruct*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryTextExtents XQueryTextExtents(display,XID,_Xconst char*,int,int*,int*,int*,XCharStruct*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XQueryTree XQueryTree(display,Window,Window*,Window*,Window**,unsigned int*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRaiseWindow XRaiseWindow(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XReadBitmapFileData XReadBitmapFileData(_Xconst char*,unsigned int*,unsigned int*,unsigned char**,int*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XReadBitmapFile XReadBitmapFile(display,Drawable ,_Xconst char*,unsigned int*,unsigned int*,Pixmap*,int*,int*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRebindKeysym XRebindKeysym(display,KeySym,KeySym*,int,_Xconst unsigned char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRecolorCursor XRecolorCursor(display,Cursor,XColor*,XColor*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XReconfigureWMWindow XReconfigureWMWindow(display,Window,int,unsigned int,XWindowChanges*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRefreshKeyboardMapping XRefreshKeyboardMapping(XMappingEvent*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRegisterIMInstantiateCallback XRegisterIMInstantiateCallback(display,struct _XrmHashBucketRec*,char*,char*,XIDProc,XPointer); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRemoveConnectionWatch XRemoveConnectionWatch(display,XConnectionWatchProc,XPointer); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRemoveFromSaveSet XRemoveFromSaveSet(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRemoveHosts XRemoveHosts(display,XHostAddress*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRemoveHost XRemoveHost(display,XHostAddress*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XReparentWindow XReparentWindow(display,Window,Window,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XResetScreenSaver XResetScreenSaver(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XResizeWindow XResizeWindow(display,Window,unsigned int,unsigned int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XResourceManagerString XResourceManagerString(display); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRestackWindows XRestackWindows(display,Window*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XrmInitialize XrmInitialize(void); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRootWindowOfScreen XRootWindowOfScreen(Screen*); // Window<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRootWindow XRootWindow(display,int); // Window<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRotateBuffers XRotateBuffers(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XRotateWindowProperties XRotateWindowProperties(display,Window,Atom*,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XScreenCount XScreenCount(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XScreenNumberOfScreen XScreenNumberOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XScreenOfDisplay XScreenOfDisplay(display,int); // Screen *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XScreenResourceString XScreenResourceString(Screen*); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSelectInput XSelectInput(display,Window,long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSendEvent XSendEvent(display,Window,Bool,long,XEvent*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XServerVendor XServerVendor(display); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetAccessControl XSetAccessControl(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetArcMode XSetArcMode(display,GC,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetAuthorization XSetAuthorization(char *,int,char *,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetBackground XSetBackground(display,GC,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetClipMask XSetClipMask(display,GC,Pixmap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetClipOrigin XSetClipOrigin(display,GC,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetClipRectangles XSetClipRectangles(display,GC,int,int,XRectangle*,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetCloseDownMode XSetCloseDownMode(display,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetCommand XSetCommand(display,Window,char**,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetDashes XSetDashes(display,GC,int,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetFillRule XSetFillRule(display,GC,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetFillStyle XSetFillStyle(display,GC,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetFontPath XSetFontPath(display,char**,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetFont XSetFont(display,GC,Font); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetForeground XSetForeground(display,GC,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetFunction XSetFunction(display,GC,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetGraphicsExposures XSetGraphicsExposures(display,GC,Bool); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetICFocus XSetICFocus(XIC ); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetIconName XSetIconName(display,Window,_Xconst char*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetICValues XSetICValues(XIC , ...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetIMValues XSetIMValues(XIM , ...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetInputFocus XSetInputFocus(display,Window,int,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetLineAttributes XSetLineAttributes(display,GC,unsigned int,int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetLocaleModifiers XSetLocaleModifiers(const char*); // Bool XSupportsLocale (void);extern char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetModifierMapping XSetModifierMapping(display,XModifierKeymap*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetOCValues XSetOCValues(XOC,...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetOMValues XSetOMValues(XOM,...) _X_SENTINEL(0); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetPlaneMask XSetPlaneMask(display,GC,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetPointerMapping XSetPointerMapping(display,_Xconst unsigned char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetScreenSaver XSetScreenSaver(display,int,int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetSelectionOwner XSetSelectionOwner(display,Atom,Window,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetState XSetState(display,GC,unsigned long ,unsigned long,int,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetStipple XSetStipple(display,GC,Pixmap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetSubwindowMode XSetSubwindowMode(display,GC,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetTile XSetTile(display,GC,Pixmap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetTransientForHint XSetTransientForHint(display,Window,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetTSOrigin XSetTSOrigin(display,GC,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWindowBackgroundPixmap XSetWindowBackgroundPixmap(display,Window,Pixmap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWindowBackground XSetWindowBackground(display,Window,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWindowBorderPixmap XSetWindowBorderPixmap(display,Window,Pixmap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWindowBorderWidth XSetWindowBorderWidth(display,Window,unsigned int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWindowBorder XSetWindowBorder(display,Window,unsigned long); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWindowColormap XSetWindowColormap(display,Window,Colormap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWMColormapWindows XSetWMColormapWindows(display,Window,Window*,int); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSetWMProtocols XSetWMProtocols(display,Window,Atom*,int); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStoreBuffer XStoreBuffer(display,_Xconst char*,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStoreBytes XStoreBytes(display,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStoreColors XStoreColors(display,Colormap,XColor*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStoreColor XStoreColor(display,Colormap,XColor*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStoreNamedColor XStoreNamedColor(display,Colormap,_Xconst char*,unsigned long,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStoreName XStoreName(display,Window,_Xconst char*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XStringToKeysym XStringToKeysym(_Xconst char*); // KeySym<ESC>:normal 0f(<CR>
-iabbrev <buffer> XSync XSync(display,Bool); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XTextExtents16 XTextExtents16(XFontStruct*,_Xconst XChar2b*,int,int*,int*,int*,XCharStruct*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XTextExtents XTextExtents(XFontStruct*,_Xconst char*,int,int*,int*,int*,XCharStruct*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XTextWidth16 XTextWidth16(XFontStruct*,_Xconst XChar2b*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XTextWidth XTextWidth(XFontStruct*,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XTranslateCoordinates XTranslateCoordinates(display,Window,Window,int,int,int*,int*,Window*); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUndefineCursor XUndefineCursor(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUngrabButton XUngrabButton(display,unsigned int,unsigned int,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUngrabKeyboard XUngrabKeyboard(display,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUngrabKey XUngrabKey(display,int,unsigned int,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUngrabPointer XUngrabPointer(display,Time); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUngrabServer XUngrabServer(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUninstallColormap XUninstallColormap(display,Colormap); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUnloadFont XUnloadFont(display,Font); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUnlockDisplay XUnlockDisplay(display); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUnmapSubwindows XUnmapSubwindows(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUnmapWindow XUnmapWindow(display,Window); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUnregisterIMInstantiateCallback XUnregisterIMInstantiateCallback(display,struct _XrmHashBucketRec*,char*,char*,XIDProc,XPointer); // Bool<ESC>:normal 0f(<CR>
-iabbrev <buffer> XUnsetICFocus XUnsetICFocus(XIC ); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8DrawImageString Xutf8DrawImageString(display,Drawable,XFontSet,GC,int,int,_Xconst char*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8DrawString Xutf8DrawString(display,Drawable,XFontSet,GC,int,int,_Xconst char*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8DrawText Xutf8DrawText(display,Drawable,GC,int,int,XmbTextItem*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8LookupString Xutf8LookupString(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8ResetIC Xutf8ResetIC(XIC ); // char *<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8TextEscapement Xutf8TextEscapement(XFontSet,_Xconst char*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8TextExtents Xutf8TextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> Xutf8TextPerCharExtents Xutf8TextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XVendorRelease XVendorRelease(display); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XVisualIDFromVisual XVisualIDFromVisual(Visual*); // VisualID<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWarpPointer XWarpPointer(display,Window,Window,int,int,unsigned int,unsigned int,int,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcDrawImageString XwcDrawImageString(display,Drawable,XFontSet,GC,int,int,_Xconst wchar_t*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcDrawString XwcDrawString(display,Drawable,XFontSet,GC,int,int,_Xconst wchar_t*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcDrawText XwcDrawText(display,Drawable,GC,int,int,XwcTextItem*,int); // void<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcLookupString XwcLookupString(XIC,XKeyPressedEvent*,wchar_t*,int,KeySym*,Status*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcResetIC XwcResetIC(XIC ); // wchar_t *<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcTextEscapement XwcTextEscapement(XFontSet,_Xconst wchar_t*,int); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcTextExtents XwcTextExtents(XFontSet,_Xconst wchar_t*,int,XRectangle*,XRectangle*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XwcTextPerCharExtents XwcTextPerCharExtents(XFontSet,_Xconst wchar_t*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> _Xwctomb _Xwctomb(char *,wchar_t); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWhitePixelOfScreen XWhitePixelOfScreen(Screen*); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWhitePixel XWhitePixel(display,int); // unsigned long<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWidthMMOfScreen XWidthMMOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWidthOfScreen XWidthOfScreen(Screen*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWindowEvent XWindowEvent(display,Window,long,XEvent*); // int<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWithdrawWindow XWithdrawWindow(display,Window,int); // Status<ESC>:normal 0f(<CR>
-iabbrev <buffer> XWriteBitmapFile XWriteBitmapFile(display,_Xconst char*,Pixmap,unsigned int,unsigned int,int,int); // int<ESC>:normal 0f(<CR>
+"XKBlib.h xkblib XKBlib
+iabbrev <buffer> XkbTranslateKeySym XkbTranslateKeySym(Display*,KeySym *,unsigned int,char*,int,int*) /* int  */
+iabbrev <buffer> XkbResizeKeyActions XkbResizeKeyActions(XkbDescPtr,int,int) /* XkbAction * */
+iabbrev <buffer> XkbUpdateKeyTypeVirtualMods XkbUpdateKeyTypeVirtualMods(XkbDescPtr,XkbKeyTypePtr,unsigned int,XkbChangesPtr) /* void  */
+iabbrev <buffer> XkbIgnoreExtension XkbIgnoreExtension(Bool) /* Bool  */
+iabbrev <buffer> XkbOpenDisplay XkbOpenDisplay(char*,int*,int*,int*,int*,int*) /* Display * */
+iabbrev <buffer> XkbQueryExtension XkbQueryExtension(Display*,int*,int*,int*,int*,int*) /* Bool  */
+iabbrev <buffer> XkbUseExtension XkbUseExtension(Display*,int*,int*) /* Bool  */
+iabbrev <buffer> XkbLibraryVersion XkbLibraryVersion(int*,int*) /* Bool  */
+iabbrev <buffer> XkbSetXlibControls XkbSetXlibControls(Display*,unsigned int,unsigned int) /* unsigned int  */
+iabbrev <buffer> XkbGetXlibControls XkbGetXlibControls(Display*) /* unsigned int  */
+iabbrev <buffer> XkbXlibControlsImplemented XkbXlibControlsImplemented() /* unsigned int  */
+iabbrev <buffer> XkbSetAtomFuncs XkbSetAtomFuncs(XkbInternAtomFunc,XkbGetAtomNameFunc) /* void  */
+iabbrev <buffer> XkbKeycodeToKeysym XkbKeycodeToKeysym(Display *,#if NeedWidePrototypes unsigned int,#else KeyCode,#endif int,int) /* KeySym  */
+iabbrev <buffer> XkbKeysymToModifiers XkbKeysymToModifiers(Display*,KeySym) /* unsigned int  */
+iabbrev <buffer> XkbLookupKeySym XkbLookupKeySym(Display*,KeyCode,unsigned int,unsigned int*,KeySym *) /* Bool  */
+iabbrev <buffer> XkbLookupKeyBinding XkbLookupKeyBinding(Display*,KeySym,unsigned int,char*,int,int*) /* int  */
+iabbrev <buffer> XkbTranslateKeyCode XkbTranslateKeyCode(XkbDescPtr,KeyCode,unsigned int,unsigned int*,KeySym *) /* Bool  */
+iabbrev <buffer> XkbSetAutoRepeatRate XkbSetAutoRepeatRate(Display*,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbGetAutoRepeatRate XkbGetAutoRepeatRate(Display*,unsigned int,unsigned int*,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbChangeEnabledControls XkbChangeEnabledControls(Display*,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbDeviceBell XkbDeviceBell(Display*,Window,int,int,int,int,Atom) /* Bool  */
+iabbrev <buffer> XkbForceDeviceBell XkbForceDeviceBell(Display*,int,int,int,int) /* Bool  */
+iabbrev <buffer> XkbDeviceBellEvent XkbDeviceBellEvent(Display*,Window,int,int,int,int,Atom) /* Bool  */
+iabbrev <buffer> XkbBell XkbBell(Display*,Window,int,Atom) /* Bool  */
+iabbrev <buffer> XkbForceBell XkbForceBell(Display*,int) /* Bool  */
+iabbrev <buffer> XkbBellEvent XkbBellEvent(Display*,Window,int,Atom) /* Bool  */
+iabbrev <buffer> XkbSelectEvents XkbSelectEvents(Display*,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbSelectEventDetails XkbSelectEventDetails(Display*,unsigned int,unsigned int,unsigned long,unsigned long) /* Bool  */
+iabbrev <buffer> XkbNoteMapChanges XkbNoteMapChanges(XkbMapChangesPtr,XkbMapNotifyEvent *,unsigned int) /* void  */
+iabbrev <buffer> XkbNoteNameChanges XkbNoteNameChanges(XkbNameChangesPtr,XkbNamesNotifyEvent *,unsigned int) /* void  */
+iabbrev <buffer> XkbGetIndicatorState XkbGetIndicatorState(Display*,unsigned int,unsigned int*) /* Status  */
+iabbrev <buffer> XkbGetDeviceIndicatorState XkbGetDeviceIndicatorState(Display*,unsigned int,unsigned int,unsigned int,unsigned int*) /* Status  */
+iabbrev <buffer> XkbGetIndicatorMap XkbGetIndicatorMap(Display*,unsigned long,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbSetIndicatorMap XkbSetIndicatorMap(Display*,unsigned long,XkbDescPtr) /* Bool  */
+iabbrev <buffer> XkbGetNamedIndicator XkbGetNamedIndicator(Display*,Atom,int*,Bool *,XkbIndicatorMapPtr,Bool *) /* Bool  */
+iabbrev <buffer> XkbGetNamedDeviceIndicator XkbGetNamedDeviceIndicator(Display*,unsigned int,unsigned int,unsigned int,Atom,int*,Bool *,XkbIndicatorMapPtr,Bool *) /* Bool  */
+iabbrev <buffer> XkbSetNamedIndicator XkbSetNamedIndicator(Display*,Atom,Bool,Bool,Bool,XkbIndicatorMapPtr) /* Bool  */
+iabbrev <buffer> XkbSetNamedDeviceIndicator XkbSetNamedDeviceIndicator(Display*,unsigned int,unsigned int,unsigned int,Atom,Bool,Bool,Bool,XkbIndicatorMapPtr) /* Bool  */
+iabbrev <buffer> XkbLockModifiers XkbLockModifiers(Display*,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbLatchModifiers XkbLatchModifiers(Display*,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbLockGroup XkbLockGroup(Display*,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbLatchGroup XkbLatchGroup(Display*,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbSetServerInternalMods XkbSetServerInternalMods(Display*,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbSetIgnoreLockMods XkbSetIgnoreLockMods(Display*,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbVirtualModsToReal XkbVirtualModsToReal(XkbDescPtr,unsigned int,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbComputeEffectiveMap XkbComputeEffectiveMap(XkbDescPtr,XkbKeyTypePtr,unsigned char*) /* Bool  */
+iabbrev <buffer> XkbInitCanonicalKeyTypes XkbInitCanonicalKeyTypes(XkbDescPtr,unsigned int,int) /* Status  */
+iabbrev <buffer> XkbAllocKeyboard XkbAllocKeyboard() /* XkbDescPtr  */
+iabbrev <buffer> XkbFreeKeyboard XkbFreeKeyboard(XkbDescPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbAllocClientMap XkbAllocClientMap(XkbDescPtr,unsigned int,unsigned int) /* Status  */
+iabbrev <buffer> XkbAllocServerMap XkbAllocServerMap(XkbDescPtr,unsigned int,unsigned int) /* Status  */
+iabbrev <buffer> XkbFreeClientMap XkbFreeClientMap(XkbDescPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbFreeServerMap XkbFreeServerMap(XkbDescPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbAddKeyType XkbAddKeyType(XkbDescPtr,Atom,int,Bool,int) /* XkbKeyTypePtr  */
+iabbrev <buffer> XkbAllocIndicatorMaps XkbAllocIndicatorMaps(XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbFreeIndicatorMaps XkbFreeIndicatorMaps(XkbDescPtr) /* void  */
+iabbrev <buffer> XkbGetMap XkbGetMap(Display*,unsigned int,unsigned int) /* XkbDescPtr  */
+iabbrev <buffer> XkbGetUpdatedMap XkbGetUpdatedMap(Display*,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetMapChanges XkbGetMapChanges(Display*,XkbDescPtr,XkbMapChangesPtr) /* Status  */
+iabbrev <buffer> XkbRefreshKeyboardMapping XkbRefreshKeyboardMapping(XkbMapNotifyEvent *) /* Status  */
+iabbrev <buffer> XkbGetKeyTypes XkbGetKeyTypes(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetKeySyms XkbGetKeySyms(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetKeyActions XkbGetKeyActions(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetKeyBehaviors XkbGetKeyBehaviors(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetVirtualMods XkbGetVirtualMods(Display*,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetKeyExplicitComponents XkbGetKeyExplicitComponents(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetKeyModifierMap XkbGetKeyModifierMap(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbGetKeyVirtualModMap XkbGetKeyVirtualModMap(Display*,unsigned int,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbAllocControls XkbAllocControls(XkbDescPtr,unsigned int) /* Status  */
+iabbrev <buffer> XkbFreeControls XkbFreeControls(XkbDescPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbGetControls XkbGetControls(Display*,unsigned long,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbSetControls XkbSetControls(Display*,unsigned long,XkbDescPtr) /* Bool  */
+iabbrev <buffer> XkbNoteControlsChanges XkbNoteControlsChanges(XkbControlsChangesPtr,XkbControlsNotifyEvent *,unsigned int) /* void  */
+iabbrev <buffer> XkbAllocCompatMap XkbAllocCompatMap(XkbDescPtr,unsigned int,unsigned int) /* Status  */
+iabbrev <buffer> XkbFreeCompatMap XkbFreeCompatMap(XkbDescPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbGetCompatMap XkbGetCompatMap(Display*,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbSetCompatMap XkbSetCompatMap(Display*,unsigned int,XkbDescPtr,Bool) /* Bool  */
+iabbrev <buffer> XkbAddSymInterpret XkbAddSymInterpret(XkbDescPtr,XkbSymInterpretPtr,Bool,XkbChangesPtr) /* XkbSymInterpretPtr  */
+iabbrev <buffer> XkbAllocNames XkbAllocNames(XkbDescPtr,unsigned int,int,int) /* Status  */
+iabbrev <buffer> XkbGetNames XkbGetNames(Display*,unsigned int,XkbDescPtr) /* Status  */
+iabbrev <buffer> XkbSetNames XkbSetNames(Display*,unsigned int,unsigned int,unsigned int,XkbDescPtr) /* Bool  */
+iabbrev <buffer> XkbChangeNames XkbChangeNames(Display*,XkbDescPtr,XkbNameChangesPtr) /* Bool  */
+iabbrev <buffer> XkbFreeNames XkbFreeNames(XkbDescPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbGetState XkbGetState(Display*,unsigned int,XkbStatePtr) /* Status  */
+iabbrev <buffer> XkbSetMap XkbSetMap(Display*,unsigned int,XkbDescPtr) /* Bool  */
+iabbrev <buffer> XkbChangeMap XkbChangeMap(Display*,XkbDescPtr,XkbMapChangesPtr) /* Bool  */
+iabbrev <buffer> XkbSetDetectableAutoRepeat XkbSetDetectableAutoRepeat(Display*,Bool,Bool *) /* Bool  */
+iabbrev <buffer> XkbGetDetectableAutoRepeat XkbGetDetectableAutoRepeat(Display*,Bool *) /* Bool  */
+iabbrev <buffer> XkbSetAutoResetControls XkbSetAutoResetControls(Display*,unsigned int,unsigned int*,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbGetAutoResetControls XkbGetAutoResetControls(Display*,unsigned int*,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbSetPerClientControls XkbSetPerClientControls(Display*,unsigned int,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbGetPerClientControls XkbGetPerClientControls(Display*,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbCopyKeyType XkbCopyKeyType(XkbKeyTypePtr,XkbKeyTypePtr) /* Status  */
+iabbrev <buffer> XkbCopyKeyTypes XkbCopyKeyTypes(XkbKeyTypePtr,XkbKeyTypePtr,int) /* Status  */
+iabbrev <buffer> XkbResizeKeyType XkbResizeKeyType(XkbDescPtr,int,int,Bool,int) /* Status  */
+iabbrev <buffer> XkbResizeKeySyms XkbResizeKeySyms(XkbDescPtr,int,int) /* KeySym * */
+iabbrev <buffer> XkbChangeTypesOfKey XkbChangeTypesOfKey(XkbDescPtr,int,int,unsigned int,int*,XkbMapChangesPtr) /* Status  */
+iabbrev <buffer> XkbChangeKeycodeRange XkbChangeKeycodeRange(XkbDescPtr,int,int,XkbChangesPtr) /* Status  */
+iabbrev <buffer> XkbListComponents XkbListComponents(Display*,unsigned int,XkbComponentNamesPtr,int*) /* XkbComponentListPtr  */
+iabbrev <buffer> XkbFreeComponentList XkbFreeComponentList(XkbComponentListPtr) /* void  */
+iabbrev <buffer> XkbGetKeyboard XkbGetKeyboard(Display*,unsigned int,unsigned int) /* XkbDescPtr  */
+iabbrev <buffer> XkbGetKeyboardByName XkbGetKeyboardByName(Display*,unsigned int,XkbComponentNamesPtr,unsigned int,unsigned int,Bool) /* XkbDescPtr  */
+iabbrev <buffer> XkbKeyTypesForCoreSymbols XkbKeyTypesForCoreSymbols( XkbDescPtr,int,KeySym *,unsigned int,int*,KeySym *) /* int  */
+iabbrev <buffer> XkbApplyCompatMapToKey XkbApplyCompatMapToKey( XkbDescPtr,KeyCode,XkbChangesPtr) /* Bool  */
+iabbrev <buffer> XkbUpdateMapFromCore XkbUpdateMapFromCore( XkbDescPtr,KeyCode,int,int,KeySym *,XkbChangesPtr) /* Bool  */
+iabbrev <buffer> XkbAddDeviceLedInfo XkbAddDeviceLedInfo(XkbDeviceInfoPtr,unsigned int,unsigned int) /* XkbDeviceLedInfoPtr  */
+iabbrev <buffer> XkbResizeDeviceButtonActions XkbResizeDeviceButtonActions(XkbDeviceInfoPtr,unsigned int) /* Status  */
+iabbrev <buffer> XkbAllocDeviceInfo XkbAllocDeviceInfo(unsigned int,unsigned int,unsigned int) /* XkbDeviceInfoPtr  */
+iabbrev <buffer> XkbFreeDeviceInfo XkbFreeDeviceInfo(XkbDeviceInfoPtr,unsigned int,Bool) /* void  */
+iabbrev <buffer> XkbNoteDeviceChanges XkbNoteDeviceChanges(XkbDeviceChangesPtr,XkbExtensionDeviceNotifyEvent *,unsigned int) /* void  */
+iabbrev <buffer> XkbGetDeviceInfo XkbGetDeviceInfo(Display*,unsigned int,unsigned int,unsigned int,unsigned int) /* XkbDeviceInfoPtr  */
+iabbrev <buffer> XkbGetDeviceInfoChanges XkbGetDeviceInfoChanges(Display*,XkbDeviceInfoPtr,XkbDeviceChangesPtr) /* Status  */
+iabbrev <buffer> XkbGetDeviceButtonActions XkbGetDeviceButtonActions(Display*,XkbDeviceInfoPtr,Bool,unsigned int,unsigned int) /* Status  */
+iabbrev <buffer> XkbGetDeviceLedInfo XkbGetDeviceLedInfo(Display*,XkbDeviceInfoPtr,unsigned int,unsigned int,unsigned int) /* Status  */
+iabbrev <buffer> XkbSetDeviceInfo XkbSetDeviceInfo(Display*,unsigned int,XkbDeviceInfoPtr) /* Bool  */
+iabbrev <buffer> XkbChangeDeviceInfo XkbChangeDeviceInfo(Display*,XkbDeviceInfoPtr,XkbDeviceChangesPtr) /* Bool  */
+iabbrev <buffer> XkbSetDeviceLedInfo XkbSetDeviceLedInfo(Display*,XkbDeviceInfoPtr,unsigned int,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbSetDeviceButtonActions XkbSetDeviceButtonActions(Display*,XkbDeviceInfoPtr,unsigned int,unsigned int) /* Bool  */
+iabbrev <buffer> XkbToControl XkbToControl(char) /* char  */
+iabbrev <buffer> XkbSetDebuggingFlags XkbSetDebuggingFlags(Display*,unsigned int,unsigned int,char*,unsigned int,unsigned int,unsigned int*,unsigned int*) /* Bool  */
+iabbrev <buffer> XkbApplyVirtualModChanges XkbApplyVirtualModChanges( XkbDescPtr,unsigned int,XkbChangesPtr) /* Bool  */
+iabbrev <buffer> XkbUpdateActionVirtualMods XkbUpdateActionVirtualMods(XkbDescPtr,XkbAction *,unsigned int) /* Bool  */
+
+" Xpm.h defs
+iabbrev <buffer> XpmAttributesSize XpmAttributesSize(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateBufferFromImage XpmCreateBufferFromImage(Display *display,char **buffer_return,XImage *image,XImage *shapeimage,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateBufferFromPixmap XpmCreateBufferFromPixmap(Display *display,char **buffer_return,Pixmap pixmap,Pixmap shapemask,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateBufferFromXpmImage XpmCreateBufferFromXpmImage(char **buffer_return,XpmImage *image,XpmInfo *info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateDataFromImage XpmCreateDataFromImage(Display *display,char ***data_return,XImage *image,XImage *shapeimage,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateDataFromPixmap XpmCreateDataFromPixmap(Display *display,char ***data_return,Pixmap pixmap,Pixmap shapemask,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateDataFromXpmImage XpmCreateDataFromXpmImage(char ***data_return,XpmImage *image,XpmInfo *info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateImageFromBuffer XpmCreateImageFromBuffer(Display *display,char *buffer,XImage **image_return,XImage **shapemask_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateImageFromData XpmCreateImageFromData(Display *display,char **data,XImage **image_return,XImage **shapemask_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateImageFromXpmImage XpmCreateImageFromXpmImage(Display *display,XpmImage *image,XImage **image_return,XImage **shapeimage_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreatePixmapFromBuffer XpmCreatePixmapFromBuffer(Display *display,Drawable d,char *buffer,Pixmap *pixmap_return,Pixmap *shapemask_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreatePixmapFromData XpmCreatePixmapFromData(Display *display,Drawable d,char **data,Pixmap *pixmap_return,Pixmap *shapemask_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreatePixmapFromXpmImage XpmCreatePixmapFromXpmImage(Display *display,Drawable d,XpmImage *image,Pixmap *pixmap_return,Pixmap *shapemask_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateXpmImageFromBuffer XpmCreateXpmImageFromBuffer(char *buffer,XpmImage *image,XpmInfo *info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateXpmImageFromData XpmCreateXpmImageFromData(char **data,XpmImage *image,XpmInfo *info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateXpmImageFromImage XpmCreateXpmImageFromImage(Display *display,XImage *image,XImage *shapeimage,XpmImage *xpmimage,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmCreateXpmImageFromPixmap XpmCreateXpmImageFromPixmap(Display *display,Pixmap pixmap,Pixmap shapemask,XpmImage *xpmimage,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmFree XpmFree(void *ptr); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmFreeAttributes XpmFreeAttributes(XpmAttributes *attributes); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmFreeExtensions XpmFreeExtensions(XpmExtension *extensions,int nextensions); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmFreeXpmImage XpmFreeXpmImage(XpmImage *image); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmFreeXpmInfo XpmFreeXpmInfo(XpmInfo *info); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmGetErrorString XpmGetErrorString(int errcode); /* char*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmGetParseError XpmGetParseError(char *filename,int *linenum_return,int *charnum_return); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmLibraryVersion XpmLibraryVersion(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmReadFileToBuffer XpmReadFileToBuffer(const char *filename,char **buffer_return); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmReadFileToData XpmReadFileToData(const char *filename,char ***data_return); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmReadFileToImage XpmReadFileToImage(Display *display,const char *filename,XImage **image_return,XImage **shapeimage_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmReadFileToPixmap XpmReadFileToPixmap(Display *display,Drawable d,const char *filename,Pixmap *pixmap_return,Pixmap *shapemask_return,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmReadFileToXpmImage XpmReadFileToXpmImage(const char *filename,XpmImage *image,XpmInfo *info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmWriteFileFromBuffer XpmWriteFileFromBuffer(const char *filename,char *buffer); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmWriteFileFromData XpmWriteFileFromData(const char *filename,char **data); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmWriteFileFromImage XpmWriteFileFromImage(Display *display,const char *filename,XImage *image,XImage *shapeimage,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmWriteFileFromPixmap XpmWriteFileFromPixmap(Display *display,const char *filename,Pixmap pixmap,Pixmap shapemask,XpmAttributes *attributes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> XpmWriteFileFromXpmImage XpmWriteFileFromXpmImage(const char *filename,XpmImage *image,XpmInfo *info); /* int  */<ESC>:normal 0f(<CR>
 
 " cairo.h defs
-
-iabbrev <buffer> cairo_clip cairo_clip(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_clip_preserve cairo_clip_preserve(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_close_path cairo_close_path(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_copy_clip_rectangle_list cairo_copy_clip_rectangle_list(cairo_t *cr); //cairo_rectangle_list_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_copy_page cairo_copy_page(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_copy_path cairo_copy_path(cairo_t *cr); //cairo_path_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_copy_path_flat cairo_copy_path_flat(cairo_t *cr); //cairo_path_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_create cairo_create(cairo_surface_t *target); //cairo_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_debug_reset_static_data cairo_debug_reset_static_data(void); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_destroy cairo_destroy(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_acquire cairo_device_acquire(cairo_device_t *device); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_destroy cairo_device_destroy(cairo_device_t *device); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_finish cairo_device_finish(cairo_device_t *device); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_flush cairo_device_flush(cairo_device_t *device); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_get_reference_count cairo_device_get_reference_count(cairo_device_t *device); //unsigned int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_get_type cairo_device_get_type(cairo_device_t *device); //cairo_device_type_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_observer_elapsed cairo_device_observer_elapsed(cairo_device_t *device); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_observer_fill_elapsed cairo_device_observer_fill_elapsed(cairo_device_t *device); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_observer_glyphs_elapsed cairo_device_observer_glyphs_elapsed(cairo_device_t *device); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_observer_mask_elapsed cairo_device_observer_mask_elapsed(cairo_device_t *device); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_observer_paint_elapsed cairo_device_observer_paint_elapsed(cairo_device_t *device); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_observer_stroke_elapsed cairo_device_observer_stroke_elapsed(cairo_device_t *device); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_reference cairo_device_reference(cairo_device_t *device); //cairo_device_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_release cairo_device_release(cairo_device_t *device); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_status cairo_device_status(cairo_device_t *device); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_to_user cairo_device_to_user(cairo_t *cr,double *x,double *y); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_device_to_user_distance cairo_device_to_user_distance(cairo_t *cr,double *dx,double *dy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_fill cairo_fill(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_fill_preserve cairo_fill_preserve(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_face_destroy cairo_font_face_destroy(cairo_font_face_t *font_face); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_face_get_reference_count cairo_font_face_get_reference_count(cairo_font_face_t *font_face); //unsigned int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_face_get_type cairo_font_face_get_type(cairo_font_face_t *font_face); //cairo_font_type_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_face_reference cairo_font_face_reference(cairo_font_face_t *font_face); //cairo_font_face_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_face_status cairo_font_face_status(cairo_font_face_t *font_face); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_copy cairo_font_options_copy(const cairo_font_options_t *original); //cairo_font_options_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_create cairo_font_options_create(void); //cairo_font_options_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_destroy cairo_font_options_destroy(cairo_font_options_t *options); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_get_antialias cairo_font_options_get_antialias(const cairo_font_options_t *options); //cairo_antialias_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_get_hint_metrics cairo_font_options_get_hint_metrics(const cairo_font_options_t *options); //cairo_hint_metrics_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_get_hint_style cairo_font_options_get_hint_style(const cairo_font_options_t *options); //cairo_hint_style_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_get_subpixel_order cairo_font_options_get_subpixel_order(const cairo_font_options_t *options); //cairo_subpixel_order_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_hash cairo_font_options_hash(const cairo_font_options_t *options); //unsigned long<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_font_options_status cairo_font_options_status(cairo_font_options_t *options); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_antialias cairo_get_antialias(cairo_t *cr); //cairo_antialias_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_current_point cairo_get_current_point(cairo_t *cr,double *x,double *y); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_dash cairo_get_dash(cairo_t *cr,double *dashes,double *offset); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_dash_count cairo_get_dash_count(cairo_t *cr); //int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_fill_rule cairo_get_fill_rule(cairo_t *cr); //cairo_fill_rule_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_font_face cairo_get_font_face(cairo_t *cr); //cairo_font_face_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_group_target cairo_get_group_target(cairo_t *cr); //cairo_surface_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_line_cap cairo_get_line_cap(cairo_t *cr); //cairo_line_cap_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_line_join cairo_get_line_join(cairo_t *cr); //cairo_line_join_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_line_width cairo_get_line_width(cairo_t *cr); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_matrix cairo_get_matrix(cairo_t *cr,cairo_matrix_t *matrix); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_miter_limit cairo_get_miter_limit(cairo_t *cr); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_operator cairo_get_operator(cairo_t *cr); //cairo_operator_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_reference_count cairo_get_reference_count(cairo_t *cr); //unsigned int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_scaled_font cairo_get_scaled_font(cairo_t *cr); //cairo_scaled_font_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_source cairo_get_source(cairo_t *cr); //cairo_pattern_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_target cairo_get_target(cairo_t *cr); //cairo_surface_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_get_tolerance cairo_get_tolerance(cairo_t *cr); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_glyph_allocate cairo_glyph_allocate(int num_glyphs); //cairo_glyph_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_glyph_free cairo_glyph_free(cairo_glyph_t *glyphs); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_glyph_path cairo_glyph_path(cairo_t *cr,const cairo_glyph_t *glyphs,int num_glyphs); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_has_current_point cairo_has_current_point(cairo_t *cr); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_identity_matrix cairo_identity_matrix(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_image_surface_create_from_png cairo_image_surface_create_from_png(const char *filename); //cairo_surface_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_image_surface_get_data cairo_image_surface_get_data(cairo_surface_t *surface); //unsigned char *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_image_surface_get_format cairo_image_surface_get_format(cairo_surface_t *surface); //cairo_format_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_image_surface_get_height cairo_image_surface_get_height(cairo_surface_t *surface); //int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_image_surface_get_stride cairo_image_surface_get_stride(cairo_surface_t *surface); //int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_image_surface_get_width cairo_image_surface_get_width(cairo_surface_t *surface); //int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_in_clip cairo_in_clip(cairo_t *cr,double x,double y); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_in_fill cairo_in_fill(cairo_t *cr,double x,double y); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_in_stroke cairo_in_stroke(cairo_t *cr,double x,double y); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_line_to cairo_line_to(cairo_t *cr,double x,double y); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_matrix_init_identity cairo_matrix_init_identity(cairo_matrix_t *matrix); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_matrix_invert cairo_matrix_invert(cairo_matrix_t *matrix); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_matrix_rotate cairo_matrix_rotate(cairo_matrix_t *matrix,double radians); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_matrix_scale cairo_matrix_scale(cairo_matrix_t *matrix,double sx,double sy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_matrix_translate cairo_matrix_translate(cairo_matrix_t *matrix,double tx,double ty); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_mesh_pattern_begin_patch cairo_mesh_pattern_begin_patch(cairo_pattern_t *pattern); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_mesh_pattern_end_patch cairo_mesh_pattern_end_patch(cairo_pattern_t *pattern); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_move_to cairo_move_to(cairo_t *cr,double x,double y); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_new_path cairo_new_path(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_new_sub_path cairo_new_sub_path(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_paint cairo_paint(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_path_destroy cairo_path_destroy(cairo_path_t *path); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_create_for_surface cairo_pattern_create_for_surface(cairo_surface_t *surface); //cairo_pattern_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_create_mesh cairo_pattern_create_mesh(void); //cairo_pattern_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_create_rgb cairo_pattern_create_rgb(double red,double green,double blue); //cairo_pattern_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_destroy cairo_pattern_destroy(cairo_pattern_t *pattern); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_get_extend cairo_pattern_get_extend(cairo_pattern_t *pattern); //cairo_extend_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_get_filter cairo_pattern_get_filter(cairo_pattern_t *pattern); //cairo_filter_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_get_reference_count cairo_pattern_get_reference_count(cairo_pattern_t *pattern); //unsigned int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_get_type cairo_pattern_get_type(cairo_pattern_t *pattern); //cairo_pattern_type_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_reference cairo_pattern_reference(cairo_pattern_t *pattern); //cairo_pattern_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_set_extend cairo_pattern_set_extend(cairo_pattern_t *pattern,cairo_extend_t extend); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_set_filter cairo_pattern_set_filter(cairo_pattern_t *pattern,cairo_filter_t filter); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pattern_status cairo_pattern_status(cairo_pattern_t *pattern); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pop_group cairo_pop_group(cairo_t *cr); //cairo_pattern_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_pop_group_to_source cairo_pop_group_to_source(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_push_group cairo_push_group(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_push_group_with_content cairo_push_group_with_content(cairo_t *cr,cairo_content_t content); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_raster_source_pattern_get_callback_data cairo_raster_source_pattern_get_callback_data(cairo_pattern_t *pattern); //void *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_raster_source_pattern_get_copy cairo_raster_source_pattern_get_copy(cairo_pattern_t *pattern); //cairo_raster_source_copy_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_raster_source_pattern_get_finish cairo_raster_source_pattern_get_finish(cairo_pattern_t *pattern); //cairo_raster_source_finish_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_raster_source_pattern_get_snapshot cairo_raster_source_pattern_get_snapshot(cairo_pattern_t *pattern); //cairo_raster_source_snapshot_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_rectangle_list_destroy cairo_rectangle_list_destroy(cairo_rectangle_list_t *rectangle_list); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_reference cairo_reference(cairo_t *cr); //cairo_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_contains_point cairo_region_contains_point(const cairo_region_t *region,int x,int y); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_copy cairo_region_copy(const cairo_region_t *original); //cairo_region_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_create cairo_region_create(void); //cairo_region_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_create_rectangle cairo_region_create_rectangle(const cairo_rectangle_int_t *rectangle); //cairo_region_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_destroy cairo_region_destroy(cairo_region_t *region); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_equal cairo_region_equal(const cairo_region_t *a,const cairo_region_t *b); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_intersect cairo_region_intersect(cairo_region_t *dst,const cairo_region_t *other); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_is_empty cairo_region_is_empty(const cairo_region_t *region); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_num_rectangles cairo_region_num_rectangles(const cairo_region_t *region); //int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_reference cairo_region_reference(cairo_region_t *region); //cairo_region_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_status cairo_region_status(const cairo_region_t *region); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_subtract cairo_region_subtract(cairo_region_t *dst,const cairo_region_t *other); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_translate cairo_region_translate(cairo_region_t *region,int dx,int dy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_union cairo_region_union(cairo_region_t *dst,const cairo_region_t *other); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_region_xor cairo_region_xor(cairo_region_t *dst,const cairo_region_t *other); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_rel_line_to cairo_rel_line_to(cairo_t *cr,double dx,double dy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_rel_move_to cairo_rel_move_to(cairo_t *cr,double dx,double dy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_reset_clip cairo_reset_clip(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_restore cairo_restore(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_rotate cairo_rotate(cairo_t *cr,double angle); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_save cairo_save(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scale cairo_scale(cairo_t *cr,double sx,double sy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scaled_font_destroy cairo_scaled_font_destroy(cairo_scaled_font_t *scaled_font); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scaled_font_get_font_face cairo_scaled_font_get_font_face(cairo_scaled_font_t *scaled_font); //cairo_font_face_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scaled_font_get_reference_count cairo_scaled_font_get_reference_count(cairo_scaled_font_t *scaled_font); //unsigned int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scaled_font_get_type cairo_scaled_font_get_type(cairo_scaled_font_t *scaled_font); //cairo_font_type_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scaled_font_reference cairo_scaled_font_reference(cairo_scaled_font_t *scaled_font); //cairo_scaled_font_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_scaled_font_status cairo_scaled_font_status(cairo_scaled_font_t *scaled_font); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_antialias cairo_set_antialias(cairo_t *cr,cairo_antialias_t antialias); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_fill_rule cairo_set_fill_rule(cairo_t *cr,cairo_fill_rule_t fill_rule); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_font_face cairo_set_font_face(cairo_t *cr,cairo_font_face_t *font_face); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_font_size cairo_set_font_size(cairo_t *cr,double size); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_line_cap cairo_set_line_cap(cairo_t *cr,cairo_line_cap_t line_cap); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_line_join cairo_set_line_join(cairo_t *cr,cairo_line_join_t line_join); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_line_width cairo_set_line_width(cairo_t *cr,double width); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_miter_limit cairo_set_miter_limit(cairo_t *cr,double limit); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_operator cairo_set_operator(cairo_t *cr,cairo_operator_t op); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_source cairo_set_source(cairo_t *cr,cairo_pattern_t *source); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_source_rgb cairo_set_source_rgb(cairo_t *cr,double red,double green,double blue); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_set_tolerance cairo_set_tolerance(cairo_t *cr,double tolerance); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_show_glyphs cairo_show_glyphs(cairo_t *cr,const cairo_glyph_t *glyphs,int num_glyphs); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_show_page cairo_show_page(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_show_text cairo_show_text(cairo_t *cr,const char *utf8); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_status cairo_status(cairo_t *cr); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_status_to_string cairo_status_to_string(cairo_status_t status); //const char *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_stroke cairo_stroke(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_stroke_preserve cairo_stroke_preserve(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_stroke_to_path cairo_stroke_to_path(cairo_t *cr); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_copy_page cairo_surface_copy_page(cairo_surface_t *surface); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_destroy cairo_surface_destroy(cairo_surface_t *surface); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_finish cairo_surface_finish(cairo_surface_t *surface); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_flush cairo_surface_flush(cairo_surface_t *surface); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_get_content cairo_surface_get_content(cairo_surface_t *surface); //cairo_content_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_get_device cairo_surface_get_device(cairo_surface_t *surface); //cairo_device_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_get_reference_count cairo_surface_get_reference_count(cairo_surface_t *surface); //unsigned int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_get_type cairo_surface_get_type(cairo_surface_t *surface); //cairo_surface_type_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_has_show_text_glyphs cairo_surface_has_show_text_glyphs(cairo_surface_t *surface); //cairo_bool_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_mark_dirty cairo_surface_mark_dirty(cairo_surface_t *surface); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_observer_elapsed cairo_surface_observer_elapsed(cairo_surface_t *surface); //double<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_reference cairo_surface_reference(cairo_surface_t *surface); //cairo_surface_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_show_page cairo_surface_show_page(cairo_surface_t *surface); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_surface_status cairo_surface_status(cairo_surface_t *surface); //cairo_status_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_text_cluster_allocate cairo_text_cluster_allocate(int num_clusters); //cairo_text_cluster_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_text_cluster_free cairo_text_cluster_free(cairo_text_cluster_t *clusters); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_text_path cairo_text_path(cairo_t *cr,const char *utf8); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_toy_font_face_get_family cairo_toy_font_face_get_family(cairo_font_face_t *font_face); //const char *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_toy_font_face_get_slant cairo_toy_font_face_get_slant(cairo_font_face_t *font_face); //cairo_font_slant_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_toy_font_face_get_weight cairo_toy_font_face_get_weight(cairo_font_face_t *font_face); //cairo_font_weight_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_translate cairo_translate(cairo_t *cr,double tx,double ty); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_font_face_create cairo_user_font_face_create(void); //cairo_font_face_t *<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_font_face_get_init_func cairo_user_font_face_get_init_func(cairo_font_face_t *font_face); //cairo_user_scaled_font_init_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_font_face_get_render_glyph_func cairo_user_font_face_get_render_glyph_func(cairo_font_face_t *font_face); //cairo_user_scaled_font_render_glyph_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_font_face_get_text_to_glyphs_func cairo_user_font_face_get_text_to_glyphs_func(cairo_font_face_t *font_face); //cairo_user_scaled_font_text_to_glyphs_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_font_face_get_unicode_to_glyph_func cairo_user_font_face_get_unicode_to_glyph_func(cairo_font_face_t *font_face); //cairo_user_scaled_font_unicode_to_glyph_func_t<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_to_device cairo_user_to_device(cairo_t *cr,double *x,double *y); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_user_to_device_distance cairo_user_to_device_distance(cairo_t *cr,double *dx,double *dy); //void<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_version cairo_version(void); //int<ESC>:normal0f(<CR>
-iabbrev <buffer> cairo_version_string cairo_version_string(void); //const char*<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_clip cairo_clip(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_clip_preserve cairo_clip_preserve(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_close_path cairo_close_path(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_copy_clip_rectangle_list cairo_copy_clip_rectangle_list(cairo_t *cr); /*cairo_rectangle_list_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_copy_page cairo_copy_page(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_copy_path cairo_copy_path(cairo_t *cr); /*cairo_path_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_copy_path_flat cairo_copy_path_flat(cairo_t *cr); /*cairo_path_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_create cairo_create(cairo_surface_t *target); /*cairo_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_debug_reset_static_data cairo_debug_reset_static_data(); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_destroy cairo_destroy(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_acquire cairo_device_acquire(cairo_device_t *device); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_destroy cairo_device_destroy(cairo_device_t *device); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_finish cairo_device_finish(cairo_device_t *device); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_flush cairo_device_flush(cairo_device_t *device); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_get_reference_count cairo_device_get_reference_count(cairo_device_t *device); /*unsigned int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_get_type cairo_device_get_type(cairo_device_t *device); /*cairo_device_type_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_observer_elapsed cairo_device_observer_elapsed(cairo_device_t *device); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_observer_fill_elapsed cairo_device_observer_fill_elapsed(cairo_device_t *device); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_observer_glyphs_elapsed cairo_device_observer_glyphs_elapsed(cairo_device_t *device); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_observer_mask_elapsed cairo_device_observer_mask_elapsed(cairo_device_t *device); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_observer_paint_elapsed cairo_device_observer_paint_elapsed(cairo_device_t *device); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_observer_stroke_elapsed cairo_device_observer_stroke_elapsed(cairo_device_t *device); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_reference cairo_device_reference(cairo_device_t *device); /*cairo_device_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_release cairo_device_release(cairo_device_t *device); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_status cairo_device_status(cairo_device_t *device); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_to_user cairo_device_to_user(cairo_t *cr,double *x,double *y); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_device_to_user_distance cairo_device_to_user_distance(cairo_t *cr,double *dx,double *dy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_fill cairo_fill(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_fill_preserve cairo_fill_preserve(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_face_destroy cairo_font_face_destroy(cairo_font_face_t *font_face); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_face_get_reference_count cairo_font_face_get_reference_count(cairo_font_face_t *font_face); /*unsigned int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_face_get_type cairo_font_face_get_type(cairo_font_face_t *font_face); /*cairo_font_type_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_face_reference cairo_font_face_reference(cairo_font_face_t *font_face); /*cairo_font_face_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_face_status cairo_font_face_status(cairo_font_face_t *font_face); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_copy cairo_font_options_copy(const cairo_font_options_t *original); /*cairo_font_options_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_create cairo_font_options_create(); /*cairo_font_options_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_destroy cairo_font_options_destroy(cairo_font_options_t *options); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_get_antialias cairo_font_options_get_antialias(const cairo_font_options_t *options); /*cairo_antialias_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_get_hint_metrics cairo_font_options_get_hint_metrics(const cairo_font_options_t *options); /*cairo_hint_metrics_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_get_hint_style cairo_font_options_get_hint_style(const cairo_font_options_t *options); /*cairo_hint_style_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_get_subpixel_order cairo_font_options_get_subpixel_order(const cairo_font_options_t *options); /*cairo_subpixel_order_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_hash cairo_font_options_hash(const cairo_font_options_t *options); /*unsigned long */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_font_options_status cairo_font_options_status(cairo_font_options_t *options); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_antialias cairo_get_antialias(cairo_t *cr); /*cairo_antialias_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_current_point cairo_get_current_point(cairo_t *cr,double *x,double *y); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_dash cairo_get_dash(cairo_t *cr,double *dashes,double *offset); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_dash_count cairo_get_dash_count(cairo_t *cr); /*int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_fill_rule cairo_get_fill_rule(cairo_t *cr); /*cairo_fill_rule_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_font_face cairo_get_font_face(cairo_t *cr); /*cairo_font_face_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_group_target cairo_get_group_target(cairo_t *cr); /*cairo_surface_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_line_cap cairo_get_line_cap(cairo_t *cr); /*cairo_line_cap_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_line_join cairo_get_line_join(cairo_t *cr); /*cairo_line_join_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_line_width cairo_get_line_width(cairo_t *cr); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_matrix cairo_get_matrix(cairo_t *cr,cairo_matrix_t *matrix); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_miter_limit cairo_get_miter_limit(cairo_t *cr); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_operator cairo_get_operator(cairo_t *cr); /*cairo_operator_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_reference_count cairo_get_reference_count(cairo_t *cr); /*unsigned int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_scaled_font cairo_get_scaled_font(cairo_t *cr); /*cairo_scaled_font_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_source cairo_get_source(cairo_t *cr); /*cairo_pattern_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_target cairo_get_target(cairo_t *cr); /*cairo_surface_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_get_tolerance cairo_get_tolerance(cairo_t *cr); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_glyph_allocate cairo_glyph_allocate(int num_glyphs); /*cairo_glyph_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_glyph_free cairo_glyph_free(cairo_glyph_t *glyphs); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_glyph_path cairo_glyph_path(cairo_t *cr,const cairo_glyph_t *glyphs,int num_glyphs); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_has_current_point cairo_has_current_point(cairo_t *cr); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_identity_matrix cairo_identity_matrix(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_image_surface_create_from_png cairo_image_surface_create_from_png(const char *filename); /*cairo_surface_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_image_surface_get_data cairo_image_surface_get_data(cairo_surface_t *surface); /*unsigned char * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_image_surface_get_format cairo_image_surface_get_format(cairo_surface_t *surface); /*cairo_format_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_image_surface_get_height cairo_image_surface_get_height(cairo_surface_t *surface); /*int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_image_surface_get_stride cairo_image_surface_get_stride(cairo_surface_t *surface); /*int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_image_surface_get_width cairo_image_surface_get_width(cairo_surface_t *surface); /*int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_in_clip cairo_in_clip(cairo_t *cr,double x,double y); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_in_fill cairo_in_fill(cairo_t *cr,double x,double y); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_in_stroke cairo_in_stroke(cairo_t *cr,double x,double y); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_line_to cairo_line_to(cairo_t *cr,double x,double y); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_matrix_init_identity cairo_matrix_init_identity(cairo_matrix_t *matrix); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_matrix_invert cairo_matrix_invert(cairo_matrix_t *matrix); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_matrix_rotate cairo_matrix_rotate(cairo_matrix_t *matrix,double radians); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_matrix_scale cairo_matrix_scale(cairo_matrix_t *matrix,double sx,double sy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_matrix_translate cairo_matrix_translate(cairo_matrix_t *matrix,double tx,double ty); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_mesh_pattern_begin_patch cairo_mesh_pattern_begin_patch(cairo_pattern_t *pattern); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_mesh_pattern_end_patch cairo_mesh_pattern_end_patch(cairo_pattern_t *pattern); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_move_to cairo_move_to(cairo_t *cr,double x,double y); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_new_path cairo_new_path(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_new_sub_path cairo_new_sub_path(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_paint cairo_paint(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_path_destroy cairo_path_destroy(cairo_path_t *path); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_create_for_surface cairo_pattern_create_for_surface(cairo_surface_t *surface); /*cairo_pattern_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_create_mesh cairo_pattern_create_mesh(); /*cairo_pattern_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_create_rgb cairo_pattern_create_rgb(double red,double green,double blue); /*cairo_pattern_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_destroy cairo_pattern_destroy(cairo_pattern_t *pattern); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_get_extend cairo_pattern_get_extend(cairo_pattern_t *pattern); /*cairo_extend_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_get_filter cairo_pattern_get_filter(cairo_pattern_t *pattern); /*cairo_filter_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_get_reference_count cairo_pattern_get_reference_count(cairo_pattern_t *pattern); /*unsigned int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_get_type cairo_pattern_get_type(cairo_pattern_t *pattern); /*cairo_pattern_type_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_reference cairo_pattern_reference(cairo_pattern_t *pattern); /*cairo_pattern_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_set_extend cairo_pattern_set_extend(cairo_pattern_t *pattern,cairo_extend_t extend); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_set_filter cairo_pattern_set_filter(cairo_pattern_t *pattern,cairo_filter_t filter); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pattern_status cairo_pattern_status(cairo_pattern_t *pattern); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pop_group cairo_pop_group(cairo_t *cr); /*cairo_pattern_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_pop_group_to_source cairo_pop_group_to_source(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_push_group cairo_push_group(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_push_group_with_content cairo_push_group_with_content(cairo_t *cr,cairo_content_t content); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_raster_source_pattern_get_callback_data cairo_raster_source_pattern_get_callback_data(cairo_pattern_t *pattern); /*void * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_raster_source_pattern_get_copy cairo_raster_source_pattern_get_copy(cairo_pattern_t *pattern); /*cairo_raster_source_copy_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_raster_source_pattern_get_finish cairo_raster_source_pattern_get_finish(cairo_pattern_t *pattern); /*cairo_raster_source_finish_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_raster_source_pattern_get_snapshot cairo_raster_source_pattern_get_snapshot(cairo_pattern_t *pattern); /*cairo_raster_source_snapshot_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_rectangle_list_destroy cairo_rectangle_list_destroy(cairo_rectangle_list_t *rectangle_list); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_reference cairo_reference(cairo_t *cr); /*cairo_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_contains_point cairo_region_contains_point(const cairo_region_t *region,int x,int y); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_copy cairo_region_copy(const cairo_region_t *original); /*cairo_region_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_create cairo_region_create(); /*cairo_region_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_create_rectangle cairo_region_create_rectangle(const cairo_rectangle_int_t *rectangle); /*cairo_region_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_destroy cairo_region_destroy(cairo_region_t *region); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_equal cairo_region_equal(const cairo_region_t *a,const cairo_region_t *b); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_intersect cairo_region_intersect(cairo_region_t *dst,const cairo_region_t *other); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_is_empty cairo_region_is_empty(const cairo_region_t *region); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_num_rectangles cairo_region_num_rectangles(const cairo_region_t *region); /*int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_reference cairo_region_reference(cairo_region_t *region); /*cairo_region_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_status cairo_region_status(const cairo_region_t *region); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_subtract cairo_region_subtract(cairo_region_t *dst,const cairo_region_t *other); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_translate cairo_region_translate(cairo_region_t *region,int dx,int dy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_union cairo_region_union(cairo_region_t *dst,const cairo_region_t *other); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_region_xor cairo_region_xor(cairo_region_t *dst,const cairo_region_t *other); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_rel_line_to cairo_rel_line_to(cairo_t *cr,double dx,double dy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_rel_move_to cairo_rel_move_to(cairo_t *cr,double dx,double dy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_reset_clip cairo_reset_clip(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_restore cairo_restore(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_rotate cairo_rotate(cairo_t *cr,double angle); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_save cairo_save(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scale cairo_scale(cairo_t *cr,double sx,double sy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scaled_font_destroy cairo_scaled_font_destroy(cairo_scaled_font_t *scaled_font); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scaled_font_get_font_face cairo_scaled_font_get_font_face(cairo_scaled_font_t *scaled_font); /*cairo_font_face_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scaled_font_get_reference_count cairo_scaled_font_get_reference_count(cairo_scaled_font_t *scaled_font); /*unsigned int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scaled_font_get_type cairo_scaled_font_get_type(cairo_scaled_font_t *scaled_font); /*cairo_font_type_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scaled_font_reference cairo_scaled_font_reference(cairo_scaled_font_t *scaled_font); /*cairo_scaled_font_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_scaled_font_status cairo_scaled_font_status(cairo_scaled_font_t *scaled_font); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_antialias cairo_set_antialias(cairo_t *cr,cairo_antialias_t antialias); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_fill_rule cairo_set_fill_rule(cairo_t *cr,cairo_fill_rule_t fill_rule); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_font_face cairo_set_font_face(cairo_t *cr,cairo_font_face_t *font_face); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_font_size cairo_set_font_size(cairo_t *cr,double size); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_line_cap cairo_set_line_cap(cairo_t *cr,cairo_line_cap_t line_cap); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_line_join cairo_set_line_join(cairo_t *cr,cairo_line_join_t line_join); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_line_width cairo_set_line_width(cairo_t *cr,double width); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_miter_limit cairo_set_miter_limit(cairo_t *cr,double limit); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_operator cairo_set_operator(cairo_t *cr,cairo_operator_t op); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_source cairo_set_source(cairo_t *cr,cairo_pattern_t *source); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_source_rgb cairo_set_source_rgb(cairo_t *cr,double red,double green,double blue); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_set_tolerance cairo_set_tolerance(cairo_t *cr,double tolerance); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_show_glyphs cairo_show_glyphs(cairo_t *cr,const cairo_glyph_t *glyphs,int num_glyphs); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_show_page cairo_show_page(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_show_text cairo_show_text(cairo_t *cr,const char *utf8); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_status cairo_status(cairo_t *cr); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_status_to_string cairo_status_to_string(cairo_status_t status); /*const char * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_stroke cairo_stroke(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_stroke_preserve cairo_stroke_preserve(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_stroke_to_path cairo_stroke_to_path(cairo_t *cr); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_copy_page cairo_surface_copy_page(cairo_surface_t *surface); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_destroy cairo_surface_destroy(cairo_surface_t *surface); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_finish cairo_surface_finish(cairo_surface_t *surface); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_flush cairo_surface_flush(cairo_surface_t *surface); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_get_content cairo_surface_get_content(cairo_surface_t *surface); /*cairo_content_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_get_device cairo_surface_get_device(cairo_surface_t *surface); /*cairo_device_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_get_reference_count cairo_surface_get_reference_count(cairo_surface_t *surface); /*unsigned int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_get_type cairo_surface_get_type(cairo_surface_t *surface); /*cairo_surface_type_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_has_show_text_glyphs cairo_surface_has_show_text_glyphs(cairo_surface_t *surface); /*cairo_bool_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_mark_dirty cairo_surface_mark_dirty(cairo_surface_t *surface); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_observer_elapsed cairo_surface_observer_elapsed(cairo_surface_t *surface); /*double */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_reference cairo_surface_reference(cairo_surface_t *surface); /*cairo_surface_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_show_page cairo_surface_show_page(cairo_surface_t *surface); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_surface_status cairo_surface_status(cairo_surface_t *surface); /*cairo_status_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_text_cluster_allocate cairo_text_cluster_allocate(int num_clusters); /*cairo_text_cluster_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_text_cluster_free cairo_text_cluster_free(cairo_text_cluster_t *clusters); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_text_path cairo_text_path(cairo_t *cr,const char *utf8); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_toy_font_face_get_family cairo_toy_font_face_get_family(cairo_font_face_t *font_face); /*const char * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_toy_font_face_get_slant cairo_toy_font_face_get_slant(cairo_font_face_t *font_face); /*cairo_font_slant_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_toy_font_face_get_weight cairo_toy_font_face_get_weight(cairo_font_face_t *font_face); /*cairo_font_weight_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_translate cairo_translate(cairo_t *cr,double tx,double ty); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_font_face_create cairo_user_font_face_create(); /*cairo_font_face_t * */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_font_face_get_init_func cairo_user_font_face_get_init_func(cairo_font_face_t *font_face); /*cairo_user_scaled_font_init_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_font_face_get_render_glyph_func cairo_user_font_face_get_render_glyph_func(cairo_font_face_t *font_face); /*cairo_user_scaled_font_render_glyph_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_font_face_get_text_to_glyphs_func cairo_user_font_face_get_text_to_glyphs_func(cairo_font_face_t *font_face); /*cairo_user_scaled_font_text_to_glyphs_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_font_face_get_unicode_to_glyph_func cairo_user_font_face_get_unicode_to_glyph_func(cairo_font_face_t *font_face); /*cairo_user_scaled_font_unicode_to_glyph_func_t */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_to_device cairo_user_to_device(cairo_t *cr,double *x,double *y); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_user_to_device_distance cairo_user_to_device_distance(cairo_t *cr,double *dx,double *dy); /*void */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_version cairo_version(); /*int */<ESC>:normal0f(<CR>
+iabbrev <buffer> cairo_version_string cairo_version_string(); /*const char* */<ESC>:normal0f(<CR>
 
 " cairo-xcb.h defs
-iabbrev <buffer> cairo_xcb_device_debug_cap_xrender_version cairo_xcb_device_debug_cap_xrender_version(cairo_device_t *device,int major_version,int minor_version); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_device_debug_cap_xshm_version cairo_xcb_device_debug_cap_xshm_version(cairo_device_t *device,int major_version,int minor_version); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_device_debug_get_precision cairo_xcb_device_debug_get_precision(cairo_device_t *device); //int<ESC>0f(<CR>
-iabbrev <buffer> cairo_xcb_device_debug_set_precision cairo_xcb_device_debug_set_precision(cairo_device_t *device,int precision); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_device_get_connection cairo_xcb_device_get_connection(cairo_device_t *device); //xcb_connection_t *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_surface_create cairo_xcb_surface_create(xcb_connection_t *connection,xcb_drawable_t drawable,xcb_visualtype_t *visual,int width,int height); //cairo_surface_t *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_surface_create_for_bitmap cairo_xcb_surface_create_for_bitmap(xcb_connection_t *connection,xcb_screen_t *screen,xcb_pixmap_t bitmap,int width,int height); //cairo_surface_t *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_surface_create_with_xrender_format cairo_xcb_surface_create_with_xrender_format(xcb_connection_t *connection,xcb_screen_t *screen,xcb_drawable_t drawable,xcb_render_pictforminfo_t *format,int width,int height); //cairo_surface_t * <ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_surface_set_drawable cairo_xcb_surface_set_drawable(cairo_surface_t *surface,xcb_drawable_t drawable,int width,int height); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xcb_surface_set_size cairo_xcb_surface_set_size(cairo_surface_t *surface,int width,int height); //void<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_device_debug_cap_xrender_version cairo_xcb_device_debug_cap_xrender_version(cairo_device_t *device,int major_version,int minor_version); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_device_debug_cap_xshm_version cairo_xcb_device_debug_cap_xshm_version(cairo_device_t *device,int major_version,int minor_version); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_device_debug_get_precision cairo_xcb_device_debug_get_precision(cairo_device_t *device); /*int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_device_debug_set_precision cairo_xcb_device_debug_set_precision(cairo_device_t *device,int precision); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_device_get_connection cairo_xcb_device_get_connection(cairo_device_t *device); /*xcb_connection_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_surface_create cairo_xcb_surface_create(xcb_connection_t *connection,xcb_drawable_t drawable,xcb_visualtype_t *visual,int width,int height); /*cairo_surface_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_surface_create_for_bitmap cairo_xcb_surface_create_for_bitmap(xcb_connection_t *connection,xcb_screen_t *screen,xcb_pixmap_t bitmap,int width,int height); /*cairo_surface_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_surface_create_with_xrender_format cairo_xcb_surface_create_with_xrender_format(xcb_connection_t *connection,xcb_screen_t *screen,xcb_drawable_t drawable,xcb_render_pictforminfo_t *format,int width,int height); /*cairo_surface_t *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_surface_set_drawable cairo_xcb_surface_set_drawable(cairo_surface_t *surface,xcb_drawable_t drawable,int width,int height); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xcb_surface_set_size cairo_xcb_surface_set_size(cairo_surface_t *surface,int width,int height); /*void */<ESC>:normal 0f(<CR>
 
 " cairo-xlib.h defs
-iabbrev <buffer> cairo_xlib_device_debug_cap_xrender_version cairo_xlib_device_debug_cap_xrender_version(cairo_device_t *device,int major_version,int minor_version); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_device_debug_get_precision cairo_xlib_device_debug_get_precision(cairo_device_t *device); //int<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_device_debug_set_precision cairo_xlib_device_debug_set_precision(cairo_device_t *device,int precision); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_create cairo_xlib_surface_create(Display *dpy,Drawable drawable,Visual *visual,int width,int height); //cairo_surface_t *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_create_for_bitmap cairo_xlib_surface_create_for_bitmap(Display *dpy,Pixmap bitmap,Screen *screen,int width,int height); //cairo_surface_t *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_depth cairo_xlib_surface_get_depth(cairo_surface_t *surface); //int<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_display cairo_xlib_surface_get_display(cairo_surface_t *surface); //Display *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_drawable cairo_xlib_surface_get_drawable(cairo_surface_t *surface); //Drawable<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_height cairo_xlib_surface_get_height(cairo_surface_t *surface); //int<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_screen cairo_xlib_surface_get_screen(cairo_surface_t *surface); //Screen *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_visual cairo_xlib_surface_get_visual(cairo_surface_t *surface); //Visual *<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_get_width cairo_xlib_surface_get_width(cairo_surface_t *surface); //int<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_set_drawable cairo_xlib_surface_set_drawable(cairo_surface_t *surface,Drawable drawable,int width,int height); //void<ESC>:normal 0f(<CR>
-iabbrev <buffer> cairo_xlib_surface_set_size cairo_xlib_surface_set_size(cairo_surface_t *surface,int width,int height); //void<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_device_debug_cap_xrender_version cairo_xlib_device_debug_cap_xrender_version(cairo_device_t *device,int major_version,int minor_version); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_device_debug_get_precision cairo_xlib_device_debug_get_precision(cairo_device_t *device); /*int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_device_debug_set_precision cairo_xlib_device_debug_set_precision(cairo_device_t *device,int precision); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_create cairo_xlib_surface_create(Display *dpy,Drawable drawable,Visual *visual,int width,int height); /*cairo_surface_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_create_for_bitmap cairo_xlib_surface_create_for_bitmap(Display *dpy,Pixmap bitmap,Screen *screen,int width,int height); /*cairo_surface_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_depth cairo_xlib_surface_get_depth(cairo_surface_t *surface); /*int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_display cairo_xlib_surface_get_display(cairo_surface_t *surface); /*Display * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_drawable cairo_xlib_surface_get_drawable(cairo_surface_t *surface); /*Drawable */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_height cairo_xlib_surface_get_height(cairo_surface_t *surface); /*int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_screen cairo_xlib_surface_get_screen(cairo_surface_t *surface); /*Screen * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_visual cairo_xlib_surface_get_visual(cairo_surface_t *surface); /*Visual * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_get_width cairo_xlib_surface_get_width(cairo_surface_t *surface); /*int */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_set_drawable cairo_xlib_surface_set_drawable(cairo_surface_t *surface,Drawable drawable,int width,int height); /*void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> cairo_xlib_surface_set_size cairo_xlib_surface_set_size(cairo_surface_t *surface,int width,int height); /*void */<ESC>:normal 0f(<CR>
+
+" sdl sdl2 SDL SDL2 sdl.h SDL.h defs
+iabbrev <buffer> IMG_Init IMG_Init(int flags); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_Linked_Version IMG_Linked_Version(); /* const SDL_version *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_Load IMG_Load(const char *file); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadBMP_RW IMG_LoadBMP_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadCUR_RW IMG_LoadCUR_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadGIF_RW IMG_LoadGIF_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadICO_RW IMG_LoadICO_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadJPG_RW IMG_LoadJPG_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadLBM_RW IMG_LoadLBM_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadPCX_RW IMG_LoadPCX_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadPNG_RW IMG_LoadPNG_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadPNM_RW IMG_LoadPNM_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadSVG_RW IMG_LoadSVG_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadTGA_RW IMG_LoadTGA_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadTIF_RW IMG_LoadTIF_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadTexture IMG_LoadTexture(SDL_Renderer *renderer,const char *file); /* SDL_Texture *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadTextureTyped_RW IMG_LoadTextureTyped_RW(SDL_Renderer *renderer,SDL_RWops *src,int freesrc,const char *type); /* SDL_Texture *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadTexture_RW IMG_LoadTexture_RW(SDL_Renderer *renderer,SDL_RWops *src,int freesrc); /* SDL_Texture *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadTyped_RW IMG_LoadTyped_RW(SDL_RWops *src,int freesrc,const char *type); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadWEBP_RW IMG_LoadWEBP_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadXCF_RW IMG_LoadXCF_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadXPM_RW IMG_LoadXPM_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_LoadXV_RW IMG_LoadXV_RW(SDL_RWops *src); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_Load_RW IMG_Load_RW(SDL_RWops *src,int freesrc); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_Quit IMG_Quit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_ReadXPMFromArray IMG_ReadXPMFromArray(char **xpm); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_SaveJPG IMG_SaveJPG(SDL_Surface *surface,const char *file,int quality); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_SaveJPG_RW IMG_SaveJPG_RW(SDL_Surface *surface,SDL_RWops *dst,int freedst,int quality); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_SavePNG IMG_SavePNG(SDL_Surface *surface,const char *file); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_SavePNG_RW IMG_SavePNG_RW(SDL_Surface *surface,SDL_RWops *dst,int freedst); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isBMP IMG_isBMP(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isCUR IMG_isCUR(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isGIF IMG_isGIF(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isICO IMG_isICO(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isJPG IMG_isJPG(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isLBM IMG_isLBM(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isPCX IMG_isPCX(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isPNG IMG_isPNG(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isPNM IMG_isPNM(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isSVG IMG_isSVG(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isTIF IMG_isTIF(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isWEBP IMG_isWEBP(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isXCF IMG_isXCF(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isXPM IMG_isXPM(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> IMG_isXV IMG_isXV(SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_AllocateChannels Mix_AllocateChannels(int numchans); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_CloseAudio Mix_CloseAudio(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_ExpireChannel Mix_ExpireChannel(int channel,int ticks); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadeInChannelTimed Mix_FadeInChannelTimed(int channel,Mix_Chunk *chunk,int loops,int ms,int ticks); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadeInMusic Mix_FadeInMusic(Mix_Music *music,int loops,int ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadeInMusicPos Mix_FadeInMusicPos(Mix_Music *music,int loops,int ms,double position); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadeOutChannel Mix_FadeOutChannel(int which,int ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadeOutGroup Mix_FadeOutGroup(int tag,int ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadeOutMusic Mix_FadeOutMusic(int ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadingChannel Mix_FadingChannel(int which); /* Mix_Fading  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FadingMusic Mix_FadingMusic(); /* Mix_Fading  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FreeChunk Mix_FreeChunk(Mix_Chunk *chunk); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_FreeMusic Mix_FreeMusic(Mix_Music *music); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetChunk Mix_GetChunk(int channel); /* Mix_Chunk *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetChunkDecoder Mix_GetChunkDecoder(int index); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetMusicDecoder Mix_GetMusicDecoder(int index); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetMusicHookData Mix_GetMusicHookData(); /* void *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetMusicType Mix_GetMusicType(const Mix_Music *music); /* Mix_MusicType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetNumChunkDecoders Mix_GetNumChunkDecoders(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetNumMusicDecoders Mix_GetNumMusicDecoders(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetSoundFonts Mix_GetSoundFonts(); /* const char*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GetSynchroValue Mix_GetSynchroValue(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GroupAvailable Mix_GroupAvailable(int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GroupChannel Mix_GroupChannel(int which,int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GroupChannels Mix_GroupChannels(int from,int to,int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GroupCount Mix_GroupCount(int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GroupNewer Mix_GroupNewer(int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_GroupOldest Mix_GroupOldest(int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_HaltChannel Mix_HaltChannel(int channel); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_HaltGroup Mix_HaltGroup(int tag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_HaltMusic Mix_HaltMusic(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_HasChunkDecoder Mix_HasChunkDecoder(const char *name); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_HasMusicDecoder Mix_HasMusicDecoder(const char *name); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Init Mix_Init(int flags); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Linked_Version Mix_Linked_Version(); /* const SDL_version *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_LoadMUS Mix_LoadMUS(const char *file); /* Mix_Music *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_LoadMUSType_RW Mix_LoadMUSType_RW(SDL_RWops *src,Mix_MusicType type,int freesrc); /* Mix_Music *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_LoadMUS_RW Mix_LoadMUS_RW(SDL_RWops *src,int freesrc); /* Mix_Music *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_LoadWAV_RW Mix_LoadWAV_RW(SDL_RWops *src,int freesrc); /* Mix_Chunk *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_OpenAudio Mix_OpenAudio(int frequency,Uint16 format,int channels,int chunksize); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_OpenAudioDevice Mix_OpenAudioDevice(int frequency,Uint16 format,int channels,int chunksize,const char* device,int allowed_changes); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Pause Mix_Pause(int channel); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_PauseMusic Mix_PauseMusic(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Paused Mix_Paused(int channel); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_PausedMusic Mix_PausedMusic(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_PlayChannelTimed Mix_PlayChannelTimed(int channel,Mix_Chunk *chunk,int loops,int ticks); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_PlayMusic Mix_PlayMusic(Mix_Music *music,int loops); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Playing Mix_Playing(int channel); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_PlayingMusic Mix_PlayingMusic(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_QuerySpec Mix_QuerySpec(int *frequency,Uint16 *format,int *channels); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_QuickLoad_RAW Mix_QuickLoad_RAW(Uint8 *mem,Uint32 len); /* Mix_Chunk *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_QuickLoad_WAV Mix_QuickLoad_WAV(Uint8 *mem); /* Mix_Chunk *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Quit Mix_Quit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_RegisterEffect Mix_RegisterEffect(int chan,Mix_EffectFunc_t f,Mix_EffectDone_t d,void *arg); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_ReserveChannels Mix_ReserveChannels(int num); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Resume Mix_Resume(int channel); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_ResumeMusic Mix_ResumeMusic(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_RewindMusic Mix_RewindMusic(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetDistance Mix_SetDistance(int channel,Uint8 distance); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetMusicCMD Mix_SetMusicCMD(const char *command); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetMusicPosition Mix_SetMusicPosition(double position); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetPanning Mix_SetPanning(int channel,Uint8 left,Uint8 right); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetPosition Mix_SetPosition(int channel,Sint16 angle,Uint8 distance); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetReverseStereo Mix_SetReverseStereo(int channel,int flip); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetSoundFonts Mix_SetSoundFonts(const char *paths); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_SetSynchroValue Mix_SetSynchroValue(int value); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_UnregisterAllEffects Mix_UnregisterAllEffects(int channel); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_UnregisterEffect Mix_UnregisterEffect(int channel,Mix_EffectFunc_t f); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_Volume Mix_Volume(int channel,int volume); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_VolumeChunk Mix_VolumeChunk(Mix_Chunk *chunk,int volume); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> Mix_VolumeMusic Mix_VolumeMusic(int volume); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_AddSocket SDLNet_AddSocket(SDLNet_SocketSet set,SDLNet_GenericSocket sock); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_AllocPacket SDLNet_AllocPacket(int size); /* UDPpacket *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_AllocPacketV SDLNet_AllocPacketV(int howmany,int size); /* UDPpacket **  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_AllocSocketSet SDLNet_AllocSocketSet(int maxsockets); /* SDLNet_SocketSet  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_CheckSockets SDLNet_CheckSockets(SDLNet_SocketSet set,Uint32 timeout); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_DelSocket SDLNet_DelSocket(SDLNet_SocketSet set,SDLNet_GenericSocket sock); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_FreePacket SDLNet_FreePacket(UDPpacket *packet); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_FreePacketV SDLNet_FreePacketV(UDPpacket **packetV); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_FreeSocketSet SDLNet_FreeSocketSet(SDLNet_SocketSet set); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_GetError SDLNet_GetError(); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_GetLocalAddresses SDLNet_GetLocalAddresses(IPaddress *addresses,int maxcount); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_Init SDLNet_Init(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_Linked_Version SDLNet_Linked_Version(); /* const SDLNet_version *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_Quit SDLNet_Quit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_ResizePacket SDLNet_ResizePacket(UDPpacket *packet,int newsize); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_ResolveHost SDLNet_ResolveHost(IPaddress *address,const char *host,Uint16 port); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_ResolveIP SDLNet_ResolveIP(const IPaddress *ip); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_SetError SDLNet_SetError(const char *fmt,...); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_TCP_Accept SDLNet_TCP_Accept(TCPsocket server); /* TCPsocket  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_TCP_Close SDLNet_TCP_Close(TCPsocket sock); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_TCP_GetPeerAddress SDLNet_TCP_GetPeerAddress(TCPsocket sock); /* IPaddress *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_TCP_Open SDLNet_TCP_Open(IPaddress *ip); /* TCPsocket  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_TCP_Recv SDLNet_TCP_Recv(TCPsocket sock,void *data,int maxlen); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_TCP_Send SDLNet_TCP_Send(TCPsocket sock,const void *data,int len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_Bind SDLNet_UDP_Bind(UDPsocket sock,int channel,const IPaddress *address); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_Close SDLNet_UDP_Close(UDPsocket sock); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_GetPeerAddress SDLNet_UDP_GetPeerAddress(UDPsocket sock,int channel); /* IPaddress *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_Open SDLNet_UDP_Open(Uint16 port); /* UDPsocket  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_Recv SDLNet_UDP_Recv(UDPsocket sock,UDPpacket *packet); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_RecvV SDLNet_UDP_RecvV(UDPsocket sock,UDPpacket **packets); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_Send SDLNet_UDP_Send(UDPsocket sock,int channel,UDPpacket *packet); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_SendV SDLNet_UDP_SendV(UDPsocket sock,UDPpacket **packets,int npackets); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_SetPacketLoss SDLNet_UDP_SetPacketLoss(UDPsocket sock,int percent); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDLNet_UDP_Unbind SDLNet_UDP_Unbind(UDPsocket sock,int channel); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AddEventWatch SDL_AddEventWatch(SDL_EventFilter filter,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AddHintCallback SDL_AddHintCallback(const char *name,SDL_HintCallback callback,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AddTimer SDL_AddTimer(Uint32 interval,SDL_TimerCallback callback,void *param); /* SDL_TimerID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AllocFormat SDL_AllocFormat(Uint32 pixel_format); /* SDL_PixelFormat *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AllocPalette SDL_AllocPalette(int ncolors); /* SDL_Palette * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AllocRW SDL_AllocRW(); /* SDL_RWops * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AndroidBackButton SDL_AndroidBackButton(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AndroidGetActivity SDL_AndroidGetActivity(); /* void *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AndroidGetExternalStoragePath SDL_AndroidGetExternalStoragePath(); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AndroidGetExternalStorageState SDL_AndroidGetExternalStorageState(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AndroidGetInternalStoragePath SDL_AndroidGetInternalStoragePath(); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AndroidGetJNIEnv SDL_AndroidGetJNIEnv(); /* void *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicAdd SDL_AtomicAdd(SDL_atomic_t *a,int v); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicCAS SDL_AtomicCAS(SDL_atomic_t *a,int oldval,int newval); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicCASPtr SDL_AtomicCASPtr(void **a,void *oldval,void *newval); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicGet SDL_AtomicGet(SDL_atomic_t *a); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicGetPtr SDL_AtomicGetPtr(void **a); /* void*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicLock SDL_AtomicLock(SDL_SpinLock *lock); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicSet SDL_AtomicSet(SDL_atomic_t *a,int v); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicSetPtr SDL_AtomicSetPtr(void **a,void* v); /* void*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicTryLock SDL_AtomicTryLock(SDL_SpinLock *lock); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AtomicUnlock SDL_AtomicUnlock(SDL_SpinLock *lock); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioInit SDL_AudioInit(const char *driver_name); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioQuit SDL_AudioQuit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioStreamAvailable SDL_AudioStreamAvailable(SDL_AudioStream *stream); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioStreamClear SDL_AudioStreamClear(SDL_AudioStream *stream); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioStreamFlush SDL_AudioStreamFlush(SDL_AudioStream *stream); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioStreamGet SDL_AudioStreamGet(SDL_AudioStream *stream,void *buf,int len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_AudioStreamPut SDL_AudioStreamPut(SDL_AudioStream *stream,const void *buf,int len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_BuildAudioCVT SDL_BuildAudioCVT(SDL_AudioCVT * cvt,SDL_AudioFormat src_format,Uint8 src_channels,int src_rate,SDL_AudioFormat dst_format,Uint8 dst_channels,int dst_rate); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CalculateGammaRamp SDL_CalculateGammaRamp(float gamma,Uint16 * ramp); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CaptureMouse SDL_CaptureMouse(SDL_bool enabled); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ClearError SDL_ClearError(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ClearHints SDL_ClearHints(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ClearQueuedAudio SDL_ClearQueuedAudio(SDL_AudioDeviceID dev); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CloseAudio SDL_CloseAudio(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CloseAudioDevice SDL_CloseAudioDevice(SDL_AudioDeviceID dev); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ComposeCustomBlendMode SDL_ComposeCustomBlendMode(SDL_BlendFactor srcColorFactor,SDL_BlendFactor dstColorFactor,SDL_BlendOperation colorOperation,SDL_BlendFactor srcAlphaFactor,SDL_BlendFactor dstAlphaFactor,SDL_BlendOperation alphaOperation); /* SDL_BlendMode  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CondBroadcast SDL_CondBroadcast(SDL_cond * cond); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CondSignal SDL_CondSignal(SDL_cond * cond); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CondWait SDL_CondWait(SDL_cond * cond,SDL_mutex * mutex); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CondWaitTimeout SDL_CondWaitTimeout(SDL_cond * cond,SDL_mutex * mutex,Uint32 ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ConvertAudio SDL_ConvertAudio(SDL_AudioCVT * cvt); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ConvertPixels SDL_ConvertPixels(int width,int height,Uint32 src_format,const void * src,int src_pitch,Uint32 dst_format,void * dst,int dst_pitch); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ConvertSurface SDL_ConvertSurface (SDL_Surface * src,const SDL_PixelFormat * fmt,Uint32 flags); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ConvertSurfaceFormat SDL_ConvertSurfaceFormat (SDL_Surface * src,Uint32 pixel_format,Uint32 flags); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateColorCursor SDL_CreateColorCursor(SDL_Surface *surface,int hot_x,int hot_y); /* SDL_Cursor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateCond SDL_CreateCond(); /* SDL_cond * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateCursor SDL_CreateCursor(const Uint8 * data,const Uint8 * mask,int w,int h,int hot_x,int hot_y); /* SDL_Cursor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateMutex SDL_CreateMutex(); /* SDL_mutex * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateRGBSurface SDL_CreateRGBSurface (Uint32 flags,int width,int height,int depth,Uint32 Rmask,Uint32 Gmask,Uint32 Bmask,Uint32 Amask); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom(void *pixels,int width,int height,int depth,int pitch,Uint32 Rmask,Uint32 Gmask,Uint32 Bmask,Uint32 Amask); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateRGBSurfaceWithFormat SDL_CreateRGBSurfaceWithFormat (Uint32 flags,int width,int height,int depth,Uint32 format); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateRGBSurfaceWithFormatFrom SDL_CreateRGBSurfaceWithFormatFrom (void *pixels,int width,int height,int depth,int pitch,Uint32 format); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateRenderer SDL_CreateRenderer(SDL_Window * window,int index,Uint32 flags); /* SDL_Renderer *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateSemaphore SDL_CreateSemaphore(Uint32 initial_value); /* SDL_sem * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateShapedWindow SDL_CreateShapedWindow(const char *title,unsigned int x,unsigned int y,unsigned int w,unsigned int h,Uint32 flags); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateSoftwareRenderer SDL_CreateSoftwareRenderer(SDL_Surface * surface); /* SDL_Renderer *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateSystemCursor SDL_CreateSystemCursor(SDL_SystemCursor id); /* SDL_Cursor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateTexture SDL_CreateTexture(SDL_Renderer * renderer,Uint32 format,int access,int w,int h); /* SDL_Texture *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateTextureFromSurface SDL_CreateTextureFromSurface(SDL_Renderer * renderer,SDL_Surface * surface); /* SDL_Texture *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateWindow SDL_CreateWindow(const char *title,int x,int y,int w,int h,Uint32 flags); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateWindowAndRenderer SDL_CreateWindowAndRenderer( int width,int height,Uint32 window_flags,SDL_Window **window,SDL_Renderer **renderer); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_CreateWindowFrom SDL_CreateWindowFrom(const void *data); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DXGIGetOutputInfo SDL_DXGIGetOutputInfo( int displayIndex,int *adapterIndex,int *outputIndex ); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DelEventWatch SDL_DelEventWatch(SDL_EventFilter filter,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DelHintCallback SDL_DelHintCallback(const char *name,SDL_HintCallback callback,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Delay SDL_Delay(Uint32 ms); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DequeueAudio SDL_DequeueAudio(SDL_AudioDeviceID dev,void *data,Uint32 len); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DestroyCond SDL_DestroyCond(SDL_cond * cond); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DestroyMutex SDL_DestroyMutex(SDL_mutex * mutex); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DestroyRenderer SDL_DestroyRenderer(SDL_Renderer * renderer); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DestroySemaphore SDL_DestroySemaphore(SDL_sem * sem); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DestroyTexture SDL_DestroyTexture(SDL_Texture * texture); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DestroyWindow SDL_DestroyWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DetachThread SDL_DetachThread(SDL_Thread * thread); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Direct SDL_Direct3D9GetAdapterIndex( int displayIndex ); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DisableScreenSaver SDL_DisableScreenSaver(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_DuplicateSurface SDL_DuplicateSurface(SDL_Surface * surface); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_EnableScreenSaver SDL_EnableScreenSaver(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_EnclosePoints SDL_EnclosePoints(const SDL_Point * points,int count,const SDL_Rect * clip,SDL_Rect * result); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Error SDL_Error(SDL_errorcode code); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_EventState SDL_EventState(Uint32 type,int state); /* Uint8  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FillRect SDL_FillRect (SDL_Surface * dst,const SDL_Rect * rect,Uint32 color); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FillRects SDL_FillRects (SDL_Surface * dst,const SDL_Rect * rects,int count,Uint32 color); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FilterEvents SDL_FilterEvents(SDL_EventFilter filter,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FlushEvent SDL_FlushEvent(Uint32 type); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FlushEvents SDL_FlushEvents(Uint32 minType,Uint32 maxType); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreeAudioStream SDL_FreeAudioStream(SDL_AudioStream *stream); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreeCursor SDL_FreeCursor(SDL_Cursor * cursor); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreeFormat SDL_FreeFormat(SDL_PixelFormat *format); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreePalette SDL_FreePalette(SDL_Palette * palette); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreeRW SDL_FreeRW(SDL_RWops * area); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreeSurface SDL_FreeSurface(SDL_Surface * surface); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_FreeWAV SDL_FreeWAV(Uint8 * audio_buf); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_BindTexture SDL_GL_BindTexture(SDL_Texture *texture,float *texw,float *texh); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_CreateContext SDL_GL_CreateContext(SDL_Window * window); /* SDL_GLContext  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_DeleteContext SDL_GL_DeleteContext(SDL_GLContext context); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_ExtensionSupported SDL_GL_ExtensionSupported(const char *extension); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_GetAttribute SDL_GL_GetAttribute(SDL_GLattr attr,int *value); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_GetCurrentContext SDL_GL_GetCurrentContext(); /* SDL_GLContext  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_GetCurrentWindow SDL_GL_GetCurrentWindow(); /* SDL_Window*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_GetDrawableSize SDL_GL_GetDrawableSize(SDL_Window * window,int *w,int *h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_GetProcAddress SDL_GL_GetProcAddress(const char *proc); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_GetSwapInterval SDL_GL_GetSwapInterval(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_LoadLibrary SDL_GL_LoadLibrary(const char *path); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_MakeCurrent SDL_GL_MakeCurrent(SDL_Window * window,SDL_GLContext context); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_ResetAttributes SDL_GL_ResetAttributes(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_SetAttribute SDL_GL_SetAttribute(SDL_GLattr attr,int value); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_SetSwapInterval SDL_GL_SetSwapInterval(int interval); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_SwapWindow SDL_GL_SwapWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_UnbindTexture SDL_GL_UnbindTexture(SDL_Texture *texture); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GL_UnloadLibrary SDL_GL_UnloadLibrary(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerAddMapping SDL_GameControllerAddMapping(const char* mappingString); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerAddMappingsFromRW SDL_GameControllerAddMappingsFromRW(SDL_RWops * rw,int freerw); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerClose SDL_GameControllerClose(SDL_GameController *gamecontroller); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerEventState SDL_GameControllerEventState(int state); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerFromInstanceID SDL_GameControllerFromInstanceID(SDL_JoystickID joyid); /* SDL_GameController * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerFromPlayerIndex SDL_GameControllerFromPlayerIndex(int player_index); /* SDL_GameController * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetAttached SDL_GameControllerGetAttached(SDL_GameController *gamecontroller); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetAxis SDL_GameControllerGetAxis (SDL_GameController *gamecontroller,SDL_GameControllerAxis axis); /* Sint16 */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetAxisFromString SDL_GameControllerGetAxisFromString(const char *pchString); /* SDL_GameControllerAxis  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetBindForAxis SDL_GameControllerGetBindForAxis(SDL_GameController *gamecontroller,SDL_GameControllerAxis axis); /* SDL_GameControllerButtonBind  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetBindForButton SDL_GameControllerGetBindForButton(SDL_GameController *gamecontroller,SDL_GameControllerButton button); /* SDL_GameControllerButtonBind  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetButton SDL_GameControllerGetButton(SDL_GameController *gamecontroller,SDL_GameControllerButton button); /* Uint8  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetButtonFromString SDL_GameControllerGetButtonFromString(const char *pchString); /* SDL_GameControllerButton  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetJoystick SDL_GameControllerGetJoystick(SDL_GameController *gamecontroller); /* SDL_Joystick * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetPlayerIndex SDL_GameControllerGetPlayerIndex(SDL_GameController *gamecontroller); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetProduct SDL_GameControllerGetProduct(SDL_GameController * gamecontroller); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetProductVersion SDL_GameControllerGetProductVersion(SDL_GameController * gamecontroller); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetStringForAxis SDL_GameControllerGetStringForAxis(SDL_GameControllerAxis axis); /* const char*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetStringForButton SDL_GameControllerGetStringForButton(SDL_GameControllerButton button); /* const char*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetType SDL_GameControllerGetType(SDL_GameController *gamecontroller); /* SDL_GameControllerType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerGetVendor SDL_GameControllerGetVendor(SDL_GameController * gamecontroller); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerMapping SDL_GameControllerMapping(SDL_GameController * gamecontroller); /* char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerMappingForDeviceIndex SDL_GameControllerMappingForDeviceIndex(int joystick_index); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerMappingForGUID SDL_GameControllerMappingForGUID(SDL_JoystickGUID guid); /* char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerMappingForIndex SDL_GameControllerMappingForIndex(int mapping_index); /* char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerName SDL_GameControllerName(SDL_GameController *gamecontroller); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerNameForIndex SDL_GameControllerNameForIndex(int joystick_index); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerNumMappings SDL_GameControllerNumMappings(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerOpen SDL_GameControllerOpen(int joystick_index); /* SDL_GameController * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerRumble SDL_GameControllerRumble(SDL_GameController *gamecontroller,Uint16 low_frequency_rumble,Uint16 high_frequency_rumble,Uint32 duration_ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerSetPlayerIndex SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller,int player_index); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerTypeForIndex SDL_GameControllerTypeForIndex(int joystick_index); /* SDL_GameControllerType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GameControllerUpdate SDL_GameControllerUpdate(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAndroidSDKVersion SDL_GetAndroidSDKVersion(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAssertionHandler SDL_GetAssertionHandler(void **puserdata); /* SDL_AssertionHandler  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAssertionReport SDL_GetAssertionReport(); /* const SDL_AssertData *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAudioDeviceName SDL_GetAudioDeviceName(int index,int iscapture); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAudioDeviceStatus SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev); /* SDL_AudioStatus */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAudioDriver SDL_GetAudioDriver(int index); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetAudioStatus SDL_GetAudioStatus(); /* SDL_AudioStatus  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetBasePath SDL_GetBasePath(); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetCPUCacheLineSize SDL_GetCPUCacheLineSize(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetCPUCount SDL_GetCPUCount(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetClipRect SDL_GetClipRect(SDL_Surface * surface,SDL_Rect * rect); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetClipboardText SDL_GetClipboardText(); /* char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetClosestDisplayMode SDL_GetClosestDisplayMode(int displayIndex,const SDL_DisplayMode * mode,SDL_DisplayMode * closest); /* SDL_DisplayMode *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetColorKey SDL_GetColorKey(SDL_Surface * surface,Uint32 * key); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetCurrentAudioDriver SDL_GetCurrentAudioDriver(); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetCurrentDisplayMode SDL_GetCurrentDisplayMode(int displayIndex,SDL_DisplayMode * mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetCurrentVideoDriver SDL_GetCurrentVideoDriver(); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetCursor SDL_GetCursor(); /* SDL_Cursor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDefaultAssertionHandler SDL_GetDefaultAssertionHandler(); /* SDL_AssertionHandler  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDefaultCursor SDL_GetDefaultCursor(); /* SDL_Cursor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDesktopDisplayMode SDL_GetDesktopDisplayMode(int displayIndex,SDL_DisplayMode * mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDisplayBounds SDL_GetDisplayBounds(int displayIndex,SDL_Rect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDisplayDPI SDL_GetDisplayDPI(int displayIndex,float * ddpi,float * hdpi,float * vdpi); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDisplayMode SDL_GetDisplayMode(int displayIndex,int modeIndex,SDL_DisplayMode * mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDisplayName SDL_GetDisplayName(int displayIndex); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDisplayOrientation SDL_GetDisplayOrientation(int displayIndex); /* SDL_DisplayOrientation  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetDisplayUsableBounds SDL_GetDisplayUsableBounds(int displayIndex,SDL_Rect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetError SDL_GetError(); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetEventFilter SDL_GetEventFilter(SDL_EventFilter * filter,void **userdata); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetGlobalMouseState SDL_GetGlobalMouseState(int *x,int *y); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetGrabbedWindow SDL_GetGrabbedWindow(void); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetHint SDL_GetHint(const char *name); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetHintBoolean SDL_GetHintBoolean(const char *name,SDL_bool default_value); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetKeyFromName SDL_GetKeyFromName(const char *name); /* SDL_Keycode  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetKeyFromScancode SDL_GetKeyFromScancode(SDL_Scancode scancode); /* SDL_Keycode  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetKeyName SDL_GetKeyName(SDL_Keycode key); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetKeyboardFocus SDL_GetKeyboardFocus(void); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetKeyboardState SDL_GetKeyboardState(int *numkeys); /* const Uint8 * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetMemoryFunctions SDL_GetMemoryFunctions(SDL_malloc_func *malloc_func,SDL_calloc_func *calloc_func,SDL_realloc_func *realloc_func,SDL_free_func *free_func); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetModState SDL_GetModState(void); /* SDL_Keymod  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetMouseFocus SDL_GetMouseFocus(void); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetMouseState SDL_GetMouseState(int *x,int *y); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumAllocations SDL_GetNumAllocations(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumAudioDevices SDL_GetNumAudioDevices(int iscapture); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumAudioDrivers SDL_GetNumAudioDrivers(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumDisplayModes SDL_GetNumDisplayModes(int displayIndex); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumRenderDrivers SDL_GetNumRenderDrivers(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumTouchDevices SDL_GetNumTouchDevices(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumTouchFingers SDL_GetNumTouchFingers(SDL_TouchID touchID); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumVideoDisplays SDL_GetNumVideoDisplays(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetNumVideoDrivers SDL_GetNumVideoDrivers(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetPerformanceCounter SDL_GetPerformanceCounter(void); /* Uint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetPerformanceFrequency SDL_GetPerformanceFrequency(void); /* Uint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetPixelFormatName SDL_GetPixelFormatName(Uint32 format); /* const char*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetPlatform SDL_GetPlatform (void); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetPowerInfo SDL_GetPowerInfo(int *secs,int *pct); /* SDL_PowerState  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetPrefPath SDL_GetPrefPath(const char *org,const char *app); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetQueuedAudioSize SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRGB SDL_GetRGB(Uint32 pixel,const SDL_PixelFormat * format,Uint8 * r,Uint8 * g,Uint8 * b); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRGBA SDL_GetRGBA(Uint32 pixel,const SDL_PixelFormat * format,Uint8 * r,Uint8 * g,Uint8 * b,Uint8 * a); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRelativeMouseMode SDL_GetRelativeMouseMode(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRelativeMouseState SDL_GetRelativeMouseState(int *x,int *y); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRenderDrawBlendMode SDL_GetRenderDrawBlendMode(SDL_Renderer * renderer,SDL_BlendMode *blendMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRenderDrawColor SDL_GetRenderDrawColor(SDL_Renderer * renderer,Uint8 * r,Uint8 * g,Uint8 * b,Uint8 * a); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRenderDriverInfo SDL_GetRenderDriverInfo(int index,SDL_RendererInfo * info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRenderTarget SDL_GetRenderTarget(SDL_Renderer *renderer); /* SDL_Texture *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRenderer SDL_GetRenderer(SDL_Window * window); /* SDL_Renderer *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRendererInfo SDL_GetRendererInfo(SDL_Renderer * renderer,SDL_RendererInfo * info); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRendererOutputSize SDL_GetRendererOutputSize(SDL_Renderer * renderer,int *w,int *h); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRevision SDL_GetRevision(void); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetRevisionNumber SDL_GetRevisionNumber(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetScancodeFromKey SDL_GetScancodeFromKey(SDL_Keycode key); /* SDL_Scancode  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetScancodeFromName SDL_GetScancodeFromName(const char *name); /* SDL_Scancode  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetScancodeName SDL_GetScancodeName(SDL_Scancode scancode); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetShapedWindowMode SDL_GetShapedWindowMode(SDL_Window *window,SDL_WindowShapeMode *shape_mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetSurfaceAlphaMod SDL_GetSurfaceAlphaMod(SDL_Surface * surface,Uint8 * alpha); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetSurfaceBlendMode SDL_GetSurfaceBlendMode(SDL_Surface * surface,SDL_BlendMode *blendMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetSurfaceColorMod SDL_GetSurfaceColorMod(SDL_Surface * surface,Uint8 * r,Uint8 * g,Uint8 * b); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetSystemRAM SDL_GetSystemRAM(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTextureAlphaMod SDL_GetTextureAlphaMod(SDL_Texture * texture,Uint8 * alpha); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTextureBlendMode SDL_GetTextureBlendMode(SDL_Texture * texture,SDL_BlendMode *blendMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTextureColorMod SDL_GetTextureColorMod(SDL_Texture * texture,Uint8 * r,Uint8 * g,Uint8 * b); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTextureScaleMode SDL_GetTextureScaleMode(SDL_Texture * texture,SDL_ScaleMode *scaleMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetThreadID SDL_GetThreadID(SDL_Thread * thread); /* SDL_threadID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetThreadName SDL_GetThreadName(SDL_Thread *thread); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTicks SDL_GetTicks(void); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTouchDevice SDL_GetTouchDevice(int index); /* SDL_TouchID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTouchDeviceType SDL_GetTouchDeviceType(SDL_TouchID touchID); /* SDL_TouchDeviceType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetTouchFinger SDL_GetTouchFinger(SDL_TouchID touchID,int index); /* SDL_Finger *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetVersion SDL_GetVersion(SDL_version * ver); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetVideoDriver SDL_GetVideoDriver(int index); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowBordersSize SDL_GetWindowBordersSize(SDL_Window * window,int *top,int *left,int *bottom,int *right); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowBrightness SDL_GetWindowBrightness(SDL_Window * window); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowData SDL_GetWindowData(SDL_Window * window,const char *name); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowDisplayIndex SDL_GetWindowDisplayIndex(SDL_Window * window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowDisplayMode SDL_GetWindowDisplayMode(SDL_Window * window,SDL_DisplayMode * mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowFlags SDL_GetWindowFlags(SDL_Window * window); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowFromID SDL_GetWindowFromID(Uint32 id); /* SDL_Window *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowGammaRamp SDL_GetWindowGammaRamp(SDL_Window * window,Uint16 * red,Uint16 * green,Uint16 * blue); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowGrab SDL_GetWindowGrab(SDL_Window * window); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowID SDL_GetWindowID(SDL_Window * window); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowMaximumSize SDL_GetWindowMaximumSize(SDL_Window * window,int *w,int *h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowMinimumSize SDL_GetWindowMinimumSize(SDL_Window * window,int *w,int *h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowOpacity SDL_GetWindowOpacity(SDL_Window * window,float * out_opacity); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowPixelFormat SDL_GetWindowPixelFormat(SDL_Window * window); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowPosition SDL_GetWindowPosition(SDL_Window * window,int *x,int *y); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowSize SDL_GetWindowSize(SDL_Window * window,int *w,int *h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowSurface SDL_GetWindowSurface(SDL_Window * window); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowTitle SDL_GetWindowTitle(SDL_Window * window); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetWindowWMInfo SDL_GetWindowWMInfo(SDL_Window * window,SDL_SysWMinfo * info); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetYUVConversionMode SDL_GetYUVConversionMode(void); /* SDL_YUV_CONVERSION_MODE  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_GetYUVConversionModeForResolution SDL_GetYUVConversionModeForResolution(int width,int height); /* SDL_YUV_CONVERSION_MODE  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticClose SDL_HapticClose(SDL_Haptic * haptic); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticDestroyEffect SDL_HapticDestroyEffect(SDL_Haptic * haptic,int effect); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticEffectSupported SDL_HapticEffectSupported(SDL_Haptic * haptic,SDL_HapticEffect * effect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticGetEffectStatus SDL_HapticGetEffectStatus(SDL_Haptic * haptic,int effect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticIndex SDL_HapticIndex(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticName SDL_HapticName(int device_index); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticNewEffect SDL_HapticNewEffect(SDL_Haptic * haptic,SDL_HapticEffect * effect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticNumAxes SDL_HapticNumAxes(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticNumEffects SDL_HapticNumEffects(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticNumEffectsPlaying SDL_HapticNumEffectsPlaying(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticOpen SDL_HapticOpen(int device_index); /* SDL_Haptic * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticOpenFromJoystick SDL_HapticOpenFromJoystick(SDL_Joystick * joystick); /* SDL_Haptic * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticOpenFromMouse SDL_HapticOpenFromMouse(void); /* SDL_Haptic * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticOpened SDL_HapticOpened(int device_index); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticPause SDL_HapticPause(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticQuery SDL_HapticQuery(SDL_Haptic * haptic); /* unsigned int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticRumbleInit SDL_HapticRumbleInit(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticRumblePlay SDL_HapticRumblePlay(SDL_Haptic * haptic,float strength,Uint32 length ); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticRumbleStop SDL_HapticRumbleStop(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticRumbleSupported SDL_HapticRumbleSupported(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticRunEffect SDL_HapticRunEffect(SDL_Haptic * haptic,int effect,Uint32 iterations); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticSetAutocenter SDL_HapticSetAutocenter(SDL_Haptic * haptic,int autocenter); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticSetGain SDL_HapticSetGain(SDL_Haptic * haptic,int gain); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticStopAll SDL_HapticStopAll(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticStopEffect SDL_HapticStopEffect(SDL_Haptic * haptic,int effect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticUnpause SDL_HapticUnpause(SDL_Haptic * haptic); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HapticUpdateEffect SDL_HapticUpdateEffect(SDL_Haptic * haptic,int effect,SDL_HapticEffect * data); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Has SDL_Has3DNow(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasARMSIMD SDL_HasARMSIMD(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasAVX SDL_HasAVX(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasAVX SDL_HasAVX2(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasAVX SDL_HasAVX512F(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasAltiVec SDL_HasAltiVec(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasClipboardText SDL_HasClipboardText(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasColorKey SDL_HasColorKey(SDL_Surface * surface); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasEvent SDL_HasEvent(Uint32 type); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasEvents SDL_HasEvents(Uint32 minType,Uint32 maxType); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasIntersection SDL_HasIntersection(const SDL_Rect * A,const SDL_Rect * B); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasMMX SDL_HasMMX(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasNEON SDL_HasNEON(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasRDTSC SDL_HasRDTSC(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasSSE SDL_HasSSE(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasSSE SDL_HasSSE2(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasSSE SDL_HasSSE3(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasSSE SDL_HasSSE41(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasSSE SDL_HasSSE42(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HasScreenKeyboardSupport SDL_HasScreenKeyboardSupport(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_HideWindow SDL_HideWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Init SDL_Init(Uint32 flags); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_InitSubSystem SDL_InitSubSystem(Uint32 flags); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IntersectRect SDL_IntersectRect(const SDL_Rect * A,const SDL_Rect * B,SDL_Rect * result); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IntersectRectAndLine SDL_IntersectRectAndLine(const SDL_Rect * rect,int *X1,int *Y1,int *X2,int *Y2); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsAndroidTV SDL_IsAndroidTV(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsChromebook SDL_IsChromebook(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsDeXMode SDL_IsDeXMode(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsGameController SDL_IsGameController(int joystick_index); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsScreenKeyboardShown SDL_IsScreenKeyboardShown(SDL_Window *window); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsScreenSaverEnabled SDL_IsScreenSaverEnabled(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsShapedWindow SDL_IsShapedWindow(const SDL_Window *window); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsTablet SDL_IsTablet(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_IsTextInputActive SDL_IsTextInputActive(void); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickClose SDL_JoystickClose(SDL_Joystick * joystick); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickCurrentPowerLevel SDL_JoystickCurrentPowerLevel(SDL_Joystick * joystick); /* SDL_JoystickPowerLevel  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickEventState SDL_JoystickEventState(int state); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickFromInstanceID SDL_JoystickFromInstanceID(SDL_JoystickID instance_id); /* SDL_Joystick * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickFromPlayerIndex SDL_JoystickFromPlayerIndex(int player_index); /* SDL_Joystick * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetAttached SDL_JoystickGetAttached(SDL_Joystick * joystick); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetAxis SDL_JoystickGetAxis(SDL_Joystick * joystick,int axis); /* Sint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetAxisInitialState SDL_JoystickGetAxisInitialState(SDL_Joystick * joystick,int axis,Sint16 *state); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetBall SDL_JoystickGetBall(SDL_Joystick * joystick,int ball,int *dx,int *dy); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetButton SDL_JoystickGetButton(SDL_Joystick * joystick,int button); /* Uint8  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDeviceGUID SDL_JoystickGetDeviceGUID(int device_index); /* SDL_JoystickGUID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDeviceInstanceID SDL_JoystickGetDeviceInstanceID(int device_index); /* SDL_JoystickID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDevicePlayerIndex SDL_JoystickGetDevicePlayerIndex(int device_index); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDeviceProduct SDL_JoystickGetDeviceProduct(int device_index); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDeviceProductVersion SDL_JoystickGetDeviceProductVersion(int device_index); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDeviceType SDL_JoystickGetDeviceType(int device_index); /* SDL_JoystickType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetDeviceVendor SDL_JoystickGetDeviceVendor(int device_index); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetGUID SDL_JoystickGetGUID(SDL_Joystick * joystick); /* SDL_JoystickGUID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetGUIDFromString SDL_JoystickGetGUIDFromString(const char *pchGUID); /* SDL_JoystickGUID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetGUIDString SDL_JoystickGetGUIDString(SDL_JoystickGUID guid,char *pszGUID,int cbGUID); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetHat SDL_JoystickGetHat(SDL_Joystick * joystick,int hat); /* Uint8  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetPlayerIndex SDL_JoystickGetPlayerIndex(SDL_Joystick * joystick); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetProduct SDL_JoystickGetProduct(SDL_Joystick * joystick); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetProductVersion SDL_JoystickGetProductVersion(SDL_Joystick * joystick); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetType SDL_JoystickGetType(SDL_Joystick * joystick); /* SDL_JoystickType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickGetVendor SDL_JoystickGetVendor(SDL_Joystick * joystick); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickInstanceID SDL_JoystickInstanceID(SDL_Joystick * joystick); /* SDL_JoystickID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickIsHaptic SDL_JoystickIsHaptic(SDL_Joystick * joystick); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickName SDL_JoystickName(SDL_Joystick * joystick); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickNameForIndex SDL_JoystickNameForIndex(int device_index); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickNumAxes SDL_JoystickNumAxes(SDL_Joystick * joystick); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickNumBalls SDL_JoystickNumBalls(SDL_Joystick * joystick); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickNumButtons SDL_JoystickNumButtons(SDL_Joystick * joystick); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickNumHats SDL_JoystickNumHats(SDL_Joystick * joystick); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickOpen SDL_JoystickOpen(int device_index); /* SDL_Joystick * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickRumble SDL_JoystickRumble(SDL_Joystick * joystick,Uint16 low_frequency_rumble,Uint16 high_frequency_rumble,Uint32 duration_ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickSetPlayerIndex SDL_JoystickSetPlayerIndex(SDL_Joystick * joystick,int player_index); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_JoystickUpdate SDL_JoystickUpdate(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LinuxSetThreadPriority SDL_LinuxSetThreadPriority(Sint64 threadID,int priority); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadBMP_RW SDL_LoadBMP_RW(SDL_RWops * src,int freesrc); /* SDL_Surface * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadDollarTemplates SDL_LoadDollarTemplates(SDL_TouchID touchId,SDL_RWops *src); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadFile SDL_LoadFile(const char *file,size_t *datasize); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadFile_RW SDL_LoadFile_RW(SDL_RWops * src,size_t *datasize,int freesrc); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadFunction SDL_LoadFunction(void *handle,const char *name); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadObject SDL_LoadObject(const char *sofile); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LoadWAV_RW SDL_LoadWAV_RW(SDL_RWops * src,int freesrc,SDL_AudioSpec * spec,Uint8 ** audio_buf,Uint32 * audio_len); /* SDL_AudioSpec * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockAudio SDL_LockAudio(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockAudioDevice SDL_LockAudioDevice(SDL_AudioDeviceID dev); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockJoysticks SDL_LockJoysticks(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockMutex SDL_LockMutex(SDL_mutex * mutex); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockSurface SDL_LockSurface(SDL_Surface * surface); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockTexture SDL_LockTexture(SDL_Texture * texture,const SDL_Rect * rect,void **pixels,int *pitch); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LockTextureToSurface SDL_LockTextureToSurface(SDL_Texture *texture,const SDL_Rect *rect,SDL_Surface **surface); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Log SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(1); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogCritical SDL_LogCritical(int category,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(2); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogDebug SDL_LogDebug(int category,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(2); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogError SDL_LogError(int category,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(2); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogGetOutputFunction SDL_LogGetOutputFunction(SDL_LogOutputFunction *callback,void **userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogGetPriority SDL_LogGetPriority(int category); /* SDL_LogPriority  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogInfo SDL_LogInfo(int category,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(2); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogMessage SDL_LogMessage(int category,SDL_LogPriority priority,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(3); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogMessageV SDL_LogMessageV(int category,SDL_LogPriority priority,const char *fmt,va_list ap); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogResetPriorities SDL_LogResetPriorities(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogSetAllPriority SDL_LogSetAllPriority(SDL_LogPriority priority); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogSetOutputFunction SDL_LogSetOutputFunction(SDL_LogOutputFunction callback,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogSetPriority SDL_LogSetPriority(int category,SDL_LogPriority priority); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogVerbose SDL_LogVerbose(int category,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(2); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LogWarn SDL_LogWarn(int category,SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(2); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LowerBlit SDL_LowerBlit (SDL_Surface * src,SDL_Rect * srcrect,SDL_Surface * dst,SDL_Rect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_LowerBlitScaled SDL_LowerBlitScaled (SDL_Surface * src,SDL_Rect * srcrect,SDL_Surface * dst,SDL_Rect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MapRGB SDL_MapRGB(const SDL_PixelFormat * format,Uint8 r,Uint8 g,Uint8 b); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MapRGBA SDL_MapRGBA(const SDL_PixelFormat * format,Uint8 r,Uint8 g,Uint8 b,Uint8 a); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MasksToPixelFormatEnum SDL_MasksToPixelFormatEnum(int bpp,Uint32 Rmask,Uint32 Gmask,Uint32 Bmask,Uint32 Amask); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MaximizeWindow SDL_MaximizeWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MemoryBarrierAcquireFunction SDL_MemoryBarrierAcquireFunction(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MemoryBarrierReleaseFunction SDL_MemoryBarrierReleaseFunction(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Metal_CreateView SDL_Metal_CreateView(SDL_Window * window); /* SDL_MetalView  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Metal_DestroyView SDL_Metal_DestroyView(SDL_MetalView view); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MinimizeWindow SDL_MinimizeWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MixAudio SDL_MixAudio(Uint8 * dst,const Uint8 * src,Uint32 len,int volume); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MixAudioFormat SDL_MixAudioFormat(Uint8 * dst,const Uint8 * src,SDL_AudioFormat format,Uint32 len,int volume); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_MouseIsHaptic SDL_MouseIsHaptic(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_NewAudioStream SDL_NewAudioStream(const SDL_AudioFormat src_format,const Uint8 src_channels,const int src_rate,const SDL_AudioFormat dst_format,const Uint8 dst_channels,const int dst_rate); /* SDL_AudioStream *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_NumHaptics SDL_NumHaptics(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_NumJoysticks SDL_NumJoysticks(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_NumSensors SDL_NumSensors(void); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationDidBecomeActive SDL_OnApplicationDidBecomeActive(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationDidChangeStatusBarOrientation SDL_OnApplicationDidChangeStatusBarOrientation(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationDidEnterBackground SDL_OnApplicationDidEnterBackground(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationDidReceiveMemoryWarning SDL_OnApplicationDidReceiveMemoryWarning(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationWillEnterForeground SDL_OnApplicationWillEnterForeground(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationWillResignActive SDL_OnApplicationWillResignActive(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OnApplicationWillTerminate SDL_OnApplicationWillTerminate(void); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OpenAudio SDL_OpenAudio(SDL_AudioSpec * desired,SDL_AudioSpec * obtained); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_OpenAudioDevice SDL_OpenAudioDevice(const char *device,int iscapture,const SDL_AudioSpec * desired,SDL_AudioSpec * obtained,int allowed_changes); /* SDL_AudioDeviceID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PauseAudio SDL_PauseAudio(int pause_on); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PauseAudioDevice SDL_PauseAudioDevice(SDL_AudioDeviceID dev,int pause_on); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PeepEvents SDL_PeepEvents(SDL_Event * events,int numevents,SDL_eventaction action,Uint32 minType,Uint32 maxType); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PixelFormatEnumToMasks SDL_PixelFormatEnumToMasks(Uint32 format,int *bpp,Uint32 * Rmask,Uint32 * Gmask,Uint32 * Bmask,Uint32 * Amask); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PollEvent SDL_PollEvent(SDL_Event * event); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PumpEvents SDL_PumpEvents(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_PushEvent SDL_PushEvent(SDL_Event * event); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_QueryTexture SDL_QueryTexture(SDL_Texture * texture,Uint32 * format,int *access,int *w,int *h); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_QueueAudio SDL_QueueAudio(SDL_AudioDeviceID dev,const void *data,Uint32 len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Quit SDL_Quit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_QuitSubSystem SDL_QuitSubSystem(Uint32 flags); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWFromConstMem SDL_RWFromConstMem(const void *mem,int size); /* SDL_RWops * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWFromFP SDL_RWFromFP(FILE * fp,SDL_bool autoclose); /* SDL_RWops * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWFromFP SDL_RWFromFP(void * fp,SDL_bool autoclose); /* SDL_RWops * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWFromFile SDL_RWFromFile(const char *file,const char *mode); /* SDL_RWops * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWFromMem SDL_RWFromMem(void *mem,int size); /* SDL_RWops * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWclose SDL_RWclose(SDL_RWops *context); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWread SDL_RWread(SDL_RWops *context,void *ptr,size_t size,size_t maxnum); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWseek SDL_RWseek(SDL_RWops *context,Sint64 offset,int whence); /* Sint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWsize SDL_RWsize(SDL_RWops *context); /* Sint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWtell SDL_RWtell(SDL_RWops *context); /* Sint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RWwrite SDL_RWwrite(SDL_RWops *context,const void *ptr,size_t size,size_t num); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RaiseWindow SDL_RaiseWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadBE SDL_ReadBE16(SDL_RWops * src); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadBE SDL_ReadBE32(SDL_RWops * src); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadBE SDL_ReadBE64(SDL_RWops * src); /* Uint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadLE SDL_ReadLE16(SDL_RWops * src); /* Uint16  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadLE SDL_ReadLE32(SDL_RWops * src); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadLE SDL_ReadLE64(SDL_RWops * src); /* Uint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReadU SDL_ReadU8(SDL_RWops * src); /* Uint8  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RecordGesture SDL_RecordGesture(SDL_TouchID touchId); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RegisterApp SDL_RegisterApp(char *name,Uint32 style,void *hInst); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RegisterEvents SDL_RegisterEvents(int numevents); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RemoveTimer SDL_RemoveTimer(SDL_TimerID id); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderClear SDL_RenderClear(SDL_Renderer * renderer); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderCopy SDL_RenderCopy(SDL_Renderer * renderer,SDL_Texture * texture,const SDL_Rect * srcrect,const SDL_Rect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderCopyEx SDL_RenderCopyEx(SDL_Renderer * renderer,SDL_Texture * texture,const SDL_Rect * srcrect,const SDL_Rect * dstrect,const double angle,const SDL_Point *center,const SDL_RendererFlip flip); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderCopyExF SDL_RenderCopyExF(SDL_Renderer * renderer,SDL_Texture * texture,const SDL_Rect * srcrect,const SDL_FRect * dstrect,const double angle,const SDL_FPoint *center,const SDL_RendererFlip flip); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderCopyF SDL_RenderCopyF(SDL_Renderer * renderer,SDL_Texture * texture,const SDL_Rect * srcrect,const SDL_FRect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawLine SDL_RenderDrawLine(SDL_Renderer * renderer,int x1,int y1,int x2,int y2); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawLineF SDL_RenderDrawLineF(SDL_Renderer * renderer,float x1,float y1,float x2,float y2); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawLines SDL_RenderDrawLines(SDL_Renderer * renderer,const SDL_Point * points,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawLinesF SDL_RenderDrawLinesF(SDL_Renderer * renderer,const SDL_FPoint * points,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawPoint SDL_RenderDrawPoint(SDL_Renderer * renderer,int x,int y); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawPointF SDL_RenderDrawPointF(SDL_Renderer * renderer,float x,float y); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawPoints SDL_RenderDrawPoints(SDL_Renderer * renderer,const SDL_Point * points,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawPointsF SDL_RenderDrawPointsF(SDL_Renderer * renderer,const SDL_FPoint * points,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawRect SDL_RenderDrawRect(SDL_Renderer * renderer,const SDL_Rect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawRectF SDL_RenderDrawRectF(SDL_Renderer * renderer,const SDL_FRect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawRects SDL_RenderDrawRects(SDL_Renderer * renderer,const SDL_Rect * rects,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderDrawRectsF SDL_RenderDrawRectsF(SDL_Renderer * renderer,const SDL_FRect * rects,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderFillRect SDL_RenderFillRect(SDL_Renderer * renderer,const SDL_Rect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderFillRectF SDL_RenderFillRectF(SDL_Renderer * renderer,const SDL_FRect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderFillRects SDL_RenderFillRects(SDL_Renderer * renderer,const SDL_Rect * rects,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderFillRectsF SDL_RenderFillRectsF(SDL_Renderer * renderer,const SDL_FRect * rects,int count); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderFlush SDL_RenderFlush(SDL_Renderer * renderer); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetClipRect SDL_RenderGetClipRect(SDL_Renderer * renderer,SDL_Rect * rect); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetD SDL_RenderGetD3D9Device(SDL_Renderer * renderer); /* IDirect3DDevice9*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetIntegerScale SDL_RenderGetIntegerScale(SDL_Renderer * renderer); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetLogicalSize SDL_RenderGetLogicalSize(SDL_Renderer * renderer,int *w,int *h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetMetalCommandEncoder SDL_RenderGetMetalCommandEncoder(SDL_Renderer * renderer); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetMetalLayer SDL_RenderGetMetalLayer(SDL_Renderer * renderer); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetScale SDL_RenderGetScale(SDL_Renderer * renderer,float *scaleX,float *scaleY); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderGetViewport SDL_RenderGetViewport(SDL_Renderer * renderer,SDL_Rect * rect); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderIsClipEnabled SDL_RenderIsClipEnabled(SDL_Renderer * renderer); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderPresent SDL_RenderPresent(SDL_Renderer * renderer); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderReadPixels SDL_RenderReadPixels(SDL_Renderer * renderer,const SDL_Rect * rect,Uint32 format,void *pixels,int pitch); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderSetClipRect SDL_RenderSetClipRect(SDL_Renderer * renderer,const SDL_Rect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderSetIntegerScale SDL_RenderSetIntegerScale(SDL_Renderer * renderer,SDL_bool enable); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderSetLogicalSize SDL_RenderSetLogicalSize(SDL_Renderer * renderer,int w,int h); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderSetScale SDL_RenderSetScale(SDL_Renderer * renderer,float scaleX,float scaleY); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderSetViewport SDL_RenderSetViewport(SDL_Renderer * renderer,const SDL_Rect * rect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RenderTargetSupported SDL_RenderTargetSupported(SDL_Renderer *renderer); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ReportAssertion SDL_ReportAssertion(SDL_AssertData *,const char *,const char *,int); /* SDL_AssertState  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ResetAssertionReport SDL_ResetAssertionReport(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_RestoreWindow SDL_RestoreWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SIMDAlloc SDL_SIMDAlloc(const size_t len); /* void *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SIMDFree SDL_SIMDFree(void *ptr); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SIMDGetAlignment SDL_SIMDGetAlignment(); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SaveAllDollarTemplates SDL_SaveAllDollarTemplates(SDL_RWops *dst); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SaveBMP_RW SDL_SaveBMP_RW (SDL_Surface * surface,SDL_RWops * dst,int freedst); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SaveDollarTemplate SDL_SaveDollarTemplate(SDL_GestureID gestureId,SDL_RWops *dst); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SemPost SDL_SemPost(SDL_sem * sem); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SemTryWait SDL_SemTryWait(SDL_sem * sem); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SemValue SDL_SemValue(SDL_sem * sem); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SemWait SDL_SemWait(SDL_sem * sem); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SemWaitTimeout SDL_SemWaitTimeout(SDL_sem * sem,Uint32 ms); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorClose SDL_SensorClose(SDL_Sensor * sensor); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorFromInstanceID SDL_SensorFromInstanceID(SDL_SensorID instance_id); /* SDL_Sensor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetData SDL_SensorGetData(SDL_Sensor * sensor,float *data,int num_values); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetDeviceInstanceID SDL_SensorGetDeviceInstanceID(int device_index); /* SDL_SensorID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetDeviceName SDL_SensorGetDeviceName(int device_index); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetDeviceNonPortableType SDL_SensorGetDeviceNonPortableType(int device_index); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetDeviceType SDL_SensorGetDeviceType(int device_index); /* SDL_SensorType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetInstanceID SDL_SensorGetInstanceID(SDL_Sensor *sensor); /* SDL_SensorID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetName SDL_SensorGetName(SDL_Sensor *sensor); /* const char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetNonPortableType SDL_SensorGetNonPortableType(SDL_Sensor *sensor); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorGetType SDL_SensorGetType(SDL_Sensor *sensor); /* SDL_SensorType  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorOpen SDL_SensorOpen(int device_index); /* SDL_Sensor * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SensorUpdate SDL_SensorUpdate(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetAssertionHandler SDL_SetAssertionHandler( SDL_AssertionHandler handler,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetClipRect SDL_SetClipRect(SDL_Surface * surface,const SDL_Rect * rect); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetClipboardText SDL_SetClipboardText(const char *text); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetColorKey SDL_SetColorKey(SDL_Surface * surface,int flag,Uint32 key); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetCursor SDL_SetCursor(SDL_Cursor * cursor); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetError SDL_SetError(SDL_PRINTF_FORMAT_STRING const char *fmt,...) SDL_PRINTF_VARARG_FUNC(1); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetEventFilter SDL_SetEventFilter(SDL_EventFilter filter,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetHint SDL_SetHint(const char *name,const char *value); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetHintWithPriority SDL_SetHintWithPriority(const char *name,const char *value,SDL_HintPriority priority); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetMainReady SDL_SetMainReady(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetMemoryFunctions SDL_SetMemoryFunctions(SDL_malloc_func malloc_func,SDL_calloc_func calloc_func,SDL_realloc_func realloc_func,SDL_free_func free_func); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetModState SDL_SetModState(SDL_Keymod modstate); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetPaletteColors SDL_SetPaletteColors(SDL_Palette * palette,const SDL_Color * colors,int firstcolor,int ncolors); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetPixelFormatPalette SDL_SetPixelFormatPalette(SDL_PixelFormat * format,SDL_Palette *palette); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetRelativeMouseMode SDL_SetRelativeMouseMode(SDL_bool enabled); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetRenderDrawBlendMode SDL_SetRenderDrawBlendMode(SDL_Renderer * renderer,SDL_BlendMode blendMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetRenderDrawColor SDL_SetRenderDrawColor(SDL_Renderer * renderer,Uint8 r,Uint8 g,Uint8 b,Uint8 a); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetRenderTarget SDL_SetRenderTarget(SDL_Renderer *renderer,SDL_Texture *texture); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetSurfaceAlphaMod SDL_SetSurfaceAlphaMod(SDL_Surface * surface,Uint8 alpha); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetSurfaceBlendMode SDL_SetSurfaceBlendMode(SDL_Surface * surface,SDL_BlendMode blendMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetSurfaceColorMod SDL_SetSurfaceColorMod(SDL_Surface * surface,Uint8 r,Uint8 g,Uint8 b); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetSurfacePalette SDL_SetSurfacePalette(SDL_Surface * surface,SDL_Palette * palette); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetSurfaceRLE SDL_SetSurfaceRLE(SDL_Surface * surface,int flag); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetTextInputRect SDL_SetTextInputRect(SDL_Rect *rect); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetTextureAlphaMod SDL_SetTextureAlphaMod(SDL_Texture * texture,Uint8 alpha); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetTextureBlendMode SDL_SetTextureBlendMode(SDL_Texture * texture,SDL_BlendMode blendMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetTextureColorMod SDL_SetTextureColorMod(SDL_Texture * texture,Uint8 r,Uint8 g,Uint8 b); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetTextureScaleMode SDL_SetTextureScaleMode(SDL_Texture * texture,SDL_ScaleMode scaleMode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetThreadPriority SDL_SetThreadPriority(SDL_ThreadPriority priority); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowBordered SDL_SetWindowBordered(SDL_Window * window,SDL_bool bordered); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowBrightness SDL_SetWindowBrightness(SDL_Window * window,float brightness); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowData SDL_SetWindowData(SDL_Window * window,const char *name,void *userdata); /* void*  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowDisplayMode SDL_SetWindowDisplayMode(SDL_Window * window,const SDL_DisplayMode * mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowFullscreen SDL_SetWindowFullscreen(SDL_Window * window,Uint32 flags); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowGammaRamp SDL_SetWindowGammaRamp(SDL_Window * window,const Uint16 * red,const Uint16 * green,const Uint16 * blue); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowGrab SDL_SetWindowGrab(SDL_Window * window,SDL_bool grabbed); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowHitTest SDL_SetWindowHitTest(SDL_Window * window,SDL_HitTest callback,void *callback_data); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowIcon SDL_SetWindowIcon(SDL_Window * window,SDL_Surface * icon); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowInputFocus SDL_SetWindowInputFocus(SDL_Window * window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowMaximumSize SDL_SetWindowMaximumSize(SDL_Window * window,int max_w,int max_h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowMinimumSize SDL_SetWindowMinimumSize(SDL_Window * window,int min_w,int min_h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowModalFor SDL_SetWindowModalFor(SDL_Window * modal_window,SDL_Window * parent_window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowOpacity SDL_SetWindowOpacity(SDL_Window * window,float opacity); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowPosition SDL_SetWindowPosition(SDL_Window * window,int x,int y); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowResizable SDL_SetWindowResizable(SDL_Window * window,SDL_bool resizable); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowShape SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape,SDL_WindowShapeMode *shape_mode); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowSize SDL_SetWindowSize(SDL_Window * window,int w,int h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowTitle SDL_SetWindowTitle(SDL_Window * window,const char *title); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetWindowsMessageHook SDL_SetWindowsMessageHook(SDL_WindowsMessageHook callback,void *userdata); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SetYUVConversionMode SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_MODE mode); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ShowCursor SDL_ShowCursor(int toggle); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ShowMessageBox SDL_ShowMessageBox(const SDL_MessageBoxData *messageboxdata,int *buttonid); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ShowSimpleMessageBox SDL_ShowSimpleMessageBox(Uint32 flags,const char *title,const char *message,SDL_Window *window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ShowWindow SDL_ShowWindow(SDL_Window * window); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_SoftStretch SDL_SoftStretch(SDL_Surface * src,const SDL_Rect * srcrect,SDL_Surface * dst,const SDL_Rect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_StartTextInput SDL_StartTextInput(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_StopTextInput SDL_StopTextInput(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_TLSCreate SDL_TLSCreate(); /* SDL_TLSID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_TLSGet SDL_TLSGet(SDL_TLSID id); /* void *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ThreadID SDL_ThreadID(); /* SDL_threadID  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_TryLockMutex SDL_TryLockMutex(SDL_mutex * mutex); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UIKitRunApp SDL_UIKitRunApp(int argc,char *argv[],SDL_main_func mainFunction); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnionRect SDL_UnionRect(const SDL_Rect * A,const SDL_Rect * B,SDL_Rect * result); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnloadObject SDL_UnloadObject(void *handle); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnlockAudio SDL_UnlockAudio(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnlockAudioDevice SDL_UnlockAudioDevice(SDL_AudioDeviceID dev); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnlockJoysticks SDL_UnlockJoysticks(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnlockMutex SDL_UnlockMutex(SDL_mutex * mutex); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnlockSurface SDL_UnlockSurface(SDL_Surface * surface); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnlockTexture SDL_UnlockTexture(SDL_Texture * texture); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UnregisterApp SDL_UnregisterApp(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UpdateTexture SDL_UpdateTexture(SDL_Texture * texture,const SDL_Rect * rect,const void *pixels,int pitch); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UpdateWindowSurface SDL_UpdateWindowSurface(SDL_Window * window); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UpdateWindowSurfaceRects SDL_UpdateWindowSurfaceRects(SDL_Window * window,const SDL_Rect * rects,int numrects); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UpdateYUVTexture SDL_UpdateYUVTexture(SDL_Texture * texture,const SDL_Rect * rect,const Uint8 *Yplane,int Ypitch,const Uint8 *Uplane,int Upitch,const Uint8 *Vplane,int Vpitch); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UpperBlit SDL_UpperBlit (SDL_Surface * src,const SDL_Rect * srcrect,SDL_Surface * dst,SDL_Rect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_UpperBlitScaled SDL_UpperBlitScaled (SDL_Surface * src,const SDL_Rect * srcrect,SDL_Surface * dst,SDL_Rect * dstrect); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_VideoInit SDL_VideoInit(const char *driver_name); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_VideoQuit SDL_VideoQuit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Vulkan_CreateSurface SDL_Vulkan_CreateSurface(												SDL_Window *window,												VkInstance instance,												VkSurfaceKHR* surface); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Vulkan_GetDrawableSize SDL_Vulkan_GetDrawableSize(SDL_Window * window,int *w,int *h); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Vulkan_GetInstanceExtensions SDL_Vulkan_GetInstanceExtensions(														SDL_Window *window,														unsigned int *pCount,														const char **pNames); /* SDL_bool  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Vulkan_GetVkGetInstanceProcAddr SDL_Vulkan_GetVkGetInstanceProcAddr(); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Vulkan_LoadLibrary SDL_Vulkan_LoadLibrary(const char *path); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_Vulkan_UnloadLibrary SDL_Vulkan_UnloadLibrary(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WaitEvent SDL_WaitEvent(SDL_Event * event); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WaitEventTimeout SDL_WaitEventTimeout(SDL_Event * event,int timeout); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WaitThread SDL_WaitThread(SDL_Thread * thread,int *status); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WarpMouseGlobal SDL_WarpMouseGlobal(int x,int y); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WarpMouseInWindow SDL_WarpMouseInWindow(SDL_Window * window,int x,int y); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WasInit SDL_WasInit(Uint32 flags); /* Uint32  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WinRTGetDeviceFamily SDL_WinRTGetDeviceFamily(); /* SDL_WinRT_DeviceFamily  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WinRTGetFSPathUNICODE SDL_WinRTGetFSPathUNICODE(SDL_WinRT_Path pathType); /* const wchar_t *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WinRTGetFSPathUTF SDL_WinRTGetFSPathUTF8(SDL_WinRT_Path pathType); /* const char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WinRTRunApp SDL_WinRTRunApp(SDL_main_func mainFunction,void * reserved); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteBE SDL_WriteBE16(SDL_RWops * dst,Uint16 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteBE SDL_WriteBE32(SDL_RWops * dst,Uint32 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteBE SDL_WriteBE64(SDL_RWops * dst,Uint64 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteLE SDL_WriteLE16(SDL_RWops * dst,Uint16 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteLE SDL_WriteLE32(SDL_RWops * dst,Uint32 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteLE SDL_WriteLE64(SDL_RWops * dst,Uint64 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_WriteU SDL_WriteU8(SDL_RWops * dst,Uint8 value); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_abs SDL_abs(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_acos SDL_acos(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_acosf SDL_acosf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_asin SDL_asin(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_asinf SDL_asinf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_atan SDL_atan(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_atan SDL_atan2(double x,double y); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_atan SDL_atan2f(float x,float y); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_atanf SDL_atanf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_atof SDL_atof(const char *str); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_atoi SDL_atoi(const char *str); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_calloc SDL_calloc(size_t nmemb,size_t size); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ceil SDL_ceil(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ceilf SDL_ceilf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_copysign SDL_copysign(double x,double y); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_copysignf SDL_copysignf(float x,float y); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_cos SDL_cos(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_cosf SDL_cosf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_exp SDL_exp(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_expf SDL_expf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_fabs SDL_fabs(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_fabsf SDL_fabsf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_floor SDL_floor(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_floorf SDL_floorf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_fmod SDL_fmod(double x,double y); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_fmodf SDL_fmodf(float x,float y); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_free SDL_free(void *mem); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_getenv SDL_getenv(const char *name); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_iPhoneSetAnimationCallback SDL_iPhoneSetAnimationCallback(SDL_Window * window,int interval,void (*callback)(void*),void *callbackParam); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_iPhoneSetEventPump SDL_iPhoneSetEventPump(SDL_bool enabled); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_iconv SDL_iconv(SDL_iconv_t cd,const char **inbuf,size_t * inbytesleft,char **outbuf,size_t * outbytesleft); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_iconv_close SDL_iconv_close(SDL_iconv_t cd); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_iconv_open SDL_iconv_open(const char *tocode,const char *fromcode); /* SDL_iconv_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_iconv_string SDL_iconv_string(const char *tocode,const char *fromcode,const char *inbuf,size_t inbytesleft); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_isdigit SDL_isdigit(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_islower SDL_islower(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_isspace SDL_isspace(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_isupper SDL_isupper(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_itoa SDL_itoa(int value,char *str,int radix); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_lltoa SDL_lltoa(Sint64 value,char *str,int radix); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_log SDL_log(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_log SDL_log10(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_log SDL_log10f(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_logf SDL_logf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ltoa SDL_ltoa(long value,char *str,int radix); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_malloc SDL_malloc(size_t size); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_memcmp SDL_memcmp(const void *s1,const void *s2,size_t len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_memcpy SDL_memcpy(SDL_OUT_BYTECAP(len) void *dst,SDL_IN_BYTECAP(len) const void *src,size_t len); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_memmove SDL_memmove(SDL_OUT_BYTECAP(len) void *dst,SDL_IN_BYTECAP(len) const void *src,size_t len); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_memset SDL_memset(SDL_OUT_BYTECAP(len) void *dst,int c,size_t len); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_pow SDL_pow(double x,double y); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_powf SDL_powf(float x,float y); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_qsort SDL_qsort(void *base,size_t nmemb,size_t size,int (*compare) (const void *,const void *)); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_realloc SDL_realloc(void *mem,size_t size); /* void * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_scalbn SDL_scalbn(double x,int n); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_scalbnf SDL_scalbnf(float x,int n); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_setenv SDL_setenv(const char *name,const char *value,int overwrite); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_sin SDL_sin(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_sinf SDL_sinf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_snprintf SDL_snprintf(SDL_OUT_Z_CAP(maxlen) char *text,size_t maxlen,SDL_PRINTF_FORMAT_STRING const char *fmt,... ) SDL_PRINTF_VARARG_FUNC(3); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_sqrt SDL_sqrt(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_sqrtf SDL_sqrtf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_sscanf SDL_sscanf(const char *text,SDL_SCANF_FORMAT_STRING const char *fmt,...) SDL_SCANF_VARARG_FUNC(2); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strcasecmp SDL_strcasecmp(const char *str1,const char *str2); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strchr SDL_strchr(const char *str,int c); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strcmp SDL_strcmp(const char *str1,const char *str2); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strdup SDL_strdup(const char *str); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strlcat SDL_strlcat(SDL_INOUT_Z_CAP(maxlen) char *dst,const char *src,size_t maxlen); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strlcpy SDL_strlcpy(SDL_OUT_Z_CAP(maxlen) char *dst,const char *src,size_t maxlen); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strlen SDL_strlen(const char *str); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strlwr SDL_strlwr(char *str); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strncasecmp SDL_strncasecmp(const char *str1,const char *str2,size_t len); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strncmp SDL_strncmp(const char *str1,const char *str2,size_t maxlen); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strrchr SDL_strrchr(const char *str,int c); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strrev SDL_strrev(char *str); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strstr SDL_strstr(const char *haystack,const char *needle); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strtod SDL_strtod(const char *str,char **endp); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strtokr SDL_strtokr(char *s1,const char *s2,char **saveptr); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strtol SDL_strtol(const char *str,char **endp,int base); /* long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strtoll SDL_strtoll(const char *str,char **endp,int base); /* Sint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strtoul SDL_strtoul(const char *str,char **endp,int base); /* unsigned long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strtoull SDL_strtoull(const char *str,char **endp,int base); /* Uint64  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_strupr SDL_strupr(char *str); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_tan SDL_tan(double x); /* double  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_tanf SDL_tanf(float x); /* float  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_tolower SDL_tolower(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_toupper SDL_toupper(int x); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_uitoa SDL_uitoa(unsigned int value,char *str,int radix); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ulltoa SDL_ulltoa(Uint64 value,char *str,int radix); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_ultoa SDL_ultoa(unsigned long value,char *str,int radix); /* char * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_utf SDL_utf8strlcpy(SDL_OUT_Z_CAP(dst_bytes) char *dst,const char *src,size_t dst_bytes); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_utf SDL_utf8strlen(const char *str); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_vsnprintf SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text,size_t maxlen,const char *fmt,va_list ap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_vsscanf SDL_vsscanf(const char *text,const char *fmt,va_list ap); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcscmp SDL_wcscmp(const wchar_t *str1,const wchar_t *str2); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcsdup SDL_wcsdup(const wchar_t *wstr); /* wchar_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcslcat SDL_wcslcat(SDL_INOUT_Z_CAP(maxlen) wchar_t *dst,const wchar_t *src,size_t maxlen); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcslcpy SDL_wcslcpy(SDL_OUT_Z_CAP(maxlen) wchar_t *dst,const wchar_t *src,size_t maxlen); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcslen SDL_wcslen(const wchar_t *wstr); /* size_t  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcsncmp SDL_wcsncmp(const wchar_t *str1,const wchar_t *str2,size_t maxlen); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> SDL_wcsstr SDL_wcsstr(const wchar_t *haystack,const wchar_t *needle); /* wchar_t * */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_ByteSwappedUNICODE TTF_ByteSwappedUNICODE(int swapped); /* void  */<ESC>:normal 0f(<CR>
+
+" TTF SDL_TTF sdl_ttf sdlttf
+iabbrev <buffer> TTF_CloseFont TTF_CloseFont(TTF_Font *font); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontAscent TTF_FontAscent(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontDescent TTF_FontDescent(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontFaceFamilyName TTF_FontFaceFamilyName(const TTF_Font *font); /* char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontFaceIsFixedWidth TTF_FontFaceIsFixedWidth(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontFaceStyleName TTF_FontFaceStyleName(const TTF_Font *font); /* char *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontFaces TTF_FontFaces(const TTF_Font *font); /* long  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontHeight TTF_FontHeight(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_FontLineSkip TTF_FontLineSkip(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GetFontHinting TTF_GetFontHinting(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GetFontKerning TTF_GetFontKerning(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GetFontKerningSize TTF_GetFontKerningSize(TTF_Font *font,int prev_index,int index) SDL_DEPRECATED;<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GetFontKerningSizeGlyphs TTF_GetFontKerningSizeGlyphs(TTF_Font *font,Uint16 previous_ch,Uint16 ch);<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GetFontOutline TTF_GetFontOutline(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GetFontStyle TTF_GetFontStyle(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GlyphIsProvided TTF_GlyphIsProvided(const TTF_Font *font,Uint16 ch); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_GlyphMetrics TTF_GlyphMetrics(TTF_Font *font,Uint16 ch,int *minx,int *maxx,int *miny,int *maxy,int *advance); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_Init TTF_Init(); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_Linked_Version TTF_Linked_Version(); /* const SDL_version *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_OpenFont TTF_OpenFont(const char *file,int ptsize); /* TTF_Font *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_OpenFontIndex TTF_OpenFontIndex(const char *file,int ptsize,long index); /* TTF_Font *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_OpenFontIndexRW TTF_OpenFontIndexRW(SDL_RWops *src,int freesrc,int ptsize,long index); /* TTF_Font *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_OpenFontRW TTF_OpenFontRW(SDL_RWops *src,int freesrc,int ptsize); /* TTF_Font *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_Quit TTF_Quit(); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderGlyph_Blended TTF_RenderGlyph_Blended(TTF_Font *font,Uint16 ch,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderGlyph_Shaded TTF_RenderGlyph_Shaded(TTF_Font *font,Uint16 ch,SDL_Color fg,SDL_Color bg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderGlyph_Solid TTF_RenderGlyph_Solid(TTF_Font *font,Uint16 ch,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderText_Blended TTF_RenderText_Blended(TTF_Font *font,const char *text,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderText_Blended_Wrapped TTF_RenderText_Blended_Wrapped(TTF_Font *font,const char *text,SDL_Color fg,Uint32 wrapLength); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderText_Shaded TTF_RenderText_Shaded(TTF_Font *font,const char *text,SDL_Color fg,SDL_Color bg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderText_Solid TTF_RenderText_Solid(TTF_Font *font,const char *text,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUNICODE_Blended TTF_RenderUNICODE_Blended(TTF_Font *font,const Uint16 *text,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUNICODE_Blended_Wrapped TTF_RenderUNICODE_Blended_Wrapped(TTF_Font *font,const Uint16 *text,SDL_Color fg,Uint32 wrapLength); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUNICODE_Shaded TTF_RenderUNICODE_Shaded(TTF_Font *font,const Uint16 *text,SDL_Color fg,SDL_Color bg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUNICODE_Solid TTF_RenderUNICODE_Solid(TTF_Font *font,const Uint16 *text,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUTF TTF_RenderUTF8_Blended(TTF_Font *font,const char *text,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUTF TTF_RenderUTF8_Blended_Wrapped(TTF_Font *font,const char *text,SDL_Color fg,Uint32 wrapLength); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUTF TTF_RenderUTF8_Shaded(TTF_Font *font,const char *text,SDL_Color fg,SDL_Color bg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_RenderUTF TTF_RenderUTF8_Solid(TTF_Font *font,const char *text,SDL_Color fg); /* SDL_Surface *  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SetFontHinting TTF_SetFontHinting(TTF_Font *font,int hinting); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SetFontKerning TTF_SetFontKerning(TTF_Font *font,int allowed); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SetFontOutline TTF_SetFontOutline(TTF_Font *font,int outline); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SetFontStyle TTF_SetFontStyle(TTF_Font *font,int style); /* void  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SizeText TTF_SizeText(TTF_Font *font,const char *text,int *w,int *h); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SizeUNICODE TTF_SizeUNICODE(TTF_Font *font,const Uint16 *text,int *w,int *h); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_SizeUTF TTF_SizeUTF8(TTF_Font *font,const char *text,int *w,int *h); /* int  */<ESC>:normal 0f(<CR>
+iabbrev <buffer> TTF_WasInit TTF_WasInit(); /* int  */<ESC>:normal 0f(<CR>
+
+let b:did_ftplugin = 1
