@@ -38583,4 +38583,4 @@ Used to indicate italicized rendering style. This is used a bitmask along with o
 TTF_STYLE_UNDERLINE 0x04
 Used to indicate underlined rendering style. This is used a bitmask along with other styles.
 
-
+vim:tw=78:ts=8:ft=help:norl:
