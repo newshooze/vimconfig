@@ -2,11 +2,8 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-set errorformat^=%-GIn\ file\ included\ from\ %f:%l:%c:,%-GIn\ file
-				 \\ included\ from\ %f:%l:%c\\,,%-GIn\ file\ included\ from\ %f
-				 \:%l:%c,%-GIn\ file\ included\ from\ %f:%l
+set errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GInfile included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory `%f',%X%*\a[%*\d]: Leaving directory `%f',%D%*\a: Entering directory `%f',%X%*\a: Leaving directory `%f',%DMaking %*\a in %f,%f|%l| %m
 
-map <F2> lbi<bar><ESC>ea<bar><ESC>
 setlocal dict=~/.vim/ftplugin/c.vim
 setlocal complete+=k
 setlocal tags+=~/.vim/doc/c/Xlib/tags
@@ -39,10 +36,16 @@ nnoremap <buffer> <F8> <ESC>:make<CR>
 inoremap <buffer> <S-F8> <ESC>:make clean<CR>
 nnoremap <buffer> <S-F8> <ESC>:make clean<CR>
 
-nnoremap <buffer> <F12> :source ~/.vim/template/c.vim<CR>gg^
+nnoremap <buffer> <F10> :read ~/.vim/template/SDL2.vim<CR>gg^
+nnoremap <buffer> <F11> :read ~/.vim/template/x11.vim<CR>gg^
+nnoremap <buffer> <F12> :read ~/.vim/template/c.vim<CR>gg^
+
+command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
+command! -buffer Temx11 :read ~/.vim/template/x11.vim
+command! -buffer Tem :read ~/.vim/template/c.vim
 
 " stdio.h
-iabbrev <buffer> fgetc fgetc(FILE); /* int */<ESC>:normal 0(<CR>
+iabbrev <buffer> fgetc fgetc(FILE); /* int */<ESC>:normal 0f(<CR>
 iabbrev <buffer> fopen fopen("filename","r"); /* FILE* */<ESC>:normal 0f(<CR>
 iabbrev <buffer> fread fread(buffer,size,n,FILE); / *size_t */<ESC>:normal 0f(<CR>
 iabbrev <buffer> fwrite fwrite(buffer,size,n,FILE); / *size_t */<ESC>:normal 0f(<CR>
@@ -1864,9 +1867,9 @@ iabbrev <buffer> SDL_wcslcpy SDL_wcslcpy(SDL_OUT_Z_CAP(maxlen) wchar_t *dst,cons
 iabbrev <buffer> SDL_wcslen SDL_wcslen(const wchar_t *wstr); /* size_t  */<ESC>:normal 0f(<CR>
 iabbrev <buffer> SDL_wcsncmp SDL_wcsncmp(const wchar_t *str1,const wchar_t *str2,size_t maxlen); /* int  */<ESC>:normal 0f(<CR>
 iabbrev <buffer> SDL_wcsstr SDL_wcsstr(const wchar_t *haystack,const wchar_t *needle); /* wchar_t * */<ESC>:normal 0f(<CR>
-iabbrev <buffer> TTF_ByteSwappedUNICODE TTF_ByteSwappedUNICODE(int swapped); /* void  */<ESC>:normal 0f(<CR>
 
 " TTF SDL_TTF sdl_ttf sdlttf
+iabbrev <buffer> TTF_ByteSwappedUNICODE TTF_ByteSwappedUNICODE(int swapped); /* void  */<ESC>:normal 0f(<CR>
 iabbrev <buffer> TTF_CloseFont TTF_CloseFont(TTF_Font *font); /* void  */<ESC>:normal 0f(<CR>
 iabbrev <buffer> TTF_FontAscent TTF_FontAscent(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
 iabbrev <buffer> TTF_FontDescent TTF_FontDescent(const TTF_Font *font); /* int  */<ESC>:normal 0f(<CR>
