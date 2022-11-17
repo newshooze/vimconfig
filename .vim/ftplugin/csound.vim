@@ -9,8 +9,6 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-set tags=~/.vim/doc/tags
-set helpfile=~/.vim/doc/csound.txt
 set dict=~/.vim/ftplugin/csound.vim
 set complete+=k
 set hidden
@@ -18,7 +16,8 @@ let maplocalleader = ","
 
 " Opens Help window for word at cursor
 " <C-r><C-W> pastes the word under cursor into command line
-nnoremap <buffer> <S-K> :help <C-r><C-W><CR>0
+nnoremap <buffer> <S-K> :help <C-r><C-W><CR>
+nnoremap <buffer> <C-k> :!man <C-r><C-W><CR> 
 
 inoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
