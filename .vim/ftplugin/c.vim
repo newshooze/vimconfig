@@ -4,22 +4,18 @@ endif
 
 set errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GInfile included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory `%f',%X%*\a[%*\d]: Leaving directory `%f',%D%*\a: Entering directory `%f',%X%*\a: Leaving directory `%f',%DMaking %*\a in %f,%f|%l| %m
 
-setlocal dict=~/.vim/ftplugin/c.vim
-setlocal complete+=k
-setlocal tags+=~/.vim/doc/c/Xlib/tags
-setlocal tags+=~/.vim/doc/c/SDL2/tags
+set dict=~/.vim/ftplugin/c.vim
+set complete+=k
 
 let maplocalleader = ","
-
 map <buffer> ( <Nop>
 map <buffer> ) <Nop>
 
 nnoremap <buffer> <localleader>c :edit ~/.vim/ftplugin/c.vim<CR>
 nnoremap <buffer> <localleader>x :edit /usr/include/X11/Xlib.h<CR>
 
-nnoremap <buffer> <S-K> :tag <C-R><C-W><CR> 
-nnoremap <buffer> <C-K> :!man <C-R><C-W><CR> 
-
+nnoremap <buffer> <S-K> :help <C-r><C-W><CR>
+nnoremap <buffer> <C-k> :!man <C-r><C-W><CR> 
 nnoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/c.vim<CR>
 
 nnoremap <buffer> <F4> <ESC>:e %:r.h<CR>
