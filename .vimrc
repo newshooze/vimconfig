@@ -4,7 +4,7 @@ nnoremap <S-Y> :bnext<CR>
 
 " Open the Quickfix List
 " <ESC> is mapped in filetype 'qf' (quickfix) to close
-nnoremap Q :copen<CR>
+nnoremap silent Q :copen<CR>:echo <CR>
 
 " default leader key is "\"
 " edit .vimrc with \v
