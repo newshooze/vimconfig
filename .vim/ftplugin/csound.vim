@@ -2,7 +2,7 @@
 " Language:	   csound file 
 " Maintainer:	   vinny 
 " URL:		    
-" Latest Revision:  2022-11-17
+" Latest Revision:  2011-12-23
 
 " Only do this when not done yet for this buffer
 if exists("b:did_ftplugin")
@@ -14,18 +14,21 @@ set complete+=k
 set hidden
 let maplocalleader = ","
 
-" Opens Help window for word at cursor
-" <C-r><C-W> pastes the word under cursor into command line
-nnoremap <buffer> <S-K> :help <C-r><C-W><CR>
-nnoremap <buffer> <C-k> :!man <C-r><C-W><CR> 
+" Shift k for help at cursor (:view used for read only)
+nnoremap <buffer> <S-K> :silent! :view +/[*]<C-R><C-W>[*] ~/.vim/doc/csound/csound.txt<CR>:echo ''<CR>
+" Control k for man page at cursor
+nnoremap <buffer> <C-K> :!man <C-r><C-W><CR> 
 
 inoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
+nnoremap <buffer> <LocalLeader>e :e ~/.vim/ftplugin/csound.vim<CR>
 nnoremap <buffer> <LocalLeader>b :<C-U>InsertScoreBlock<CR>
+" Align score columns
 nnoremap <buffer> <LocalLeader>f :<C-U>AlignColumns<CR>
+" Align score columns for visual selection
 vnoremap <buffer> <LocalLeader>f :<C-U>'<,'>AlignColumns<CR>
 nnoremap <buffer> <LocalLeader>i :<C-U>InsertScoreBlock<CR>
 nnoremap <buffer> <LocalLeader>t :<C-U>AddColumnValue 3 1<CR>
