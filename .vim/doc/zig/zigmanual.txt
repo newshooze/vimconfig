@@ -75,7 +75,7 @@
 |switch|
   |Exhaustive-Switching|
   |Switching-with-Enum-Literals|
-  |Inline-switch|
+  |Inline-Switch|
 |while|
   |Labeled-while|
   |while-with-Optionals|
@@ -746,7 +746,7 @@ See also: |Integers| |Floats| |void| |Errors| |@Type|
 See also: |Optional| |undefined|
 
 ==============================================================================
-                                                      *String-Literals-and-Unicode-Point-Literals*
+                                                      *String-Literals-and-Unicode-Code-Point-Literals*
 
 String literals are constant single-item Pointers to null-terminated byte arrays.
 The type of string literals encodes both the length, and the fact that they
@@ -1421,21 +1421,21 @@ Container level variables may be declared inside a struct, union, or enum:
       S.x += 1;
       return S.x;
   }
-  >
+<
   
   Shell
   $ zig test namespaced_container_level_variable.zig
   1/1 test.namespaced container level variable... OK
   All 1 tests passed.
   
-  ==============================================================================
-                                                        *Static-Local-Variables*
-  
-  It is also possible to have local variables with static lifetime by
-  using containers inside functions.
+==============================================================================
+                                                      *Static-Local-Variables*
+
+It is also possible to have local variables with static lifetime by
+using containers inside functions.
   
   static_local_variable.zig
-  >
+>
   const std = @import("std");
   const expect = std.testing.expect;
   
@@ -1544,7 +1544,7 @@ $ zig test comptime_vars.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Integer-Literals*
+               *Integers*                            *Integer-Literals*
 
 integer_literals.zig
 >
@@ -1687,7 +1687,7 @@ strict = 9.765625e-04
 See also: |@setFloatMode||Division-by-Zero|
 
 ==============================================================================
-                                                      *Operators*
+                                                      *Operators* *Table-of-Operators*               
 
 ┌───────────────┬─────────────────┬──────────────────────────┬─────────────────────────────────────────────────────────────────────┐
 │     Syntax    │  Revelant Types │    Description           │        Example                                                      │
@@ -6437,74 +6437,74 @@ test.zig
   fn bang2() void {
       @panic("PermissionDenied");
   }
-  >
-  
-  Shell
-  $ zig build-exe test.zig
-  
-  $ ./test
-  thread 1637184 panic: PermissionDenied
-  docgen_tmp/test.zig:38:5: 0x22f3c5 in bang2 (test)
-      @panic("PermissionDenied");
-      ^
-  docgen_tmp/test.zig:30:10: 0x23a558 in hello (test)
-      bang2();
-           ^
-  docgen_tmp/test.zig:17:14: 0x22f39a in bar (test)
-          hello();
-               ^
-  docgen_tmp/test.zig:7:12: 0x21199d in foo (test)
-          bar();
-             ^
-  docgen_tmp/test.zig:2:8: 0x21001d in main (test)
-      foo(12);
+<
+
+Shell
+$ zig build-exe test.zig
+
+$ ./test
+thread 1637184 panic: PermissionDenied
+docgen_tmp/test.zig:38:5: 0x22f3c5 in bang2 (test)
+    @panic("PermissionDenied");
+    ^
+docgen_tmp/test.zig:30:10: 0x23a558 in hello (test)
+    bang2();
          ^
-  /home/andy/tmp/zig/lib/std/start.zig:596:22: 0x20f6db in posixCallMainAndExit (test)
-              root.main();
-                       ^
-  /home/andy/tmp/zig/lib/std/start.zig:368:5: 0x20f1a1 in _start (test)
-      @call(.{ .modifier = .never_inline }, posixCallMainAndExit, .{});
-      ^
-  (process terminated by signal)
-  
-  Here, the stack trace does not explain how the control flow in bar got
-  to the hello() call. One would have to open a debugger or further
-  instrument the application in order to find out. The error return trace,
-  on the other hand, shows exactly how the error bubbled up.
-  
-  This debugging feature makes it easier to iterate quickly on code that
-  robustly handles all error conditions. This means that Zig developers
-  will naturally find themselves writing correct, robust code in order
-  to increase their development pace.
-  
-  Error Return Traces are enabled by default in Debug and ReleaseSafe
-  builds and disabled by default in ReleaseFast and ReleaseSmall builds.
-  
-  There are a few ways to activate this error return tracing feature:
-    Return an error from main
-    An error makes its way to catch unreachable and you have
-    not overridden the default panic handler
-    Use errorReturnTrace to access the current return trace.
-    You can use std.debug.dumpStackTrace to print it.
-    This function returns comptime-known null when building
-    without error return tracing support.
-  
-  ==============================================================================
-                                                        *Implementation-Details*
-  
-  To analyze performance cost, there are two cases:
-  
-    when no errors are returned
-    when returning errors
-  
-  For the case when no errors are returned, the cost is a single
-  memory write operation, only in the first non-failable function
-  in the call graph that calls a failable function, i.e. when a
-  function returning void calls a function returning error.
-  This is to initialize this struct in the stack memory:
-  
-  stack_trace_struct.zig
-  >
+docgen_tmp/test.zig:17:14: 0x22f39a in bar (test)
+        hello();
+             ^
+docgen_tmp/test.zig:7:12: 0x21199d in foo (test)
+        bar();
+           ^
+docgen_tmp/test.zig:2:8: 0x21001d in main (test)
+    foo(12);
+       ^
+/home/andy/tmp/zig/lib/std/start.zig:596:22: 0x20f6db in posixCallMainAndExit (test)
+            root.main();
+                     ^
+/home/andy/tmp/zig/lib/std/start.zig:368:5: 0x20f1a1 in _start (test)
+    @call(.{ .modifier = .never_inline }, posixCallMainAndExit, .{});
+    ^
+(process terminated by signal)
+
+Here, the stack trace does not explain how the control flow in bar got
+to the hello() call. One would have to open a debugger or further
+instrument the application in order to find out. The error return trace,
+on the other hand, shows exactly how the error bubbled up.
+
+This debugging feature makes it easier to iterate quickly on code that
+robustly handles all error conditions. This means that Zig developers
+will naturally find themselves writing correct, robust code in order
+to increase their development pace.
+
+Error Return Traces are enabled by default in Debug and ReleaseSafe
+builds and disabled by default in ReleaseFast and ReleaseSmall builds.
+
+There are a few ways to activate this error return tracing feature:
+  Return an error from main
+  An error makes its way to catch unreachable and you have
+  not overridden the default panic handler
+  Use errorReturnTrace to access the current return trace.
+  You can use std.debug.dumpStackTrace to print it.
+  This function returns comptime-known null when building
+  without error return tracing support.
+
+==============================================================================
+                                                      *Implementation-Details*
+
+To analyze performance cost, there are two cases:
+
+  1) when no errors are returned
+  2) when returning errors
+
+For the case when no errors are returned, the cost is a single
+memory write operation, only in the first non-failable function
+in the call graph that calls a failable function, i.e. when a
+function returning void calls a function returning error.
+This is to initialize this struct in the stack memory:
+
+stack_trace_struct.zig
+>
   pub const StackTrace = struct {
       index: usize,
       instruction_addresses: [N]usize,
@@ -6653,7 +6653,7 @@ as arguments can be annotated with the "nonnull" attribute
 make better decisions knowing that pointer arguments cannot be null.
 
 ==============================================================================
-*Optional-Type*
+                                                      *Optional-Type*
 
 An optional is created by putting ? in front of a type. You can
 use compile-time reflection to access the child type of an optional:
@@ -7905,6 +7905,7 @@ Shell
 $ zig test N_primes.zig
 1/1 test.variable values... OK
 All 1 tests passed.
+
 When we compile this program, Zig generates the constants with the answer
 pre-computed. Here are the lines from the generated LLVM IR:
 
@@ -7915,7 +7916,7 @@ functions. For example, we could call the sum function as is with a slice of
 numbers whose length and values were only known at run-time.
 
 ==============================================================================
-                                                      *Generic-Data-Structurs*
+                                                      *Generic-Data-Structures*
 
 Zig uses these capabilities to implement generic data structures without
 introducing any special-case syntax. If you followed along so far, you may
@@ -8320,7 +8321,7 @@ before 1.0.0 is released, with a conclusive statement about the status
 of AT&T vs Intel/NASM syntax.
 
 ==============================================================================
-*Output-Constraints*
+                                                      *Output-Constraints*
 
 Output constraints are still considered to be unstable in Zig, and so LLVM
 documentation and GCC documentation must be used to understand the semantics.
@@ -9414,17 +9415,20 @@ See also: |@divTrunc| |@divFloor|
 ==============================================================================
                                                       *divFloor* *@divFloor*
 
-@divExact(numerator: T, denominator: T) T
+@divFloor(numerator: T, denominator: T) T
 
-Exact division. Caller guarantees denominator != 0 and
-@divTrunc(numerator, denominator) * denominator == numerator.
+Floored division. Rounds toward negative infinity.  For unsigned integers
+it is the same as numerator / denominator.  Caller guarantees
+denominator != 0 and !(@typeInfo(T) == .Int and T.is_signed and
+numerator == std.math.minInt(T) and denominator == -1).
 
-@divExact(6, 3) == 2
-@divExact(a, b) * b == a
+@divFloor(-5, 3) == -2
+(@divFloor(a, b) * b) + @mod(a, b) == a
 
-For a function that returns a possible error code, use @import("std").math.divExact.
+For a function that returns a possible error code,
+use @import("std").math.divFloor.
 
-See also: |@divTrunc| |@divFloor|
+See also: |@divTrunc||@divExact|
 
 ==============================================================================
                                                       *divTrunc* *@divTrunc*
