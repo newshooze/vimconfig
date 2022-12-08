@@ -328,7 +328,7 @@
   |Zen|
 
 ==============================================================================
-                                                      *Introduction* 
+                                       *Introduction* 
 
 Zig is a general-purpose programming language and toolchain for maintaining
  robust, optimal, and reusable software.
@@ -352,7 +352,7 @@ The code samples in this document are compiled and tested as part
 of the main test suite of Zig.
 
 ==============================================================================
-                                                      *Zig-Standard-Library*
+                                       *Zig-Standard-Library*
 
 The Zig Standard Library has its own documentation.
 
@@ -361,7 +361,7 @@ and definitions to help you build programs or libraries. You will see many
 examples of Zig's Standard Library used in this documentation.
 
 ==============================================================================
-                                                      *Hello-World*
+                                       *Hello-World*
 
 hello.zig
 >
@@ -487,7 +487,7 @@ Note that you can leave off the ! from the return type because
 std.debug.print cannot fail
 
 ==============================================================================
-                                                      *Comments* 
+                                       *Comments* 
 comments.zig
 >
   const print = @import("std").debug.print;
@@ -511,7 +511,7 @@ This helps allow Zig to have the property that each line of code
 can be tokenized out of context.
 
 ==============================================================================
-                                                      *Doc-comments* 
+                                       *Doc-comments* 
 
 A doc comment is one that begins with exactly three slashes
 (i.e. /// but not ////); multiple doc comments in a row are merged
@@ -544,7 +544,7 @@ it will become a compile error to have a doc comment in an unexpected place,
 such as in the middle of an expression, or just before a non-doc comment.
 
 ==============================================================================
-                                                      *Top-Level-Doc-Comments* 
+                                       *Top-Level-Doc-Comments* 
 
 User documentation that doesn't belong to whatever immediately follows it,
 like container-level documentation, goes in top-level doc comments. A top-level
@@ -558,7 +558,7 @@ tldoc_comments.zig
 <
 
 ==============================================================================
-                                                      *Values* 
+                                       *Values* 
 values.zig
 >
   // Top-level declarations are order-independent:
@@ -645,7 +645,7 @@ type: anyerror!i32
 value: 1234
 
 ==============================================================================
-                                                      *Primitive-Types*
+                                       *Primitive-Types*
 
 ┌─────────────────┬────────────────────┬─────────────────────────────────────┐
 │     Type        │  C Equivalent      │         Description                 │
@@ -731,7 +731,7 @@ The maximum allowed bit-width of an integer type is 65535.
 See also: |Integers| |Floats| |void| |Errors| |@Type|
 
 ==============================================================================
-                                                      *Primitive-Values*
+                                       *Primitive-Values*
 
 ┌─────────────────┬─────────────────────────────────────┐
 │      Name       │           Description               │
@@ -746,7 +746,7 @@ See also: |Integers| |Floats| |void| |Errors| |@Type|
 See also: |Optional| |undefined|
 
 ==============================================================================
-                                                      *String-Literals-and-Unicode-Code-Point-Literals*
+                                       *String-Literals-and-Unicode-Code-Point-Literals*
 
 String literals are constant single-item Pointers to null-terminated byte arrays.
 The type of string literals encodes both the length, and the fact that they
@@ -807,7 +807,7 @@ true
 See also: |Arrays| |Source Encoding|
 
 ==============================================================================
-                                                      *Escape-Sequences*
+                                       *Escape-Sequences*
 
 ┌───────────────┬──────────────────────────────────────────────────────────────┐
 │Escape Sequence│                        Name                                  │
@@ -832,7 +832,7 @@ See also: |Arrays| |Source Encoding|
 Note that the maximum valid Unicode point is 0x10ffff.
 
 ==============================================================================
-                                                      *Multiline-String-Literals* 
+                                       *Multiline-String-Literals* 
 
 Multiline string literals have no escapes and can span across multiple lines.
 To start a multiline string literal, use the \\ token. Just like a comment,
@@ -854,7 +854,7 @@ multiline_string_literals.zig
 See also: |@embedFile|
 
 ==============================================================================
-                                                      *Assignment* 
+                                       *Assignment* 
 
 Use the const keyword to assign a value to an identifier:
 
@@ -927,7 +927,7 @@ docgen_tmp/var_must_be_initialized.zig:2:5: error: variables must be initialized
     ^~~~~~~~~~
 
 ==============================================================================
-                                                      *undefined* 
+                                       *undefined* 
 
 Use undefined to leave variables uninitialized:
 
@@ -958,7 +958,7 @@ However, this behavior is only an implementation feature, not a language
 semantic, so it is not guaranteed to be observable to code.
 
 ==============================================================================
-                                                      *Zig-Test*
+                                       *Zig-Test*
 
 Code written within one or more test declarations can be used to
 ensure behavior meets expectations:
@@ -1014,7 +1014,7 @@ All 1 tests passed.
   This line indicates the total number of tests that have passed.
 
 ==============================================================================
-                                                      *Test-Declarations* 
+                                       *Test-Declarations* 
 
 Test declarations contain the keyword test, followed by an optional name
 written as a string literal, followed by a block containing any valid Zig
@@ -1035,7 +1035,7 @@ or after the code under test.
 See also: |The-Global-Error-Set| |Grammar|
 
 ==============================================================================
-                                                      *Nested-Container-Tests* 
+                                       *Nested-Container-Tests* 
 
 When the zig test tool is building a test runner, only resolved test
 declarations are included in the build. Initially, only the given Zig
@@ -1114,7 +1114,7 @@ $ zig test testdecl_container_top_level.zig
 All 4 tests passed.
 
 ==============================================================================
-                                                      *Test-Failure* 
+                                       *Test-Failure* 
 
 The default test runner checks for an error returned from a test.
 When a test returns an error, the test is considered a failure and its
@@ -1149,7 +1149,7 @@ error: the following test command failed with exit code 1:
 /home/andy/tmp/zig/zig-cache/o/c8cfbb273b267e28462c38d7de2721ed/test
 
 ==============================================================================
-                                                      *Skip-Tests* 
+                                       *Skip-Tests* 
 
 One way to skip tests is to filter them out by using the zig test
 command line parameter --test-filter [text]. This makes the test
@@ -1203,7 +1203,7 @@ In the code sample above, the test would not be skipped in blocking IO
 mode if the nosuspend keyword was used (see |Async-and-Await|).
 
 ==============================================================================
-                                                      *Report-Memory-Leaks*
+                                       *Report-Memory-Leaks*
 
 When code allocates Memory using the Zig Standard Library's testing allocator,
 std.testing.allocator, the default test runner will report any leaks that
@@ -1260,7 +1260,7 @@ error: the following test command failed with exit code 1:
 See also: |defer| |Memory|
 
 ==============================================================================
-                                                      *Detecting-Test-Build* 
+                                       *Detecting-Test-Build* 
 
 Use the compile variable @import("builtin").is_test to detect a test build:
 
@@ -1284,13 +1284,13 @@ $ zig test detect_test.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Test-Output-and-Logging* 
+                                       *Test-Output-and-Logging* 
 
 The default test runner and the Zig Standard Library's testing namespace
 output messages to standard error.
 
 ==============================================================================
-                                                      *The-Testing-Namespace* 
+                                       *The-Testing-Namespace* 
 
 The Zig Standard Library's testing namespace contains useful functions to
 help you create tests. In addition to the expect function, this document
@@ -1330,13 +1330,13 @@ strings, and more. See the rest of the std.testing namespace in the
 Zig Standard Library for more available functions.
 
 ==============================================================================
-                                                      *Test-Tool-Documentation* 
+                                       *Test-Tool-Documentation* 
 
 zig test has a few command line parameters which affect the compilation.
 See zig test --help for a full list.
 
 ==============================================================================
-                                                      *Variables*
+                                       *Variables*
 
 A variable is a unit of Memory storage.
 
@@ -1345,7 +1345,7 @@ a variable. This causes less work for both humans and computers to do
 when reading code, and creates more optimization opportunities.
 
 ==============================================================================
-                                                      *Identifiers*
+                                       *Identifiers*
 
 Variable identifiers are never allowed to shadow identifiers from an outer scope.
 
@@ -1373,7 +1373,7 @@ test.zig
 <
 
 ==============================================================================
-                                                      *Container-Level-Variables*
+                                       *Container-Level-Variables*
 
 Container level variables have static lifetime and are order-independent
 and lazily analyzed. The initialization value of container level variables
@@ -1402,9 +1402,10 @@ Shell
 $ zig test container_level_variables.zig
 1/1 test.container level variables... OK
 All 1 tests passed.
+
 Container level variables may be declared inside a struct, union, or enum:
+namespaced_container_level_variable.zig
 >
-  namespaced_container_level_variable.zig
   const std = @import("std");
   const expect = std.testing.expect;
   
@@ -1423,13 +1424,13 @@ Container level variables may be declared inside a struct, union, or enum:
   }
 <
   
-  Shell
-  $ zig test namespaced_container_level_variable.zig
-  1/1 test.namespaced container level variable... OK
-  All 1 tests passed.
+Shell
+$ zig test namespaced_container_level_variable.zig
+1/1 test.namespaced container level variable... OK
+All 1 tests passed.
   
 ==============================================================================
-                                                      *Static-Local-Variables*
+                                       *Static-Local-Variables*
 
 It is also possible to have local variables with static lifetime by
 using containers inside functions.
@@ -1457,6 +1458,7 @@ Shell
 $ zig test static_local_variable.zig
 1/1 test.static local variable... OK
 All 1 tests passed.
+
 The extern keyword or @extern builtin function can be used to link against
 a variable that is exported from another object. The export keyword or @export
 builtin function can be used to make a variable available to other objects at
@@ -1465,7 +1467,7 @@ link time. In both cases, the type of the variable must be C ABI compatible.
 See also: |Exporting-a-C-Library|
 
 ==============================================================================
-                                                      *Thread-Local-Variables*
+                                       *Thread-Local-Variables*
 
 A variable may be specified to be a thread-local variable using
 the threadlocal keyword:
@@ -1496,13 +1498,14 @@ Shell
 $ zig test tls.zig
 1/1 test.thread local storage... OK
 All 1 tests passed.
+
 For Single Threaded Builds, all thread local variables are treated as
 regular Container Level Variables.
 
 Thread local variables may not be const.
 
 ==============================================================================
-                                                      *Local-Variables*
+                                       *Local-Variables*
 
 Local variables occur inside Functions, comptime blocks, and @cImport blocks.
 
@@ -1562,7 +1565,7 @@ integer_literals.zig
 <
 
 ==============================================================================
-                                                      *Runtime-Integer-Values*
+                                       *Runtime-Integer-Values*
 
 Integer literals have no size limitation, and if any undefined behavior occurs,
 the compiler catches it.
@@ -1593,7 +1596,7 @@ For signed integer types, Zig uses a two's complement representation.
 See also: |Wrapping-Operations|
 
 ==============================================================================
-                                                      *Floats*
+                                       *Floats*
 
 Zig has the following floating point types:
 
@@ -1605,7 +1608,7 @@ f128 - IEEE-754-2008 binary128
 c_longdouble - matches long double for the target C ABI
 
 ==============================================================================
-                                                      *Float-Literals*
+                                       *Float-Literals*
 
 Float literals have type comptime_float which is guaranteed to have the same
 precision and operations of the largest other floating point type, which is f128.
@@ -1638,7 +1641,7 @@ float_literals.zig
 <
 
 ==============================================================================
-                                                      *Floating-Point-Operations*
+                                       *Floating-Point-Operations*
 
 By default floating point operations use Strict mode, but you can switch
 to Optimized mode on a per-block basis:
@@ -1687,7 +1690,7 @@ strict = 9.765625e-04
 See also: |@setFloatMode||Division-by-Zero|
 
 ==============================================================================
-                                                      *Operators* *Table-of-Operators*               
+                                       *Operators* *Table-of-Operators*               
 
 ┌───────────────┬─────────────────┬──────────────────────────┬─────────────────────────────────────────────────────────────────────┐
 │     Syntax    │  Revelant Types │    Description           │        Example                                                      │
@@ -1982,7 +1985,7 @@ See also: |@setFloatMode||Division-by-Zero|
 └───────────────┴─────────────────┴──────────────────────────┴─────────────────────────────────────────────────────────────────────┘
 
 ==============================================================================
-                                                      *Precedence*
+                                       *Precedence*
 
 x() x[] x.y x.* x.?
 a!b
@@ -1998,7 +2001,7 @@ or
 = *= *%= *|= /= %= += +%= +|= -= -%= -|= <<= <<|= >>= &= ^= |=
 
 ==============================================================================
-                                                      *Arrays*
+                                       *Arrays*
 
 arrays.zig
 >
@@ -2119,7 +2122,7 @@ See also:
 |for| |Slices|
 
 ==============================================================================
-                                                      *Anonymous-List-Literals*
+                                       *Anonymous-List-Literals*
 
 Similar to Enum Literals and Anonymous Struct Literals the type
 can be omitted from array literals:
@@ -2170,7 +2173,7 @@ $ zig test infer_list_literal.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Multidimensional-Arrays*
+                                       *Multidimensional-Arrays*
 
 Multidimensional arrays can be created by nesting arrays:
 
@@ -2206,7 +2209,7 @@ $ zig test multidimensional.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Sentinel-Terminated-Arrays*
+                                       *Sentinel-Terminated-Arrays*
 
 The syntax [N:x]T describes an array which has a sentinel element of value x at the index corresponding to len.
 
@@ -2231,7 +2234,7 @@ All 1 tests passed.
 See also: |Sentinel-Terminated Pointers| |Sentinel-Terminated Slices|
 
 ==============================================================================
-                                                      *Vectors*
+                                       *Vectors*
 
 A vector is a group of booleans, Integers, Floats, or Pointers which are
 operated on in parallel, using SIMD instructions if possible.
@@ -2316,7 +2319,7 @@ TODO consider suggesting std.MultiArrayList
 See also: |@splat| |@shuffle| |@select| |@reduce|
 
 ==============================================================================
-                                                      *Pointers*
+                                       *Pointers*
 
 Zig has two kinds of pointers: single-item and many-item.
 
@@ -2509,7 +2512,7 @@ All 1 tests passed.
 See also: |Optional-Pointers| |@intToPtr| |@ptrToInt| |C Pointers|
 
 ==============================================================================
-                                                      *volatile*
+                                       *volatile*
 
 Loads and stores are assumed to not have side effects. If a given load or
 store should have side effects, such as Memory Mapped Input/Output (MMIO),
@@ -2570,7 +2573,7 @@ $ zig test pointer_casting.zig
 All 2 tests passed.
 
 ==============================================================================
-                                                      *Alignment*
+                                       *Alignment*
 
 Each type has an alignment - a number of bytes such that, when a value of the
 type is loaded from or stored to memory, the memory address must be evenly
@@ -2686,7 +2689,7 @@ error: the following test command crashed:
 /home/andy/tmp/zig/zig-cache/o/c8cfbb273b267e28462c38d7de2721ed/test
 
 ==============================================================================
-                                                      *allowzero*
+                                       *allowzero*
 
 This pointer attribute allows a pointer to have address zero.
 This is only ever needed on the freestanding OS target, where the address
@@ -2713,7 +2716,7 @@ $ zig test allowzero.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Sentinel-Terminated-Pointers*
+                                       *Sentinel-Terminated-Pointers*
 
 The syntax [*:x]T describes a pointer that has a length determined by a
 sentinel value. This provides protection against buffer overflow and overreads.
@@ -2748,7 +2751,7 @@ referenced by:
 See also: |Sentinel-Terminated-Slices| |Sentinel-Terminated-Arrays|
 
 ==============================================================================
-                                                      *Slices*
+                                       *Slices*
 
 test.zig
 >
@@ -2865,7 +2868,7 @@ All 2 tests passed.
 See also: |Pointers| |for| |Arrays|
 
 ==============================================================================
-                                                      *Sentinel-Terminated-Slices*
+                                       *Sentinel-Terminated-Slices*
 
 The syntax [:x]T is a slice which has a runtime known length and also
 guarantees a sentinel value at the element indexed by the length.
@@ -2955,7 +2958,7 @@ error: the following test command crashed:
 See also: |Sentinel-Terminated-Pointers| |Sentinel-Terminated-Arrays|
 
 ==============================================================================
-                                                      *struct*
+                                       *struct*
 
 structs.zig
 // Declare a struct.
@@ -3108,7 +3111,7 @@ $ zig test structs.zig
 All 4 tests passed.
 
 ==============================================================================
-                                                      *Default-Field-Values*
+                                       *Default-Field-Values*
 
 Each struct field may have an expression indicating the default field value.
 Such expressions are executed at comptime, and allow the field to be omitted
@@ -3137,7 +3140,7 @@ $ zig test default_field_values.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *extern-struct*
+                                       *extern-struct*
 
 An extern struct has in-memory layout guaranteed to match the C ABI for the target.
 
@@ -3147,7 +3150,7 @@ Every other use case should be solved with packed struct or normal struct.
 See also: |extern-union| |extern-enum|
 
 ==============================================================================
-                                                      *packed-struct*
+                                       *packed-struct*
 
 Unlike normal structs, packed structs have guaranteed in-memory layout:
 
@@ -3398,7 +3401,7 @@ with MMIO (the use case for volatile packed structs) once this issue is resolved
 Don't worry, there will be a good solution for this use case in zig.
 
 ==============================================================================
-                                                      *Struct-Naming*
+                                       *Struct-Naming*
 
 Since all structs are anonymous, Zig infers the type name based on a few rules.
 
@@ -3437,7 +3440,7 @@ anonymous: struct_name.main__struct_3881
 function: struct_name.List(i32)
 
 ==============================================================================
-                                                      *Anonymous-Struct-Literals*
+                                       *Anonymous-Struct-Literals*
 
 Zig allows omitting the struct type of a literal. When the result is coerced,
 the struct literal will directly instantiate the result location, with no copy:
@@ -3535,7 +3538,7 @@ All 1 tests passed.
 See also: |comptime| |@fieldParentPtr|
 
 ==============================================================================
-                                                      *enum*
+                                       *enum*
 
 enums.zig
 >
@@ -3650,7 +3653,7 @@ All 7 tests passed.
 See also: |@typeInfo| |@tagName| |@sizeOf|
 
 ==============================================================================
-                                                      *extern-enum*
+                                       *extern-enum*
 
 By default, enums are not guaranteed to be compatible with the C ABI:
 
@@ -3684,7 +3687,7 @@ Shell
 $ zig build-obj test.zig
 
 ==============================================================================
-                                                      *Enum-Literals*
+                                       *Enum-Literals*
 
 Enum literals allow specifying the name of an enum
 field without specifying the enum type:
@@ -3724,7 +3727,7 @@ $ zig test test_enum_literals.zig
 All 2 tests passed.
 
 ==============================================================================
-                                                      *Non-exhaustive-enum*
+                                       *Non-exhaustive-enum*
 
 A Non-exhaustive enum can be created by adding a trailing '_' field.
 It must specify a tag type and cannot consume every enumeration value.
@@ -3771,7 +3774,7 @@ $ zig test test_switch_non-exhaustive.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *union*
+                                       *union*
 
 A bare union defines a set of possible types that a value can be as a
 list of fields. Only one field can be active at a time. The in-memory
@@ -3840,7 +3843,7 @@ To initialize a union when the tag is a comptime-known name,
 see |@unionInit|
 
 ==============================================================================
-                                                      *Tagged-union*
+                                       *Tagged-union*
 
 Unions can be declared with an enum tag type. This turns the union into a
 tagged union, which makes it eligible to use with switch expressions.
@@ -3984,20 +3987,20 @@ $ zig test test_tagName.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *extern-union*
+                                       *extern-union*
 
 An extern union has memory layout guaranteed to be compatible with the target C ABI.
 
 See also: |extern-struct|
 
 ==============================================================================
-                                                      *packed-union*
+                                       *packed-union*
 
 A packed union has well-defined in-memory layout and is
 eligible to be in a |packed-struct|.
 
 ==============================================================================
-                                                      *Anonymous-Union-Literals*
+                                       *Anonymous-Union-Literals*
 
 Anonymous Struct Literals syntax can be used to initialize
 unions without specifying the type:
@@ -4030,7 +4033,7 @@ $ zig test anon_union.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *opaque*
+                                       *opaque*
 
 opaque {} declares a new type with an unknown (but non-zero) size and alignment.
 It can contain declarations the same as structs, unions, and enums.
@@ -4070,7 +4073,7 @@ referenced by:
     remaining reference traces hidden; use '-freference-trace' to see all reference traces
 
 ==============================================================================
-                                                      *Blocks*
+                                       *Blocks*
 
 Blocks are used to limit the scope of variable declarations:
 
@@ -4120,7 +4123,7 @@ Here, blk can be any name.
 See also: |Labeled-while| |Labeled-for|
 
 ==============================================================================
-                                                      *Shadowing*
+                                       *Shadowing*
 
 Identifiers are never allowed to "hide" other identifiers by using the same name:
 
@@ -4169,7 +4172,7 @@ $ zig test test_scopes.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Empty-Blocks*
+                                       *Empty-Blocks*
 
 An empty block is equivalent to void{}:
 
@@ -4193,7 +4196,7 @@ $ zig test empty_block.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *switch*
+                                       *switch*
 
 switch.zig
 >
@@ -4319,7 +4322,7 @@ All 1 tests passed.
 See also: |comptime| |enum| |@compileError| |Compile Variables|
 
 ==============================================================================
-                                                      *Exhaustive-Switching*
+                                       *Exhaustive-Switching*
 
 When a switch expression does not have an else clause, it must exhaustively
 list all the possible values. Failure to do so is a compile error:
@@ -4354,7 +4357,7 @@ const Color = enum {
               ^~~~
 
 ==============================================================================
-                                                      *Switching-with-Enum-Literals*
+                                       *Switching-with-Enum-Literals*
 
 Enum Literals can be useful to use with switch to avoid repetitively specifying enum or union types:
 
@@ -4386,7 +4389,7 @@ $ zig test test_exhaustive_switch.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Inline-Switch*
+                                       *Inline-Switch*
 
 Switch prongs can be marked as inline to generate the
 prong's body for eachpossible value it could have:
@@ -4529,7 +4532,7 @@ All 1 tests passed.
 See also: |inline while| |inline for|
 
 ==============================================================================
-                                                      *while*
+                                       *while*
 
 A while loop is used to repeatedly execute an expression
 until some condition is no longer true.
@@ -4657,7 +4660,7 @@ $ zig test while.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Labeled-while*
+                                       *Labeled-while*
 
 When a while loop is labeled, it can be referenced
 from a break or continue from within a nested loop:
@@ -4689,7 +4692,7 @@ $ zig test test_nested_break.zig
 All 2 tests passed.
 
 ==============================================================================
-                                                      *while-with-Optionals*
+                                       *while-with-Optionals*
 
 Just like if expressions, while loops can take an optional as the
 condition and capture the payload. When null is encountered the loop exits.
@@ -4736,7 +4739,7 @@ $ zig test while.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *while-with-Error-Unions*
+                                       *while-with-Error-Unions*
 
 Just like if expressions, while loops can take an error union as the
 condition and capture the payload or the error code. When the condition
@@ -4775,7 +4778,7 @@ $ zig test while.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *inline-while*
+                                       *inline-while*
 
 While loops can be inlined. This causes the loop to be unrolled,
 which allows the code to do some things which only work at compile time,
@@ -4818,7 +4821,7 @@ It is recommended to use inline loops only for one of these reasons:
 See also: |if| |Optionals| |Errors| |comptime| |unreachable|
 
 ==============================================================================
-                                                      *for*
+                                       *for*
 
 for.zig
 >
@@ -4895,7 +4898,7 @@ $ zig test for.zig
 All 3 tests passed.
 
 ==============================================================================
-                                                      *Labeled-for*
+                                       *Labeled-for*
 
 When a for loop is labeled, it can be referenced from a
 break or continue from within a nested loop:
@@ -4936,7 +4939,7 @@ $ zig test test_nested_break.zig
 All 2 tests passed.
 
 ==============================================================================
-                                                      *inline-for*
+                                       *inline-for*
 
 For loops can be inlined. This causes the loop to be unrolled,
 which allows the code to do some things which only work at compile time,
@@ -4980,7 +4983,7 @@ It is recommended to use inline loops only for one of these reasons:
   See also: |while| |comptime| |Arrays| |Slices|
 
 ==============================================================================
-                                                      *if*
+                                       *if*
 
 if.zig
 >
@@ -5154,7 +5157,7 @@ All 5 tests passed.
 See also: |Optionals| |Errors|
 
 ==============================================================================
-                                                      *defer*
+                                       *defer*
 
 defer.zig
 >
@@ -5276,7 +5279,7 @@ All 3 tests passed.
 See also: |Errors|
 
 ==============================================================================
-                                                      *unreachable*
+                                       *unreachable*
 
 In |Debug| and |ReleaseSafe| mode unreachable emits a call
 to panic with the message reached unreachable code.
@@ -5285,7 +5288,7 @@ In |ReleaseFast| and |ReleaseSmall| mode, the optimizer uses the assumption
 that unreachable code will never be hit to perform optimizations.
 
 ==============================================================================
-                                                      *Basics*
+                                       *Basics*
 
 test_unreachable.zig
 >
@@ -5342,7 +5345,7 @@ error: the following test command crashed:
 /home/andy/tmp/zig/zig-cache/o/c8cfbb273b267e28462c38d7de2721ed/test
 
 ==============================================================================
-                                                      *At-Compile-Time*
+                                       *At-Compile-Time*
 
 test.zig
 >
@@ -5372,7 +5375,7 @@ docgen_tmp/test.zig:10:24: note: control flow is diverted here
 See also: |Zig-Test| |Build-Mode| |comptime|
 
 ==============================================================================
-                                                      *noreturn*
+                                       *noreturn*
 
 noreturn is the type of:
   break
@@ -5426,7 +5429,7 @@ Shell
 $ zig test noreturn_from_exit.zig -target x86_64-windows --test-no-exec*noreturn*
 
 ==============================================================================
-                                                      *Functions*
+                                       *Functions*
 
 functions.zig
 >
@@ -5499,7 +5502,7 @@ There is a difference between a function body and a function pointer. Function
 bodies are comptime-only types while function Pointers may be runtime-known.
 
 ==============================================================================
-                                                      *Pass-by-value-Parameters*
+                                       *Pass-by-value-Parameters*
 
 Primitive types such as Integers and Floats passed as parameters are copied,
 and then the copy is available in the function body. This is called
@@ -5542,7 +5545,7 @@ All 1 tests passed.
 For extern functions, Zig follows the C ABI for passing structs and unions by value.
 
 ==============================================================================
-                                                      *Function-Parameter-Type-Inference*
+                                       *Function-Parameter-Type-Inference*
 
 Function parameters can be declared with anytype in place of the type.
 In this case the parameter types will be inferred when the function is called.
@@ -5571,7 +5574,7 @@ $ zig test test_fn_type_inference.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Function-Reflection*
+                                       *Function-Reflection*
 
 test_fn_reflection.zig
 >
@@ -5589,10 +5592,10 @@ $ zig test test_fn_reflection.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Errors*
+                                       *Errors*
 
 ==============================================================================
-                                                      *Error-Set-Type*
+                                       *Error-Set-Type*
 
 An error set is like an enum. However, each error name across the
 entire compilation gets assigned an unsigned integer greater than 0.
@@ -5687,7 +5690,7 @@ test.zig
 This becomes useful when using Inferred Error Sets.
 
 ==============================================================================
-                                                      *The-Global-Error-Set*
+                                       *The-Global-Error-Set*
 
 |anyerror| refers to the global error set. This is the error set that
 contains all errors in the entire compilation unit. It is a superset
@@ -5703,7 +5706,7 @@ error set at compile-time is better for generated documentation and helpful
 error messages, such as forgetting a possible error value in a switch.
 
 ==============================================================================
-                                                      *Error-Union-Type*
+                                       *Error-Union-Type*
 
 An error set type and normal type can be combined with the ! binary
 operator to form an error union type. You are likely to use an error
@@ -5777,7 +5780,7 @@ trying to do. One of the following:
   You want to take a different action for each possible error.
 
 ==============================================================================
-                                                      *catch*
+                                       *catch*
 
 If you want to provide a default value, you can use the catch binary operator:
 
@@ -5796,7 +5799,7 @@ default value of 13. The type of the right hand side of the binary catch
 operator must match the unwrapped error union type, or be of type noreturn.
 
 ==============================================================================
-                                                      *try*
+                                       *try*
 Let's say you wanted to return the error if you got one,
 otherwise continue with the function logic:
 
@@ -5858,7 +5861,7 @@ handle_all_error_scenarios.zig
 <
 
 ==============================================================================
-                                                      *errdefer*
+                                       *errdefer*
 
 The other component to error handling is defer statements.
 In addition to an unconditional defer, Zig has errdefer,
@@ -5892,7 +5895,7 @@ verbosity and cognitive overhead of trying to make sure every exit path is
 covered. The deallocation code is always directly following the allocation code.
 
 ==============================================================================
-                                                      *Common-errdefer-Slip-Ups*
+                                       *Common-errdefer-Slip-Ups*
 
 It should be noted that errdefer statements only last until the end of
 the block they are written in, and therefore are not run if an error is
@@ -6216,7 +6219,7 @@ $ zig test test_error_union.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Merging-Error-Sets*
+                                       *Merging-Error-Sets*
 
 Use the || operator to merge two error sets together. The resulting error
 set contains the errors of both error sets. Doc comments from the left-hand
@@ -6265,7 +6268,7 @@ $ zig test test_merging_error_sets.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Inferred-Error-Sets*
+                                       *Inferred-Error-Sets*
 
 Because many functions in Zig return a possible error, Zig supports
 inferring the error set. To infer the error set for a function,
@@ -6316,7 +6319,7 @@ guide you toward completing the set.
 These limitations may be overcome in a future version of Zig.
 
 ==============================================================================
-                                                      *Error-Return-Traces*
+                                       *Error-Return-Traces*
 
 Error Return Traces show all the points in the code that an error was
 returned to the calling function. This makes it practical to use try
@@ -6490,7 +6493,7 @@ There are a few ways to activate this error return tracing feature:
   without error return tracing support.
 
 ==============================================================================
-                                                      *Implementation-Details*
+                                       *Implementation-Details*
 
 To analyze performance cost, there are two cases:
 
@@ -6544,7 +6547,7 @@ statement in code without error return tracing can become a jump instruction
 in code with error return tracing.
 
 ==============================================================================
-                                                      *Optionals*
+                                       *Optionals*
 
 One area that Zig provides safety without compromising
 efficiency or readability is with the optional type.
@@ -6653,7 +6656,7 @@ as arguments can be annotated with the "nonnull" attribute
 make better decisions knowing that pointer arguments cannot be null.
 
 ==============================================================================
-                                                      *Optional-Type*
+                                       *Optional-Type*
 
 An optional is created by putting ? in front of a type. You can
 use compile-time reflection to access the child type of an optional:
@@ -6680,7 +6683,7 @@ $ zig test test_optional_type.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *null*
+                                       *null*
 
 Just like undefined, null has its own type, and the
 only way to use it is to cast it to a different type:
@@ -6691,7 +6694,7 @@ test.zig
 <
 
 ==============================================================================
-                                                      *Optional-Pointers*
+                                       *Optional-Pointers*
 
 An optional pointer is guaranteed to be the same size as a pointer.
 The null of the optional is guaranteed to be address 0.
@@ -6722,7 +6725,7 @@ $ zig test test_optional_pointer.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Casting*
+                                       *Casting*
 
 A type cast converts a value of one type to another. Zig has Type Coercion
 for conversions that are known to be completely safe and unambiguous,
@@ -6731,7 +6734,7 @@ There is also a third kind of type conversion called Peer Type Resolution
 for the case when a result type must be decided given multiple operand types.
 
 ==============================================================================
-                                                      *Type-Coercion*
+                                       *Type-Coercion*
 
 Type coercion occurs when one type is expected, but different type is provided:
 
@@ -6771,7 +6774,7 @@ how to get from one type to another, and the transformation is
 guaranteed to be safe. There is one exception, which is C Pointers.
 
 ==============================================================================
-                                                      *Type-Coercion-Stricter-Qualification*
+                                       *Type-Coercion-Stricter-Qualification*
 
 Values which have the same representation at runtime can be cast to increase
 the strictness of the qualifiers, no matter how nested the qualifiers are:
@@ -6819,7 +6822,7 @@ $ zig test pointer_coerce_const_optional.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Type-Coercion-Integer-and-Float-Widening*
+                                       *Type-Coercion-Integer-and-Float-Widening*
 
 Integers coerce to integer types which can represent every value
 of the old type, and likewise Floats coerce to float types which
@@ -6869,7 +6872,7 @@ $ zig test test_integer_widening.zig
 All 3 tests passed.
 
 ==============================================================================
-                                                      *Type-Coercion-Coercion-Float-to-Int*
+                                       *Type-Coercion-Coercion-Float-to-Int*
 
 A compiler error is appropriate because this ambiguous
 expression leaves the compiler two choices about the coercion.
@@ -6891,7 +6894,7 @@ $ zig test test.zig -fstage1
     var f: f32 = 54.0 / 5;
                  ^
 ==============================================================================
-                                                      *Type-Coercion-Slices-Arrays-and-Pointers*
+                                       *Type-Coercion-Slices-Arrays-and-Pointers*
 
 coerce__slices_arrays_and_ptrs.zig
 >
@@ -6979,7 +6982,7 @@ All 7 tests passed.
 See also: |C-Pointers|
 
 ==============================================================================
-                                                      *Type-Coercion-Optionals*
+                                       *Type-Coercion-Optionals*
 
 The payload type of Optionals, as well as null, coerce to the optional type.
 
@@ -7023,7 +7026,7 @@ $ zig test test_coerce_optional_wrapped_error_union.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Type-Coercion-Error-Unions*
+                                       *Type-Coercion-Error-Unions*
 
 The payload type of an Error Union Type as well as the
 Error Set Type coerce to the error union type:
@@ -7048,9 +7051,10 @@ $ zig test test_coerce_to_error_union.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Type-Coercion-Compile-Time-Known-Numbers*
+                                       *Type-Coercion-Compile-Time-Known-Numbers*
 
-When a number is comptime-known to be representable in the destination type, it may be coerced:
+When a number is comptime-known to be representable
+in the destination type, it may be coerced:
 
 test_coerce_large_to_small.zig
 >
@@ -7069,7 +7073,7 @@ $ zig test test_coerce_large_to_small.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Type-Coercion-unions-and-enums*
+                                       *Type-Coercion-unions-and-enums*
 
 Tagged unions can be coerced to enums, and enums can be coerced to
 tagged unions when they are comptime-known to be a field of the
@@ -7111,12 +7115,12 @@ All 1 tests passed.
 See also: |union| |enum|
 
 ==============================================================================
-                                                      *Type-Coercion-undefined*
+                                       *Type-Coercion-undefined*
 
 |undefined| can be cast to any type.
 
 ==============================================================================
-                                                      *Explicit-Casts*
+                                       *Explicit-Casts*
 
 Explicit casts are performed via Builtin Functions.
 Some explicit casts are safe; some are not.
@@ -7141,18 +7145,18 @@ Some explicit casts are no-ops at runtime; some are not.
 |@truncate| - convert between integer types, chopping off bits
 
 ==============================================================================
-                                                      *Peer-Type-Resolution*
+                                       *Peer-Type-Resolution*
 
 Peer Type Resolution occurs in these places:
 
-  switch expressions
-  if expressions
-  while expressions
-  for expressions
-  Multiple break statements in a block
-  Some binary operations
-  This kind of type resolution chooses a type that all peer
-  types can coerce into.
+  1) switch expressions
+  2) if expressions
+  3) while expressions
+  4) for expressions
+  5) Multiple break statements in a block
+  6) Some binary operations
+  7) This kind of type resolution chooses a type that all peer
+     types can coerce into.
 
 Here are some examples:
 
@@ -7264,15 +7268,15 @@ $ zig test peer_type_resolution.zig
 All 7 tests passed.
 
 ==============================================================================
-                                                      *Zero-Bit-Types*
+                                       *Zero-Bit-Types*
 
 For some types, |@sizeOf| is 0:
-  void
-  The Integers u0 and i0.
-  Arrays and Vectors with len 0, or with an element type that is a zero bit type.
-  An enum with only 1 tag.
-  A struct with all fields being zero bit types.
-  A union with only 1 field which is a zero bit type.
+  1) void
+  2) The Integers u0 and i0.
+  3) Arrays and Vectors with len 0, or with an element type that is a zero bit type.
+  4) An enum with only 1 tag.
+  5) A struct with all fields being zero bit types.
+  6) A union with only 1 field which is a zero bit type.
 
 These types can only ever have one possible value, and thus
 require 0 bits to represent. Code that makes use of these
@@ -7301,7 +7305,7 @@ These assembly instructions do not have any code associated with the
 void values - they only perform the function call prologue and epilogue.
 
 ==============================================================================
-                                                      *void*
+                                       *void*
 
 void can be useful for instantiating generic types. For example, given
 a Map(Key, Value), one can pass void for the Value type to make it into a Set:
@@ -7388,11 +7392,11 @@ $ zig test void_ignored.zig
 All 2 tests passed.
 
 ==============================================================================
-                                                      *Result-Location-Semantics*
+                                       *Result-Location-Semantics*
 
 TODO add documentation for this
 ==============================================================================
-                                                      *usingnamespace*
+                                       *usingnamespace*
 
 usingnamespace is a declaration that mixes all the public declarations of the
 operand, which must be a struct, union, enum, or opaque, into the namespace:
@@ -7430,15 +7434,15 @@ forward declarations, giving precise control over what declarations a
 given file exposes.
 
 ==============================================================================
-                                                      *comptime*                                                      
+                                       *comptime*                                                      
 
 Zig places importance on the concept of whether an expression is known at
 compile-time. There are a few different places this concept is used, and these
 building blocks are used to keep the language small, readable, and powerful.
 
 ==============================================================================
-                                                      *Introducing-the-Compile-Time-Concept*
-                                                      *Compile-Time-Parameters*
+                                       *Introducing-the-Compile-Time-Concept*
+                                       *Compile-Time-Parameters*
 
 Compile-time parameters is how Zig implements generics.
 It is compile-time duck typing.
@@ -7571,7 +7575,7 @@ This works the same way for switch expressions - they are implicitly inlined
 when the target expression is compile-time known.
 
 ==============================================================================
-                                                      *Compile-Time-Variables*
+                                       *Compile-Time-Variables*
 
 In Zig, the programmer can label variables as comptime. This guarantees to
 the compiler that every load and store of the variable is performed at
@@ -7664,7 +7668,7 @@ demonstrated later in this article, allows expressiveness that in other
 languages requires using macros, generated code, or a preprocessor to accomplish.
 
 ==============================================================================
-                                                      *Compile-Time-Expressions*
+                                       *Compile-Time-Expressions*
 
 In Zig, it matters whether a given expression is known at compile-time or
 run-time. A programmer can use a comptime expression to guarantee that the
@@ -7916,7 +7920,7 @@ functions. For example, we could call the sum function as is with a slice of
 numbers whose length and values were only known at run-time.
 
 ==============================================================================
-                                                      *Generic-Data-Structures*
+                                       *Generic-Data-Structures*
 
 Zig uses these capabilities to implement generic data structures without
 introducing any special-case syntax. If you followed along so far, you may
@@ -7973,7 +7977,7 @@ Node refers to itself as a pointer, which has a well-defined size at compile
 time, so it works fine.
 
 ==============================================================================
-                                                      *Case-Study-print-in-Zig*
+                                       *Case-Study-print-in-Zig*
 
 Putting all of this together, let's see how print works in Zig.
 
@@ -8200,7 +8204,7 @@ preprocessor language. It's Zig all the way down.
 See also: |inline while| |inline for|
 
 ==============================================================================
-                                                      *Assembly*
+                                       *Assembly*
 
 For some use cases, it may be necessary to directly control the machine code
 generated by Zig programs, rather than relying on Zig's code generation. For
@@ -8321,7 +8325,7 @@ before 1.0.0 is released, with a conclusive statement about the status
 of AT&T vs Intel/NASM syntax.
 
 ==============================================================================
-                                                      *Output-Constraints*
+                                       *Output-Constraints*
 
 Output constraints are still considered to be unstable in Zig, and so LLVM
 documentation and GCC documentation must be used to understand the semantics.
@@ -8330,7 +8334,7 @@ Note that some breaking changes to output
 constraints are planned with issue #215.
 
 ==============================================================================
-                                                      *Input-Constraints*
+                                       *Input-Constraints*
 
 Input constraints are still considered to be unstable in Zig, and so LLVM
 documentation and GCC documentation must be used to understand the semantics.
@@ -8339,7 +8343,7 @@ Note that some breaking changes to input
 constraints are planned with issue #215.
 
 ==============================================================================
-                                                      *Clobbers*
+                                       *Clobbers*
 
 Clobbers are the set of registers whose values will not be preserved by the
 execution of the assembly code. These do not include output or input registers.
@@ -8351,7 +8355,7 @@ Failure to declare the full set of clobbers for a given inline assembly
 expression is unchecked Undefined Behavior.
 
 ==============================================================================
-                                                      *Global-Assembly*
+                                       *Global-Assembly*
 
 When an assembly expression occurs in a container level comptime block,
 this is global assembly.
@@ -8390,7 +8394,7 @@ $ zig test global-asm.zig -target x86_64-linux
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Atomics*
+                                       *Atomics*
 
 TODO: @fence()
 
@@ -8399,7 +8403,7 @@ TODO: @atomic rmw
 TODO: builtin atomic memory ordering enum
 
 ==============================================================================
-                                                      *Async-Functions*
+                                       *Async-Functions*
 
 When a function is called, a frame is pushed to the stack, the function runs
 until it reaches a return statement, and then the frame is popped from the
@@ -8420,7 +8424,7 @@ contains a suspension point. Async functions can be called the same as
 normal functions. A function call of an async function is a suspend point.
 
 ==============================================================================
-                                                      *Suspend-and-Resume*
+                                       *Suspend-and-Resume*
 
 At any point, a function may suspend itself. This causes control flow to
 return to the callsite (in the case of the first suspension), or resumer
@@ -8488,7 +8492,7 @@ All 1 tests passed.
 suspend causes a function to be async.
 
 ==============================================================================
-                                                      *Resuming-from-Suspend-Blocks*
+                                       *Resuming-from-Suspend-Blocks*
 
 Upon entering a suspend block, the async function is already considered
 suspended, and can be resumed. For example, if you started another kernel
@@ -8526,7 +8530,7 @@ All 1 tests passed.
 This is guaranteed to tail call, and therefore will not cause a new stack frame.
 
 ==============================================================================
-                                                      *Async-and-Await*
+                                       *Async-and-Await*
 
 In the same way that every suspend has a matching resume, every async has a
 matching await in standard code.
@@ -8635,7 +8639,7 @@ code will use only async and await, but event loop implementations
 will make use of suspend internally.
 
 ==============================================================================
-                                                      *Async-Function-Example*
+                                       *Async-Function-Example*
 
 Putting all of this together, here is an example of typical async/await usage:
 
@@ -8801,14 +8805,14 @@ points, the order of the printed "... returning" messages is determined by
 the order of async callsites.
 
 ==============================================================================
-                                                      *Builtin-Functions*
+                                       *Builtin-Functions*
 
 Builtin functions are provided by the compiler and are prefixed
 with @. The comptime keyword on a parameter means that the
 parameter must be known at compile time.
 
 ==============================================================================
-                                                      *addrSpaceCast* *@addrSpaceCast*
+                                       *addrSpaceCast* *@addrSpaceCast*
 
 @addrSpaceCast(comptime addrspace: std.builtin.AddressSpace, ptr: anytype) anytype
 
@@ -8819,7 +8823,7 @@ memory location as the pointer operand. It is always valid to cast a pointer
 between the same address spaces.
 
 ==============================================================================
-                                                      *addWithOverflow* *@addWithOverflow*
+                                       *addWithOverflow* *@addWithOverflow*
 
 @addWithOverflow(comptime T: type, a: T, b: T, result: *T) bool
 
@@ -8828,7 +8832,7 @@ overflowed bits in result and returns true. If no overflow or underflow
 occurs, returns false.
 
 ==============================================================================
-                                                      *alignCast* *@alignCast*
+                                       *alignCast* *@alignCast*
 
 @alignCast(comptime alignment: u29, ptr: anytype) anytype
 
@@ -8839,7 +8843,7 @@ A pointer alignment safety check is added to the generated code to make sure
 the pointer is aligned as promised.
 
 ==============================================================================
-                                                      *alignOf* *@alignOf*
+                                       *alignOf* *@alignOf*
 
 @alignOf(comptime T: type) comptime_int
 
@@ -8859,7 +8863,7 @@ less than or equal to @sizeOf(T).
 See also: |Alignment|
 
 ==============================================================================
-                                                      *as* *@as*
+                                       *as* *@as*
 
 @as(comptime T: type, expression) T
 
@@ -8868,7 +8872,7 @@ unambiguous and safe, and is the preferred way to convert between types,
 whenever possible.
 
 ==============================================================================
-                                                      *asyncCall* *@asyncCall*
+                                       *asyncCall* *@asyncCall*
 
 @asyncCall(frame_buffer: []align(@alignOf(@Frame(anyAsyncFunction))) u8, result_ptr, function_ptr, args: anytype) anyframe->T
 
@@ -8915,7 +8919,7 @@ $ zig test async_struct_field_fn_pointer.zig -fstage1
 All 1 tests passed.
 
 ==============================================================================
-                                                      *atomicLoad* *@atomicLoad*
+                                       *atomicLoad* *@atomicLoad*
 
 @atomicLoad(comptime T: type, ptr: *const T, comptime ordering: builtin.AtomicOrder) T
 
@@ -8926,7 +8930,7 @@ T must be a pointer, a bool, a float, an integer or an enum.
 See also: |@atomicStore| |@atomicRmw| |@fence| |@cmpxchgWeak| |@cmpxchgStrong|
 
 ==============================================================================
-                                                      *atomicRmw* *@atomicRmw*
+                                       *atomicRmw* *@atomicRmw*
 
 @atomicRmw(comptime T: type, ptr: *T, comptime op: builtin.AtomicRmwOp, operand: T, comptime ordering: builtin.AtomicOrder) T
 
@@ -8949,7 +8953,7 @@ Supported operations:
 See also: |@atomicStore| |@atomicLoad| |@fence| |@cmpxchgWeak| |@cmpxchgStrong|
 
 ==============================================================================
-                                                      *atomicStore* *@atomicStore*
+                                       *atomicStore* *@atomicStore*
 
 @atomicStore(comptime T: type, ptr: *T, value: T, comptime ordering: builtin.AtomicOrder) void
 
@@ -8960,7 +8964,7 @@ T must be a pointer, a bool, a float, an integer or an enum.
 See also: |@atomicLoad| |@atomicRmw| |@fence| |@cmpxchgWeak| |@cmpxchgStrong|
 
 ==============================================================================
-                                                      *bitCast* *@bitCast*
+                                       *bitCast* *@bitCast*
 
 @bitCast(comptime DestType: type, value: anytype) DestType
 
@@ -8983,7 +8987,7 @@ and any other type without a well-defined memory layout, also cannot be used
 in this operation.
 
 ==============================================================================
-                                                      *bitOffsetOf* *@bitOffsetOf*
+                                       *bitOffsetOf* *@bitOffsetOf*
 
 @bitOffsetOf(comptime T: type, comptime field_name: []const u8) comptime_int
 
@@ -8996,7 +9000,7 @@ but they will have different bit offsets.
 See also: |@offsetOf|
 
 ==============================================================================
-                                                      *boolToInt* *@boolToInt*
+                                       *boolToInt* *@boolToInt*
 
 @boolToInt(value: bool) u1
 
@@ -9006,7 +9010,7 @@ If the value is known at compile-time,
 the return type is comptime_int instead of u1.
 
 ==============================================================================
-                                                      *bitSizeOf* *@bitSizeOf*
+                                       *bitSizeOf* *@bitSizeOf*
 
 @bitSizeOf(comptime T: type) comptime_int
 
@@ -9020,7 +9024,7 @@ runtime, such as comptime_int and type, the result is 0.
 See also: |@sizeOf| |@typeInfo|
 
 ==============================================================================
-                                                      *breakpoint* *@breakpoint*
+                                       *breakpoint* *@breakpoint*
 
 @breakpoint()
 
@@ -9030,7 +9034,7 @@ debuggers to break there.
 This function is only valid within function scope.
 
 ==============================================================================
-                                                      *mulAdd* *@mulAdd*
+                                       *mulAdd* *@mulAdd*
 
 @mulAdd(comptime T: type, a: T, b: T, c: T) T
 
@@ -9040,7 +9044,7 @@ and is thus more accurate.
 Supports Floats and Vectors of floats.
 
 ==============================================================================
-                                                      *byteSwap* *@byteSwap*
+                                       *byteSwap* *@byteSwap*
 
 @byteSwap(operand: anytype) T
 
@@ -9061,7 +9065,7 @@ are what are swapped on a little vs big endian system. On the other hand,
 if T is specified to be u24, then only 3 bytes are reversed.
 
 ==============================================================================
-                                                      *bitReverse* *@bitReverse*
+                                       *bitReverse* *@bitReverse*
 
 @bitReverse(integer: anytype) T
 
@@ -9073,7 +9077,7 @@ including the sign bit if applicable.
 For example 0b10110110 (u8 = 182, i8 = -74) becomes 0b01101101 (u8 = 109, i8 = 109).
 
 ==============================================================================
-                                                      *offsetOf* *@offsetOf*
+                                       *offsetOf* *@offsetOf*
 
 @offsetOf(comptime T: type, comptime field_name: []const u8) comptime_int
 
@@ -9082,7 +9086,7 @@ Returns the byte offset of a field relative to its containing struct.
 See also: |@bitOffsetOf|
 
 ==============================================================================
-                                                      *call* *@call*
+                                       *call* *@call*
 
 @call(options: std.builtin.CallOptions, function: anytype, args: anytype) anytype
 
@@ -9153,7 +9157,7 @@ The CallOptions struct is reproduced here:
 <
 
 ==============================================================================
-                                                      *cDefine* *@cDefine*
+                                       *cDefine* *@cDefine*
 
 @cDefine(comptime name: []u8, value)
 
@@ -9171,7 +9175,7 @@ Use the void value, like this:
 See also: |Import-from-C-Header-File| |@cInclude| |@cImport| |@cUndef| |void|
 
 ==============================================================================
-                                                      *cImport* *@cImport*
+                                       *cImport* *@cImport*
 
 @cImport(expression) type
 
@@ -9195,7 +9199,7 @@ To analyze the C code with different preprocessor defines
 See also: |Import-from-C-Header-File| |@cInclude| |@cDefine| |@cUndef|
 
 ==============================================================================
-                                                      *cInclude* *@cInclude*
+                                       *cInclude* *@cInclude*
 
 @cInclude(comptime path: []u8)
 
@@ -9206,7 +9210,7 @@ This appends #include <$path>\n to the c_import temporary buffer.
 See also: |Import-from-C-Header-File| |@cImport| |@cDefine| |@cUndef|
 
 ==============================================================================
-                                                      *clz* *@clz*
+                                       *clz* *@clz*
 
 @clz(operand: anytype)
 
@@ -9227,7 +9231,7 @@ If operand is zero, @clz returns the bit width of integer type T.
 See also: |@ctz| |@popCount|
 
 ==============================================================================
-                                                      *cmpxchgStrong* *@cmpxchgStrong*
+                                       *cmpxchgStrong* *@cmpxchgStrong*
 
 @cmpxchgStrong(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T
 This function performs a strong atomic compare exchange operation.
@@ -9256,7 +9260,7 @@ T must be a pointer, a bool, a float, an integer or an enum.
 See also: |@atomicStore| |@atomicLoad| |@atomicRmw| |@fence| |@cmpxchgWeak|
 
 ==============================================================================
-                                                      *cmpxchgWeak* *@cmpxchgWeak*
+                                       *cmpxchgWeak* *@cmpxchgWeak*
 
 @cmpxchgWeak(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T
 
@@ -9288,7 +9292,7 @@ T must be a pointer, a bool, a float, an integer or an enum.
 See also: |@atomicStore| |@atomicLoad| |@atomicRmw| |@fence| |@cmpxchgStrong|
 
 ==============================================================================
-                                                      *compileError* *@compileError*
+                                       *compileError* *@compileError*
 
 @compileError(comptime msg: []u8)
 This function, when semantically analyzed,
@@ -9298,7 +9302,7 @@ There are several ways that code avoids being semantically checked, such
 as using if or switch with compile time constants, and comptime functions.
 
 ==============================================================================
-                                                      *compileLog* *@compileLog*
+                                       *compileLog* *@compileLog*
 
 @compileLog(args: ...)
 This function prints the arguments passed to it at compile-time.
@@ -9365,7 +9369,7 @@ OK
 All 1 tests passed.
 
 ==============================================================================
-                                                      *ctz* *@ctz*
+                                       *ctz* *@ctz*
 
 @ctz(operand: anytype)
 
@@ -9386,7 +9390,7 @@ If operand is zero, @ctz returns the bit width of integer type T.
 See also: |@clz| |@popCount|
 
 ==============================================================================
-                                                      *cUndef* *@cUndef*
+                                       *cUndef* *@cUndef*
 
 @cUndef(comptime name: []u8)
 
@@ -9397,7 +9401,7 @@ This appends #undef $name to the @cImport temporary buffer.
 See also: |Import-from-C-Header-File| |@cImport| |@cDefine| |@cInclude|
 
 ==============================================================================
-                                                      *divExact* *@divExact*
+                                       *divExact* *@divExact*
 
 @divExact(numerator: T, denominator: T) T
 
@@ -9413,7 +9417,7 @@ use @import("std").math.divExact.
 See also: |@divTrunc| |@divFloor|
 
 ==============================================================================
-                                                      *divFloor* *@divFloor*
+                                       *divFloor* *@divFloor*
 
 @divFloor(numerator: T, denominator: T) T
 
@@ -9431,7 +9435,7 @@ use @import("std").math.divFloor.
 See also: |@divTrunc||@divExact|
 
 ==============================================================================
-                                                      *divTrunc* *@divTrunc*
+                                       *divTrunc* *@divTrunc*
 
 @divTrunc(numerator: T, denominator: T) T
 
@@ -9451,7 +9455,7 @@ use @import("std").math.divTrunc.
 See also: |@divFloor| |@divExact|
 
 ==============================================================================
-                                                      *embedFile* *@embedFile*
+                                       *embedFile* *@embedFile*
 
 @embedFile(comptime path: []const u8) *const [N:0]u8
 
@@ -9465,7 +9469,7 @@ path is absolute or relative to the current file, just like @import.
 See also: |@import|
 
 ==============================================================================
-                                                      *enumToInt* *@enumToInt*
+                                       *enumToInt* *@enumToInt*
 
 @enumToInt(enum_or_tagged_union: anytype) anytype
 
@@ -9478,7 +9482,7 @@ the result is a comptime_int known at comptime.
 See also: |@intToEnum|
 
 ==============================================================================
-                                                      *errorName* *@errorName*
+                                       *errorName* *@errorName*
 
 @errorName(err: anyerror) [:0]const u8
 
@@ -9490,7 +9494,7 @@ or all calls have a compile-time known value for err,
 then no error name table will be generated.
 
 ==============================================================================
-                                                      *errorReturnTrace* *@errorReturnTrace*
+                                       *errorReturnTrace* *@errorReturnTrace*
 
 @errorReturnTrace() ?*builtin.StackTrace
 
@@ -9499,7 +9503,7 @@ in a function that calls a function with an error or error union return type,
 returns a stack trace object. Otherwise returns null.
 
 ==============================================================================
-                                                      *errorToInt* *@errorToInt*
+                                       *errorToInt* *@errorToInt*
 
 @errorToInt(err: anytype) std.meta.Int(.unsigned, @sizeOf(anyerror) * 8)
 
@@ -9515,7 +9519,7 @@ of an error is not stable across source code changes.
 See also: |@intToError|
 
 ==============================================================================
-                                                      *errSetCast* *@errSetCast*
+                                       *errSetCast* *@errSetCast*
 
 @errSetCast(comptime T: DestType, value: anytype) DestType
 
@@ -9524,7 +9528,7 @@ to convert an error which is not in the destination error set results in
 safety-protected Undefined Behavior.
 
 ==============================================================================
-                                                      *export* *@export*
+                                       *export* *@export*
 
 @export(declaration, comptime options: std.builtin.ExportOptions) void
 
@@ -9570,7 +9574,7 @@ When looking at the resulting object, you can see the symbol is used verbatim:
 See also: |Exporting-a-C-Library|
 
 ==============================================================================
-                                                      *extern* *@extern*
+                                       *extern* *@extern*
 
 @extern(T: type, comptime options: std.builtin.ExternOptions) *T
 
@@ -9579,7 +9583,7 @@ Creates a reference to an external symbol in the output object file.
 See also: |@export|
 
 ==============================================================================
-                                                      *fence* *@fence*
+                                       *fence* *@fence*
 
 @fence(order: AtomicOrder)
 
@@ -9590,7 +9594,7 @@ AtomicOrder can be found with @import("std").builtin.AtomicOrder.
 See also: |@atomicStore| |@atomicLoad| |@atomicRmw| |@cmpxchgWeak| |@cmpxchgStrong|
 
 ==============================================================================
-                                                      *field* *@field*
+                                       *field* *@field*
 
 @field(lhs: anytype, comptime field_name: []const u8) (field)
 
@@ -9636,14 +9640,14 @@ $ zig test field_decl_access_by_string.zig
 All 2 tests passed.
 
 ==============================================================================
-                                                      *fieldParentPtr* *@fieldParentPtr*
+                                       *fieldParentPtr* *@fieldParentPtr*
 
 @fieldParentPtr(comptime ParentType: type, comptime field_name: []const u8, field_ptr: *T) *ParentType
 
 Given a pointer to a field, returns the base pointer of a struct.
 
 ==============================================================================
-                                                      *floatCast* *@floatCast*
+                                       *floatCast* *@floatCast*
 
 @floatCast(comptime DestType: type, value: anytype) DestType
 
@@ -9651,7 +9655,7 @@ Convert from one float type to another. This cast is safe,
 but may cause the numeric value to lose precision.
 
 ==============================================================================
-                                                      *floatToInt* *@floatToInt*
+                                       *floatToInt* *@floatToInt*
 
 @floatToInt(comptime DestType: type, float: anytype) DestType
 
@@ -9663,7 +9667,7 @@ the destination type, it invokes safety-checked Undefined Behavior.
 See also: |@intToFloat|
 
 ==============================================================================
-                                                      *frame* *@frame*
+                                       *frame* *@frame*
 
 @frame() *@Frame(func)
 
@@ -9675,7 +9679,7 @@ This function does not mark a suspension point, but it does
 cause the function in scope to become an async function.
 
 ==============================================================================
-                                                      *Frame* *@Frame*
+                                       *Frame* *@Frame*
 
 @Frame(func: anytype) type
 
@@ -9705,7 +9709,7 @@ $ zig test heap_allocated_frame.zig -fstage1
 All 1 tests passed.
 
 ==============================================================================
-                                                      *frameAddress* *@frameAddress*
+                                       *frameAddress* *@frameAddress*
 
 @frameAddress() usize
 
@@ -9718,7 +9722,7 @@ aggressive optimizations.
 This function is only valid within function scope.
 
 ==============================================================================
-                                                      *frameSize* *@frameSize*
+                                       *frameSize* *@frameSize*
 
 @frameSize(func: anytype) usize
 
@@ -9727,7 +9731,7 @@ This is the same as @sizeOf(@Frame(func)), where func may be runtime-known.
 This function is typically used in conjunction with @asyncCall.
 
 ==============================================================================
-                                                      *hasDecl* *@hasDecl*
+                                       *hasDecl* *@hasDecl*
 
 @hasDecl(comptime Container: type, comptime name: []const u8) bool
 
@@ -9767,7 +9771,7 @@ All 1 tests passed.
 See also: |@hasField|
 
 ==============================================================================
-                                                      *hasField* *@hasField*
+                                       *hasField* *@hasField*
 
 @hasField(comptime Container: type, comptime name: []const u8) bool
 
@@ -9780,7 +9784,7 @@ It does not include functions, variables, or constants.
 See also: |@hasDecl|
 
 ==============================================================================
-                                                      *import* *@import*
+                                       *import* *@import*
 
 @import(comptime path: []u8) type
 
@@ -9811,7 +9815,7 @@ The following packages are always available:
 See also: |Compile-Variables| |@embedFile|
 
 ==============================================================================
-                                                      *intCast* *@intCast*
+                                       *intCast* *@intCast*
 
 @intCast(comptime DestType: type, int: anytype) DestType
 Converts an integer to another integer while keeping the same numerical value.
@@ -9851,7 +9855,7 @@ type, use |@truncate|.
 If T is comptime_int, then this is semantically equivalent to Type Coercion.
 
 ==============================================================================
-                                                      *intToEnum* *@intToEnum*
+                                       *intToEnum* *@intToEnum*
 
 @intToEnum(comptime DestType: type, integer: anytype) DestType
 
@@ -9863,7 +9867,7 @@ type invokes safety-checked Undefined Behavior.
 See also: |@enumToInt|
 
 ==============================================================================
-                                                      *intToError* *@intToError*
+                                       *intToError* *@intToError*
 
 @intToError(value: std.meta.Int(.unsigned, @sizeOf(anyerror) * 8)) anyerror
 
@@ -9879,7 +9883,7 @@ results in safety-protected Undefined Behavior.
 See also: |@errorToInt|
 
 ==============================================================================
-                                                      *intToFloat* *@intToFloat*
+                                       *intToFloat* *@intToFloat*
 
 @intToFloat(comptime DestType: type, int: anytype) DestType
 
@@ -9887,7 +9891,7 @@ Converts an integer to the closest floating point representation.
 To convert the other way, use @floatToInt. This cast is always safe.
 
 ==============================================================================
-                                                      *intToPtr* *@intToPtr*
+                                       *intToPtr* *@intToPtr*
 
 @intToPtr(comptime DestType: type, address: usize) DestType
 
@@ -9900,7 +9904,7 @@ If the destination pointer type does not allow address zero and address is
 zero, this invokes safety-checked Undefined Behavior.
 
 ==============================================================================
-                                                      *max* *@max*
+                                       *max* *@max*
 
 @max(a: T, b: T) T
 
@@ -9913,7 +9917,7 @@ is NaN, the other operand is returned. If both operands are NaN, NaN is returned
 See also: |@min| |Vectors|
 
 ==============================================================================
-                                                      *memcpy* *@memcpy*
+                                       *memcpy* *@memcpy*
 
 @memcpy(noalias dest: [*]u8, noalias source: [*]const u8, byte_count: usize)
 
@@ -9933,7 +9937,7 @@ There is also a standard library function for this:
 <
 
 ==============================================================================
-                                                      *memset* *@memset*
+                                       *memset* *@memset*
 
 @memset(dest: [*]u8, c: u8, byte_count: usize)
 
@@ -9952,7 +9956,7 @@ There is also a standard library function for this:
 <
 
 ==============================================================================
-                                                      *min* *@min*
+                                       *min* *@min*
 
 @min(a: T, b: T) T
 
@@ -9965,7 +9969,7 @@ is NaN, the other operand is returned. If both operands are NaN, NaN is returned
 See also: |@max| |Vectors|
 
 ==============================================================================
-                                                      *wasmMemorySize* *@wasmMemorySize*
+                                       *wasmMemorySize* *@wasmMemorySize*
 
 @wasmMemorySize(index: u32) u32
 This function returns the size of the Wasm memory identified by index as an
@@ -9979,7 +9983,7 @@ new allocator from scratch, you should use something like
 See also: |@wasmMemoryGrow|
 
 ==============================================================================
-                                                      *wasmMemoryGrow* *@wasmMemoryGrow*
+                                       *wasmMemoryGrow* *@wasmMemoryGrow*
 
 @wasmMemoryGrow(index: u32, delta: u32) i32
 
@@ -10016,7 +10020,7 @@ $ zig test wasmMemoryGrow.zig
 See also: |@wasmMemorySize|
 
 ==============================================================================
-                                                      *mod* *@mod*
+                                       *mod* *@mod*
 
 @mod(numerator: T, denominator: T) T
 Modulus division. For unsigned integers this is the same as
@@ -10032,7 +10036,7 @@ For a function that returns an error code, see @import("std").math.mod.
 See also: |@rem|
 
 ==============================================================================
-                                                      *mulWithOverflow* *@mulWithOverflow*
+                                       *mulWithOverflow* *@mulWithOverflow*
 
 @mulWithOverflow(comptime T: type, a: T, b: T, result: *T) bool
 
@@ -10041,7 +10045,7 @@ overflowed bits in result and returns true. If no overflow or underflow occurs,
 returns false.
 
 ==============================================================================
-                                                      *panic* *@panic*
+                                       *panic* *@panic*
 
 @panic(message: []const u8) noreturn
 
@@ -10061,7 +10065,7 @@ be useful for 2 scenarios:
 See also: |Root-Source-File|
 
 ==============================================================================
-                                                      *popCount* *@popCount*
+                                       *popCount* *@popCount*
 
 @popCount(operand: anytype)
 
@@ -10079,7 +10083,7 @@ of the integer type.
 See also: |@ctz| |@clz|
 
 ==============================================================================
-                                                      *prefetch* *@prefetch*
+                                       *prefetch* *@prefetch*
 
 @prefetch(ptr: anytype, comptime options: std.builtin.PrefetchOptions)
 
@@ -10124,7 +10128,7 @@ builtin.zig
 <
 
 ==============================================================================
-                                                      *ptrCast* *@ptrCast*
+                                       *ptrCast* *@ptrCast*
 
 @ptrCast(comptime DestType: type, value: anytype) DestType
 Converts a pointer of one type to a pointer of another type.
@@ -10133,7 +10137,7 @@ Optional Pointers are allowed. Casting an optional pointer which is null to a
 non-optional pointer invokes safety-checked Undefined Behavior.
 
 ==============================================================================
-                                                      *ptrToInt* *@ptrToInt*
+                                       *ptrToInt* *@ptrToInt*
 
 @ptrToInt(value: anytype) usize
 Converts value to a usize which is the address of the pointer.
@@ -10142,7 +10146,7 @@ value can be *T or ?*T.
 To convert the other way, use @intToPtr
 
 ==============================================================================
-                                                      *rem* *@rem*
+                                       *rem* *@rem*
 
 @rem(numerator: T, denominator: T) T
 
@@ -10158,7 +10162,7 @@ For a function that returns an error code, see @import("std").math.rem.
 See also: |@mod|
 
 ==============================================================================
-                                                      *returnAddress* *@returnAddress*
+                                       *returnAddress* *@returnAddress*
 
 @returnAddress() usize
 
@@ -10173,7 +10177,7 @@ If the function gets inlined into a calling function,
 the returned address will apply to the calling function.
 
 ==============================================================================
-                                                      *select* *@select*
+                                       *select* *@select*
 
 @select(comptime T: type, pred: @Vector(len, bool), a: @Vector(len, T), b: @Vector(len, T)) @Vector(len, T)
 
@@ -10183,21 +10187,21 @@ the corresponding element in the result will be a[i] and otherwise b[i].
 See also: |Vector|
 
 ==============================================================================
-                                                      *setAlignStack* *@setAlignStack*
+                                       *setAlignStack* *@setAlignStack*
 
 @setAlignStack(comptime alignment: u29)
 
 Ensures that a function will have a stack alignment of at least alignment bytes.
 
 ==============================================================================
-                                                      *setCold* *@setCold*
+                                       *setCold* *@setCold*
 
 @setCold(comptime is_cold: bool)
 
 Tells the optimizer that a function is rarely called.
 
 ==============================================================================
-                                                      *setEvalBranchQuota* *@setEvalBranchQuota*
+                                       *setEvalBranchQuota* *@setEvalBranchQuota*
 
 @setEvalBranchQuota(comptime new_quota: u32)
 
@@ -10247,7 +10251,7 @@ All 1 tests passed.
 See also: |comptime|
 
 ==============================================================================
-                                                      *setFloatMode* *@setFloatMode*
+                                       *setFloatMode* *@setFloatMode*
 
 @setFloatMode(comptime mode: @import("std").builtin.FloatMode)
 
@@ -10289,7 +10293,7 @@ scope by using a comptime block.
 See also: |Floating-Point-Operations|
 
 ==============================================================================
-                                                      *setRuntimeSafety* *@setRuntimeSafety*
+                                       *setRuntimeSafety* *@setRuntimeSafety*
 
 @setRuntimeSafety(comptime safety_on: bool) void
 
@@ -10329,7 +10333,7 @@ error: the following test command crashed:
 Note: it is planned to replace @setRuntimeSafety with @optimizeFor
 
 ==============================================================================
-                                                      *shlExact* *@shlExact*
+                                       *shlExact* *@shlExact*
 
 @shlExact(value: T, shift_amt: Log2T) T
 
@@ -10343,7 +10347,7 @@ bits. This is because shift_amt >= @typeInfo(T).Int.bits is undefined behavior.
 See also: |@shrExact| |@shlWithOverflow|
 
 ==============================================================================
-                                                      *shlWithOverflow* *@shlWithOverflow*
+                                       *shlWithOverflow* *@shlWithOverflow*
 
 @shlWithOverflow(comptime T: type, a: T, shift_amt: Log2T, result: *T) bool
 
@@ -10358,7 +10362,7 @@ bits. This is because shift_amt >= @typeInfo(T).Int.bits is undefined behavior.
 See also: |@shlExact| |@shrExact|
 
 ==============================================================================
-                                                      *shrExact* *@shrExact*
+                                       *shrExact* *@shrExact*
 
 @shrExact(value: T, shift_amt: Log2T) T
 
@@ -10371,7 +10375,7 @@ bits. This is because shift_amt >= @typeInfo(T).Int.bits is undefined behavior.
 See also: |@shlExact| |@shlWithOverflow|
 
 ==============================================================================
-                                                      *shuffle* *@shuffle*
+                                       *shuffle* *@shuffle*
 
 @shuffle(comptime E: type, a: @Vector(a_len, E), b: @Vector(b_len, E), comptime mask: @Vector(mask_len, i32)) @Vector(mask_len, E)
 
@@ -10425,7 +10429,7 @@ All 1 tests passed.
 See also: |Vectors|
 
 ==============================================================================
-                                                      *sizeOf* *@sizeOf*
+                                       *sizeOf* *@sizeOf*
 
 @sizeOf(comptime T: type) comptime_int
 This function returns the number of bytes it takes to store T in memory.
@@ -10442,7 +10446,7 @@ disallowed at runtime, such as comptime_int and type, the result is 0.
 See also: |@bitSizeOf| |@typeInfo|
 
 ==============================================================================
-                                                      *splat* *@splat*
+                                       *splat* *@splat*
 
 @splat(comptime len: u32, scalar: anytype) @Vector(len, @TypeOf(scalar))
 
@@ -10471,7 +10475,7 @@ scalar must be an integer, bool, float, or pointer.
 See also: |Vectors| |@shuffle|
 
 ==============================================================================
-                                                      *reduce* *@reduce*
+                                       *reduce* *@reduce*
 
 @reduce(comptime op: std.builtin.ReduceOp, value: anytype) E
 
@@ -10512,7 +10516,7 @@ All 1 tests passed.
 See also: |Vectors| |@setFloatMode|
 
 ==============================================================================
-                                                      *src* *@src*
+                                       *src* *@src*
 
 @src() std.builtin.SourceLocation
 
@@ -10544,7 +10548,7 @@ $ zig test source_location.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *sqrt* *@sqrt*
+                                       *sqrt* *@sqrt*
 
 @sqrt(value: anytype) @TypeOf(value)
 
@@ -10555,7 +10559,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *sin* *@sin* 
+                                       *sin* *@sin* 
 
 @sin(value: anytype) @TypeOf(value)
 
@@ -10566,7 +10570,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *cos* *@cos*
+                                       *cos* *@cos*
 
 cos(value: anytype) @TypeOf(value)
 
@@ -10577,7 +10581,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *tan* *@tan*
+                                       *tan* *@tan*
 
 @tan(value: anytype) @TypeOf(value)
 
@@ -10588,7 +10592,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *exp* *@exp*
+                                       *exp* *@exp*
 
 @exp(value: anytype) @TypeOf(value)
 
@@ -10599,7 +10603,7 @@ Supports Floats and Vectors of floats, with the caveat that
 some float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *exp2* *@exp2*
+                                       *exp2* *@exp2*
 
 @exp2(value: anytype) @TypeOf(value)
 
@@ -10610,7 +10614,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *log* *@log*
+                                       *log* *@log*
 
 @log(value: anytype) @TypeOf(value)
 
@@ -10621,7 +10625,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *log2* *@log2*
+                                       *log2* *@log2*
 
 @log2(value: anytype) @TypeOf(value)
 
@@ -10632,7 +10636,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *log10* *@log10*
+                                       *log10* *@log10*
 
 @log10(value: anytype) @TypeOf(value)
 
@@ -10643,7 +10647,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *fabs* *@fabs*
+                                       *fabs* *@fabs*
 
 @fabs(value: anytype) @TypeOf(value)
 
@@ -10654,7 +10658,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *floor* *@floor*
+                                       *floor* *@floor*
 
 @floor(value: anytype) @TypeOf(value)
 
@@ -10665,7 +10669,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *ceil* *@ceil* 
+                                       *ceil* *@ceil* 
 
 @ceil(value: anytype) @TypeOf(value)
 
@@ -10676,7 +10680,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *trunc* *@trunc*
+                                       *trunc* *@trunc*
 
 @trunc(value: anytype) @TypeOf(value)
 
@@ -10687,7 +10691,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *round* *@round* 
+                                       *round* *@round* 
 
 @round(value: anytype) @TypeOf(value)
 
@@ -10698,7 +10702,7 @@ Supports Floats and Vectors of floats, with the caveat that some
 float operations are not yet implemented for all float types.
 
 ==============================================================================
-                                                      *subWithOverflow* *@subWithOverflow*
+                                       *subWithOverflow* *@subWithOverflow*
 
 @subWithOverflow(comptime T: type, a: T, b: T, result: *T) bool
 
@@ -10707,7 +10711,7 @@ stores the overflowed bits in result and returns true.
 If no overflow or underflow occurs, returns false.
 
 ==============================================================================
-                                                      *tagName* *@tagName*
+                                       *tagName* *@tagName*
 
 @tagName(value: anytype) [:0]const u8
 
@@ -10717,7 +10721,7 @@ If the enum is non-exhaustive and the tag value does not
 map to a name, it invokes safety-checked Undefined Behavior.
 
 ==============================================================================
-                                                      *This* *@This*
+                                       *This* *@This*
 
 
 @This() type
@@ -10758,7 +10762,7 @@ When @This() is used at file scope, it returns a reference
 to the struct that corresponds to the current file.
 
 ==============================================================================
-                                                      *truncate* *@truncate* 
+                                       *truncate* *@truncate* 
 
 
 @truncate(comptime T: type, integer: anytype) T
@@ -10792,7 +10796,7 @@ All 1 tests passed.
 Use |@intCast| to convert numbers guaranteed to fit the destination type.
 
 ==============================================================================
-                                                      *Type* *@Type* 
+                                       *Type* *@Type* 
 
 
 @Type(comptime info: std.builtin.Type) type
@@ -10830,7 +10834,7 @@ For these types, @Type is not available:
   |BoundFn|
 
 ==============================================================================
-                                                      *typeInfo* *@typeInfo*
+                                       *typeInfo* *@typeInfo*
 
 @typeInfo(comptime T: type) std.builtin.Type
 
@@ -10843,7 +10847,7 @@ Type information of structs, unions, enums, and opaques has declarations, which
 are also guaranteed to be in the same order as appearance in the source file.
 
 ==============================================================================
-                                                      *typeName* *@typeName*
+                                       *typeName* *@typeName*
 
 @typeName(T: type) *const [N:0]u8
 
@@ -10853,7 +10857,7 @@ name is fully qualified with the parent namespace included as part of the
 type name with a series of dots.
 
 ==============================================================================
-                                                      *TypeOf* *@TypeOf*
+                                       *TypeOf* *@TypeOf*
 
 
 @TypeOf(...) type
@@ -10889,7 +10893,7 @@ $ zig test no_runtime_side_effects.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *unionInit* *@unionInit*
+                                       *unionInit* *@unionInit*
 
 @unionInit(comptime Union: type, comptime active_field_name: []const u8, init_expr) Union
 
@@ -10899,13 +10903,13 @@ field name is a comptime-known value rather than an identifier token.
 @unionInit forwards its result location to init_expr.
 
 ==============================================================================
-                                                      *Vector* *@Vector* 
+                                       *Vector* *@Vector* 
 
 @Vector(len: comptime_int, Element: type) type
 Creates Vectors.
 
 ==============================================================================
-                                                      *Build-Mode*
+                                       *Build-Mode*
 
 Zig has four build modes:
 
@@ -10936,7 +10940,7 @@ Optimizations on and safety off
 Size optimizations on and safety off
 
 ==============================================================================
-                                                      *Debug*
+                                       *Debug*
 
 Shell
 $ zig build-exe example.zig
@@ -10947,7 +10951,7 @@ $ zig build-exe example.zig
   No reproducible build requirement
 
 ==============================================================================
-                                                      *ReleaseFast* 
+                                       *ReleaseFast* 
 
 Shell
 $ zig build-exe example.zig -O ReleaseFast
@@ -10958,7 +10962,7 @@ $ zig build-exe example.zig -O ReleaseFast
   Reproducible build
 
 ==============================================================================
-                                                      *ReleaseSafe* 
+                                       *ReleaseSafe* 
 
 Shell
 $ zig build-exe example.zig -O ReleaseSafe
@@ -10969,7 +10973,7 @@ $ zig build-exe example.zig -O ReleaseSafe
   Reproducible build
 
 ==============================================================================
-                                                      *ReleaseSmall* 
+                                       *ReleaseSmall* 
 Shell
 $ zig build-exe example.zig -O ReleaseSmall
   Medium runtime performance
@@ -10980,7 +10984,7 @@ $ zig build-exe example.zig -O ReleaseSmall
 See also: |Compile-Variables| |Zig-Build-System| |Undefined-Behavior|
 
 ==============================================================================
-                                                      *Single-Threaded-Builds*
+                                       *Single-Threaded-Builds*
 
 Zig has a compile option --single-threaded which has the following effects:
 
@@ -10991,7 +10995,7 @@ Zig has a compile option --single-threaded which has the following effects:
   std.Mutex becomes an empty data structure and all of its functions become no-ops.
 
 ==============================================================================
-                                                      *Undefined-Behavior*
+                                       *Undefined-Behavior*
 
 Zig has many instances of undefined behavior. If undefined behavior is
 detected at compile-time, Zig emits a compile error and refuses to continue.
@@ -11027,7 +11031,7 @@ docgen_tmp/test.zig:2:5: 0x211565 in test.safety check (test)
 error: the following test command crashed:
 /home/andy/tmp/zig/zig-cache/o/c8cfbb273b267e28462c38d7de2721ed/test
 ==============================================================================
-                                                      *Reaching-Unreachable-Code* 
+                                       *Reaching-Unreachable-Code* 
 
 At compile-time:
 
@@ -11081,7 +11085,7 @@ docgen_tmp/test.zig:4:21: 0x20fffa in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Index-out-of-Bounds* 
+                                       *Index-out-of-Bounds* 
 
 At compile-time:
 
@@ -11134,7 +11138,7 @@ docgen_tmp/test.zig:2:16: 0x21000b in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Cast-Negative-Number-to-Unsigned-Integer* 
+                                       *Cast-Negative-Number-to-Unsigned-Integer* 
 
 At compile-time:
 
@@ -11184,7 +11188,7 @@ docgen_tmp/test.zig:5:5: 0x21020d in main (test)
 To obtain the maximum value of an unsigned integer, use std.math.maxInt.
 
 ==============================================================================
-                                                      *Cast-Truncates-Data* 
+                                       *Cast-Truncates-Data* 
 
 At compile-time:
 
@@ -11234,8 +11238,8 @@ docgen_tmp/test.zig:5:5: 0x2101c6 in main (test)
 To truncate bits, use @truncate.
 
 ==============================================================================
-                                                      *Integer-Overflow*
-                                                      *Default-Operations*
+                                       *Integer-Overflow*
+                                       *Default-Operations*
 
 The following operators can cause integer overflow:
 
@@ -11293,7 +11297,7 @@ docgen_tmp/test.zig:5:5: 0x2101b4 in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Standard-Library-Math-Functions* 
+                                       *Standard-Library-Math-Functions* 
 
 These functions provided by the standard library return possible errors.
 
@@ -11336,7 +11340,7 @@ docgen_tmp/test.zig:8:9: 0x20ff3d in main (test)
         return err;
         ^
 ==============================================================================
-                                                      *Builtin-Overflow-Functions* 
+                                       *Builtin-Overflow-Functions* 
 
 These builtins return a bool of whether or not overflow occurred,
 as well as returning the overflowed bits:
@@ -11370,7 +11374,7 @@ $ ./test
 overflowed result: 9
 
 ==============================================================================
-                                                      *Wrapping-Operations* 
+                                       *Wrapping-Operations* 
 
 These operations have guaranteed wraparound semantics.
 
@@ -11401,7 +11405,7 @@ $ zig test wraparound_semantics.zig
 All 1 tests passed.
 
 ==============================================================================
-                                                      *Exact-Left-Shift-Overflow*
+                                       *Exact-Left-Shift-Overflow*
 
 At compile-time:
 
@@ -11442,7 +11446,7 @@ docgen_tmp/test.zig:5:5: 0x2101ca in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Exact-Right-Shift-Overflow*
+                                       *Exact-Right-Shift-Overflow*
 
 At compile-time:
 
@@ -11489,7 +11493,7 @@ docgen_tmp/test.zig:5:5: 0x2101c1 in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Division-by-Zero*
+                                       *Division-by-Zero*
 
 At compile-time:
 
@@ -11540,7 +11544,7 @@ docgen_tmp/test.zig:6:5: 0x2101ea in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Remainder-Division-by-Zero* 
+                                       *Remainder-Division-by-Zero* 
 
 At compile-time:
 
@@ -11591,7 +11595,7 @@ docgen_tmp/test.zig:6:5: 0x2101ea in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Exact-Division-Remainder* 
+                                       *Exact-Division-Remainder* 
 
 At compile-time:
 
@@ -11641,7 +11645,7 @@ docgen_tmp/test.zig:6:5: 0x210259 in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Attempt-to-Unwrap-Null* 
+                                       *Attempt-to-Unwrap-Null* 
 
 At compile-time:
 
@@ -11713,7 +11717,7 @@ it's null
 See also: |Optionals|
 
 ==============================================================================
-                                                      *Attempt-to-Unwrap-Error*
+                                       *Attempt-to-Unwrap-Error*
 
 At compile-time:
 
@@ -11848,7 +11852,7 @@ docgen_tmp/test.zig:6:5: 0x21016a in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Invalid-Enum-Cast* 
+                                       *Invalid-Enum-Cast* 
 
 At compile-time:
 
@@ -11911,7 +11915,7 @@ docgen_tmp/test.zig:11:5: 0x2101a3 in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Invalid-Error-Set-Cast* 
+                                       *Invalid-Error-Set-Cast* 
 
 At compile-time:
 
@@ -11982,7 +11986,7 @@ docgen_tmp/test.zig:12:8: 0x21013d in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Incorrect-Pointer-Alignment* 
+                                       *Incorrect-Pointer-Alignment* 
 
 At compile-time:
 
@@ -12038,7 +12042,7 @@ docgen_tmp/test.zig:5:12: 0x20fd17 in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Wrong-Union-Field-Access* 
+                                       *Wrong-Union-Field-Access* 
 
 At compile-time:
 
@@ -12167,11 +12171,11 @@ value: 1.23400001e+01
 See also: |union| |extern-union|
 
 ==============================================================================
-                                                      *Out-of-Bounds-Float-to-Integer-Cast*
+                                       *Out-of-Bounds-Float-to-Integer-Cast*
 
 TODO
 ==============================================================================
-                                                      *Pointer-Cast-Invalid-Null*
+                                       *Pointer-Cast-Invalid-Null*
 
 This happens when casting a pointer with the address 0 to a pointer which may
 not have the address 0. For example, C Pointers, Optional Pointers, and
@@ -12221,7 +12225,7 @@ docgen_tmp/test.zig:3:5: 0x210061 in main (test)
 (process terminated by signal)
 
 ==============================================================================
-                                                      *Memory*
+                                       *Memory*
 
 The Zig language performs no memory management on behalf of the programmer.
 This is why Zig has no runtime, and why Zig code works seamlessly in so many
@@ -12276,7 +12280,7 @@ std.heap.GeneralPurposeAllocator. However, it is still recommended
 to follow the Choosing an Allocator guide.
 
 ==============================================================================
-                                                      *Choosing-an-Allocator* 
+                                       *Choosing-an-Allocator* 
 
 What allocator to use depends on a number of factors.
 Here is a flow chart to help you decide:
@@ -12346,7 +12350,7 @@ Everything gets freed at once with the call to arena.deinit().
   9) You can also consider Implementing an Allocator.
 
 ==============================================================================
-                                                      *Where-are-the-bytes*
+                                       *Where-are-the-bytes*
 
 String literals such as "foo" are in the global constant data section. This
 is why it is an error to pass a string literal to a mutable slice, like this:
@@ -12405,7 +12409,7 @@ allocator.create is determined by the allocator's implementation.
 TODO: thread local variables
 
 ==============================================================================
-                                                      *Implementing-an-Allocator*
+                                       *Implementing-an-Allocator*
 
 Zig programmers can implement their own allocators by fulfilling the
 Allocator interface. In order to do this one must read carefully the
@@ -12415,7 +12419,7 @@ There are many example allocators to look at for inspiration.
 Look at std/heap.zig and std.heap.GeneralPurposeAllocator.
 
 ==============================================================================
-                                                      *Heap-Allocation-Failure*
+                                       *Heap-Allocation-Failure*
 
 Many programming languages choose to handle the possibility of
 heap allocation failure by unconditionally crashing. By convention,
@@ -12451,7 +12455,7 @@ heap allocation failure. There are many problems with this reasoning:
      process being killed, and often fails to return the system back to working order.
 
 ==============================================================================
-                                                      *Recursion* 
+                                       *Recursion* 
 
 Recursion is a fundamental tool in modeling software. However it
 has an often-overlooked problem: unbounded memory allocation.
@@ -12466,7 +12470,7 @@ it is planned that a future version of Zig will provide such protection,
 with some degree of cooperation from Zig code required.
 
 ==============================================================================
-                                                      *Lifetime-and-Ownership*
+                                       *Lifetime-and-Ownership*
 
 It is the Zig programmer's responsibility to ensure that a pointer is not
 accessed when the memory pointed to is no longer available. Note that a
@@ -12496,7 +12500,7 @@ referenced by the pointer, and lifetime determines the point at which
 the memory becomes inaccessible (lest Undefined Behavior occur).
 
 ==============================================================================
-                                                      *Compile-Variables*
+                                       *Compile-Variables*
 
 Compile variables are accessible by importing the "builtin" package,
 which the compiler makes available to every Zig source file. It contains
@@ -12624,7 +12628,7 @@ Example of what is imported with @import("builtin"):
 See also: |Build-Mode|
 
 ==============================================================================
-                                                      *Root-Source-File*
+                                       *Root-Source-File*
 
 TODO: explain how root source file finds other files
 
@@ -12641,7 +12645,7 @@ TODO: lazy analysis
 TODO: using comptime { _ = @import() }
 
 ==============================================================================
-                                                      *Zig-Build-System*
+                                       *Zig-Build-System*
 
 The Zig Build System provides a cross-platform, dependency-free way to
 declare the logic required to build a project. With this system, the
@@ -12674,7 +12678,7 @@ usage help menu. This will include project-specific options that
 were declared in the build.zig script.
 
 ==============================================================================
-                                                      *Building-an-Executable*
+                                       *Building-an-Executable*
 
 This build.zig file is automatically generated by zig init-exe.
 
@@ -12710,7 +12714,7 @@ build.zig
 <
 
 ==============================================================================
-                                                      *Building-a-Library* 
+                                       *Building-a-Library* 
 
 This build.zig file is automatically generated by zig init-lib.
 
@@ -12733,7 +12737,7 @@ build.zig
 <
 
 ==============================================================================
-                                                      *Compiling-C-Source-Code* 
+                                       *Compiling-C-Source-Code* 
 
 >
   lib.addCSourceFile("src/lib.c", &[_][]const u8{
@@ -12744,7 +12748,7 @@ build.zig
 <
 
 ==============================================================================
-                                                      *C*
+                                       *C*
 
 Although Zig is independent of C, and, unlike most other languages, does not
 depend on libc, Zig acknowledges the importance of interacting with existing C code.
@@ -12752,7 +12756,7 @@ depend on libc, Zig acknowledges the importance of interacting with existing C c
 There are a few ways that Zig facilitates C interop.
 
 ==============================================================================
-                                                      *C-Type-Primitives*
+                                       *C-Type-Primitives*
 
 These have guaranteed C ABI compatibility and can be used like any other type.
 
@@ -12770,7 +12774,7 @@ To interop with the C void type, use anyopaque.
 See also: |Primitive-Types|
 
 ==============================================================================
-                                                      *Import-from-C-Header-File*
+                                       *Import-from-C-Header-File*
 
 The @cImport builtin function can be used to directly import symbols from .h files:
 
@@ -12816,14 +12820,14 @@ to control preprocessor directives and include multiple .h files:
 See also: |@cImport| |@cInclude| |@cDefine| |@cUndef| |@import|
 
 ==============================================================================
-                                                      *C-Translation-CLI* 
+                                       *C-Translation-CLI* 
 
 Zig's C translation capability is available as a CLI tool via zig translate-c.
 It requires a single filename as an argument. It may also take a set of optional
 flags that are forwarded to clang. It writes the translated file to stdout.
 
 ==============================================================================
-                                                      *Command-line-flags* 
+                                       *Command-line-flags* 
 
   1) -I: Specify a search directory for include files.
      May be used multiple times. Equivalent to clang's -I flag.
@@ -12838,7 +12842,7 @@ flags that are forwarded to clang. It writes the translated file to stdout.
      If no target is specified, the current host target will be used.
 
 ==============================================================================
-                                                      *Using--target-and--cflags* 
+                                       *Using--target-and--cflags* 
 
 Important! When translating C code with zig translate-c, you must use
 the same -target triple that you will use when compiling the translated code.
@@ -12889,7 +12893,7 @@ See also: |Targets| |C-Type-Primitives| |Pointers| |C-Pointers|
           |Import-from-C-Header-File| |@cInclude| |@cImport| |@setRuntimeSafety|
 
 ==============================================================================
-                                                      *C-Translation-Caching* 
+                                       *C-Translation-Caching* 
 
 The C translation feature (whether used via zig translate-c or @cImport)
 integrates with the Zig caching system. Subsequent runs with the same
@@ -12922,7 +12926,7 @@ cimport.h contains the file to translate (constructed from calls to @cInclude, @
 See also: |Import-from-C-Header-File| |C Translation-CLI| |@cInclude| |@cImport|
 
 ==============================================================================
-                                                      *Translation-failures* 
+                                       *Translation-failures* 
 
 Some C constructs cannot be translated to Zig - for example, goto, structs
 with bitfields, and token-pasting macros. Zig employs demotion to allow
@@ -12945,7 +12949,7 @@ error in your code unless you actually use them.
 See also: |opaque| |extern| |@compileError|
 
 ==============================================================================
-                                                      *C-Macros* 
+                                       *C-Macros* 
 
 C Translation makes a best-effort attempt to translate function-like macros
 into equivalent Zig functions. Since C macros operate at the level of lexical
@@ -12984,7 +12988,7 @@ MAKELOCAL was demoted to @compileError since it cannot be expressed as a Zig
 function; this simply means that you cannot directly use MAKELOCAL from Zig.
 
 ==============================================================================
-                                                      *C-Pointers*
+                                       *C-Pointers*
 
 This type is to be avoided whenever possible. The only valid reason for
 using a C pointer is in auto-generated code from translating C code.
@@ -13028,7 +13032,7 @@ When a C pointer is pointing to an array of structs, the syntax reverts to this:
 ptr_to_struct_array[index].struct_member
 
 ==============================================================================
-                                                      *Exporting-a-C-Library* 
+                                       *Exporting-a-C-Library* 
 
 One of the primary use cases for Zig is exporting a library with the C ABI
 for other programming languages to call into. The export keyword in front
@@ -13091,7 +13095,7 @@ $ zig build test
 See also: |export|
 
 ==============================================================================
-                                                      *Mixing-Object-Files* 
+                                       *Mixing-Object-Files* 
 
 You can mix Zig object files with any other object
 files that respect the C ABI. Example:
@@ -13154,7 +13158,7 @@ all your base are belong to us
 See also: |Targets| |Zig-Build-System|
 
 ==============================================================================
-                                                      *WebAssembly*
+                                       *WebAssembly*
 
 Zig supports building for WebAssembly out of the box.
 
@@ -13192,7 +13196,7 @@ $ node test.js
 The result is 3
 
 ==============================================================================
-                                                      *WASI* 
+                                       *WASI* 
 
 Zig's support for WebAssembly System Interface (WASI) is under active development.
 Example of using the standard library and reading command line arguments:
@@ -13251,7 +13255,7 @@ $ wasmtime --dir=. preopens.wasm
 0: Preopen{ .fd = 3, .type = PreopenType{ .Dir = '.' } }
 
 ==============================================================================
-                                                      *Targets*
+                                       *Targets*
 
 Targets 
 Zig supports generating code for all targets that LLVM supports.
@@ -13510,7 +13514,7 @@ Windows x86_64
 macOS x86_64
 
 ==============================================================================
-                                                      *Style-Guide*
+                                       *Style-Guide*
 
 These coding conventions are not enforced by the compiler,
 but they are shipped in this documentation along with the
@@ -13518,7 +13522,7 @@ compiler in order to provide a point of reference, should
 anyone wish to point to an authority on agreed upon Zig coding style.
 
 ==============================================================================
-                                                      *Whitespace* 
+                                       *Whitespace* 
 
   1) 4 space indentation
 
@@ -13530,7 +13534,7 @@ anyone wish to point to an authority on agreed upon Zig coding style.
   4) Line length: aim for 100; use common sense.
 
 ==============================================================================
-                                                      *Names* 
+                                       *Names* 
 
 Roughly speaking:camelCaseFunctionName,TitleCaseTypeName,snake_case_variable_name.
 
@@ -13613,7 +13617,7 @@ style_example.zig
 See the Zig Standard Library for more examples.
 
 ==============================================================================
-                                                      *Doc-Comment-Guidance* 
+                                       *Doc-Comment-Guidance* 
 
   1) Omit any information that is redundant based
      on the name of the thing being documented.
@@ -13629,7 +13633,7 @@ See the Zig Standard Library for more examples.
      cause safety-checked Undefined Behavior when violated.
 
 ==============================================================================
-                                                      *Source-Encoding* 
+                                       *Source-Encoding* 
 
 Zig source code is encoded in UTF-8. An invalid
 UTF-8 byte sequence results in a compile error.
@@ -13672,7 +13676,7 @@ naive search such as /[ \t]/, or an advanced search such as /\s/, and in
 either case whitespace will be correctly identified.
 
 ==============================================================================
-                                                      *Keyword-Reference*
+                                       *Keyword-Reference*
 
 ┌───────────────┬──────────────────────────────────────────────────────────────┐
 │    Keyword    │                     Description                              │
@@ -13929,7 +13933,7 @@ either case whitespace will be correctly identified.
 └───────────────┴──────────────────────────────────────────────────────────────┘
 
 ==============================================================================
-                                                      *Grammar*
+                                       *Grammar*
 
 grammar.y
 Root <- skip container_doc_comment? ContainerMembers eof
@@ -14479,7 +14483,7 @@ keyword <- KEYWORD_align / KEYWORD_allowzero / KEYWORD_and / KEYWORD_anyframe
          / KEYWORD_usingnamespace / KEYWORD_var / KEYWORD_volatile / KEYWORD_while
 
 ==============================================================================
-                                                      *Zen*
+                                       *Zen*
 
  - Communicate intent precisely.
  - Edge cases matter.
