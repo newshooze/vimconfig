@@ -6,16 +6,20 @@ if exists("b:did_ftplugin")
 endif
 
 
-setlocal bufhidden=wipe
+let maplocalleader = ","
+nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/help.vim<CR>
+
+"setlocal bufhidden=wipe
 " make help window full screen
-autocmd BufWinEnter * exec ":only"
+autocmd BufEnter <buffer> exec ":only"
 " map q to close help buffer
 nnoremap <buffer> q <ESC>:bd<CR>
 " map Shift + k to close the help buffer
 nnoremap <buffer> <S-K> <ESC>:bd<CR>
-" map escape to close the help buffer :bd = bufferdelete
+" map Escape to close the help buffer :bd = bufferdelete
 nnoremap <buffer> <ESC> <ESC>:bd<CR>
+" map Enter to follow tag
+nnoremap <buffer> <CR> <C-]>
 " Don't load another plugin for this buffer
 let b:did_ftplugin = 1
-
-let b:undo_ftplugin = "setl com<"
+let b:undo_ftplugin = 1
