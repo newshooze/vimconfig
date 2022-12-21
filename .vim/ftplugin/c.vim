@@ -4,6 +4,7 @@ endif
 
 set errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GInfile included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory `%f',%X%*\a[%*\d]: Leaving directory `%f',%D%*\a: Entering directory `%f',%X%*\a: Leaving directory `%f',%DMaking %*\a in %f,%f|%l| %m
 
+set tags=~/.vim/doc/c/**/tags
 set dict=~/.vim/ftplugin/c.vim
 set complete+=k
 
@@ -11,14 +12,23 @@ let maplocalleader = ","
 map <buffer> ( <Nop>
 map <buffer> ) <Nop>
 
-nnoremap <buffer> <localleader>c :edit ~/.vim/ftplugin/c.vim<CR>
-nnoremap <buffer> <localleader>x :edit /usr/include/X11/Xlib.h<CR>
+nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
+nnoremap <buffer> <localleader>x :view /usr/include/X11/Xlib.h<CR>
+nnoremap <buffer> <localleader>q :copen<CR>
+" Open quickfix list
+nnoremap <buffer> <localleader>q :copen 5<CR>
+" Open location list
+nnoremap <buffer> <localleader>l :lopen 5<CR>
+" Opne command line history
+nnoremap <buffer> <localleader>c :<C-F>
 
-nnoremap <buffer> <S-K> :help <C-r><C-W><CR>
-nnoremap <buffer> <C-k> :!man <C-r><C-W><CR> 
+nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
+nnoremap <buffer> <C-K> :!man <C-r><C-W><CR> 
 nnoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/c.vim<CR>
 
+" Switch to header or source
 nnoremap <buffer> <F4> <ESC>:e %:r.h<CR>
+nnoremap <buffer> <S-F4> <ESC>:e %:r.c<CR>
 " Compile current filename.c and link to executable
 nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
@@ -40,15 +50,22 @@ command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
 command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
 
+function s:AVX() abort
+	source ~/.vim/ftplugin/xmmabbreviations.vim
+	set dict+=~/.vim/ftplugin/xmmabbreviations.vim
+endfunction
+
+command! -buffer AVX :call <SID>AVX()
+
 " stdio.h
 iabbrev <buffer> fgetc fgetc(FILE); /* int */<ESC>:normal 0f(<CR>
 iabbrev <buffer> fopen fopen("filename","r"); /* FILE* */<ESC>:normal 0f(<CR>
-iabbrev <buffer> fread fread(buffer,size,n,FILE); / *size_t */<ESC>:normal 0f(<CR>
-iabbrev <buffer> fwrite fwrite(buffer,size,n,FILE); / *size_t */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fread fread(buffer,size,n,FILE); /* size_t */<ESC>:normal 0f(<CR>
+iabbrev <buffer> fwrite fwrite(buffer,size,n,FILE); /* size_t */<ESC>:normal 0f(<CR>
 iabbrev <buffer> fclose fclose(FILE); /* int */<ESC>:normal 0f(<CR>
 iabbrev <buffer> fseek fseek(FILE,offset,wence); /* int - wence is SEEK_SET,SEEK_CUR,SEEK_END */<ESC>:normal 0f(<CR>
 iabbrev <buffer> ftell ftell(FILE); /* long */<ESC>:normal 0f(<CR>
-iabbrev <buffer> rewind rewind(FILE); / *void */<ESC>:normal 0f(<CR>
+iabbrev <buffer> rewind rewind(FILE); /* void */<ESC>:normal 0f(<CR>
 iabbrev <buffer> popen popen("command --args","r"); /* FILE* */<ESC>:normal 0f(<CR>
 iabbrev <buffer> pclose pclose(FILE); /* int */<ESC>:normal 0f(<CR>
 iabbrev <buffer> rewind rewind(FILE); /* void */<ESC>:normal 0f(<CR>

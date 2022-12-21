@@ -9,6 +9,7 @@ if exists("b:did_ftplugin")
   finish
 endif
 
+set helpfile=~/.vim/doc/csound/csound.txt
 set dict=~/.vim/ftplugin/csound.vim
 set complete+=k
 set hidden
@@ -24,6 +25,7 @@ nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
+nnoremap <buffer> <LocalLeader>q :copen 5<CR>
 nnoremap <buffer> <LocalLeader>e :e ~/.vim/ftplugin/csound.vim<CR>
 nnoremap <buffer> <LocalLeader>b :<C-U>InsertScoreBlock<CR>
 " Align score columns
@@ -85,6 +87,10 @@ function! ModifyColumnValueFunction(col,val,op)
 	exe ":.!awk '{VAL=" . a:val . "}" . "/" . s:awk_score_regex . "/" . "{$" . a:col . a:op . "=VAL} {print}'"
 endfunction
 
+" AlignColumnsCompletionFunction used at the
+" command prompt when 'AlignColumns is called.
+" It will cycle through the numbers 1-10 when
+" <TAB> is hit.
 function! AlignColumnsCompletionFunction(A,L,P)
 	let l:ret = ""
 	let l:index = 1

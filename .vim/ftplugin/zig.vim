@@ -7,29 +7,20 @@ endif
 let maplocalleader = ","
 
 " ----------------------- TESTING ----------------------------------
-function Select(id,result)
+function! Select(id,result)
 	echo(a:result)
 endfunction
 
-function DO()
+function! DO()
 	call popup_menu(['Red','Green','Blue'], #{callback: 'Select',line:'cursor',col:'cursor'})
 endfunction
-
-nnoremap <F2> :call DO()<CR>
+function! l:DOIT()
+	call popup_notification('CAPTION',#{line:'cursor',col:20,minwidth:4})
+endfunction
+nnoremap <F2> :call <SID>DOIT()<CR>
 " ----------------------- END TESTING ------------------------------
 set tags=~/.vim/doc/zig/**/tags
 set complete+=t
-
-au BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
-au BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
-au BufRead ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
-" <CR> moves to hyperlink under cursor
-au BufRead ~/.vim/doc/zig/zigmanual.txt nnoremap <buffer> <CR> :silent! tag <C-R><C-W><CR>
-" close help in many ways
-au BufRead ~/.vim/doc/zig/zigmanual.txt nnoremap <buffer> q :bd<CR>
-au BufRead ~/.vim/doc/zig/zigmanual.txt nnoremap <buffer> <ESC> :bd<CR>
-au BufRead ~/.vim/doc/zig/zigmanual.txt nnoremap <buffer> <C-K> :bd<CR>
-au BufRead ~/.vim/doc/zig/zigmanual.txt nnoremap <buffer> <S-K> :call GoToDefinition()<CR>
 
 function! GoToDefinition()
 	if len("<cword>")
@@ -42,19 +33,20 @@ endfunction
 nnoremap <buffer> <S-K> :call GoToDefinition()<CR>
 " Control k for zig manual
 nnoremap <buffer> <C-K> :silent! :view ~/.vim/doc/zig/zigmanual.txt<CR>:echo ''<CR>
-"nnoremap <buffer> <C-K> :silent! :view +/[*]<C-R><C-W>[*] ~/.vim/doc/zig/zig.txt<CR>:echo ''<CR>
-
+" grep word under cursor and open the quickfix list
+nnoremap <buffer> <localleader>g :vimgrep /<C-R><C-W>/j ~/.vim/doc/zig/std/**/*.zig<CR>:copen 5<CR>
 " Open quickfix list
 nnoremap <buffer> <localleader>q :copen 5<CR>
 " Open location list
 nnoremap <buffer> <localleader>l :lopen 5<CR>
-" Opne command line history
+" Open command line history
 nnoremap <buffer> <localleader>c :<C-F>
 " Open this file
 nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/zig.vim<CR>
 
 
-" sourcing doesn't seem to work in vim 9
+
+" sourcing doesn't seem to work
 inoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/zig.vim<CR>
 nnoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/zig.vim<CR>
 

@@ -36,6 +36,7 @@ let maplocalleader = ","
 nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/text.vim<CR>
 nnoremap <buffer> <localleader>m :call Menu()<CR>
 
-
 nnoremap <buffer> <F2> :source ~/.vim/ftplugin/text.vim<CR>
+
+
 let b:did_ftplugin = 1
