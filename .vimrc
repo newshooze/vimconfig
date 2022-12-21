@@ -35,9 +35,9 @@ nnoremap <leader>k <C-W>k
 nnoremap <leader>l <C-W>l
 
 " Complete file name with <C-f>
-inoremap <C-F> <C-X><C-F> 
+inoremap <C-F> <C-x><C-F> 
 " Complete line
-inoremap  <C-L> <C-X><C-L>
+inoremap  <C-L> <C-x><C-L>
 
 " Close command history window with escape.
 autocmd CmdWinEnter * nnoremap <buffer> <ESC> :q<CR>
@@ -49,7 +49,16 @@ autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
 autocmd BufLeave * if &bt=='help' | mark H | endif
 
 " Zighelp zighelp
-au! BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
+autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
+
+autocmd BufRead /usr/lib/zig/**/*.zig setlocal nomodifiable
+autocmd BufRead /usr/lib/zig/**/*.zig setlocal filetype=zighelp
+
+" Zig manual
+autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
+autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
 " move through command line history
 cnoremap <C-N> <Up>
@@ -101,6 +110,6 @@ function! ColorDemo() abort
 endfunction
 
 command! ColorDemo call ColorDemo()
-if &term =~ '256color'
-  set t_ut=
-endif
+set t_Co=256
+" Virtual console cursor block
+let &t_ve= "\e[?25h\e[?16;143;255c"
