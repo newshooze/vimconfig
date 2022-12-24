@@ -1,6 +1,6 @@
 " Cycle forward and backward through open files
-nnoremap <S-T> :bprevious<CR>
-nnoremap <S-Y> :bnext<CR>
+nnoremap <silent> <S-T> :bprevious<CR>
+nnoremap <silent> <S-Y> :bnext<CR>
 
 " These are annoying
 nnoremap <buffer> ( <NOP>
@@ -23,7 +23,7 @@ nnoremap <C-t> :tab term<CR>
 
 " Open the Quickfix List
 " <ESC> is mapped in filetype 'qf' (quickfix) to close
-nnoremap Q <ESC>:silent! copen 5<CR>:echo<CR>
+nnoremap Q :silent! copen 5<CR>:echo<CR>
 nnoremap <leader>q  <ESC>:silent! copen 5<CR>:echo<CR>
 " Open command line window
 nnoremap <leader>c <ESC>:<C-F>
@@ -39,8 +39,8 @@ inoremap <C-F> <C-x><C-F>
 " Complete line
 inoremap  <C-L> <C-x><C-L>
 
-" Close command history window with escape.
-autocmd CmdWinEnter * nnoremap <buffer> <ESC> :q<CR>
+" Close command history window in several ways.
+autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> ,c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> \c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
@@ -49,6 +49,9 @@ autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
 autocmd BufLeave * if &bt=='help' | mark H | endif
 
 " Zighelp zighelp
+autocmd BufRead ~/.vim/doc/zig/**/* setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/zig/**/* setlocal filetype=zighelp
+
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
 
@@ -60,10 +63,14 @@ autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
 autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
-" move through command line history
+" Close system header files easily
+autocmd BufRead /usr/include/* nnoremap q <ESC>:bd<CR>
+" Restore q
+autocmd BufLeave /usr/include/* nnoremap q <NOP>
+
+" Move through command line history
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
-
 
 tnoremap <ESC> <C-\><C-N><CR>
 " Close terminal with escape
@@ -91,6 +98,8 @@ set autoread
 set autowriteall
 set incsearch
 set nofoldenable
+" Make escape work instantly
+set ttimeoutlen=10
 
 filetype plugin on
 
@@ -109,7 +118,7 @@ function! ColorDemo() abort
   endfor
 endfunction
 
-command! ColorDemo call ColorDemo()
 set t_Co=256
+
 " Virtual console cursor block
 let &t_ve= "\e[?25h\e[?16;143;255c"
