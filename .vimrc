@@ -45,6 +45,8 @@ autocmd CmdWinEnter * nnoremap <buffer> ,c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> \c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
 
+" Full screen help
+autocmd BufEnter * if &bt=='help' | exec ":only" | endif
 " Return to previous help topic with 'H
 autocmd BufLeave * if &bt=='help' | mark H | endif
 
