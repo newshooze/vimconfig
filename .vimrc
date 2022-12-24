@@ -1,6 +1,6 @@
 " Cycle forward and backward through open files
-nnoremap <silent> <S-T> :bprevious<CR>
 nnoremap <silent> <S-Y> :bnext<CR>
+nnoremap <silent> <S-T> :bprevious<CR>
 
 " These are annoying
 nnoremap <buffer> ( <NOP>
@@ -78,7 +78,6 @@ tnoremap <ESC><ESC> exit<CR>
 
 autocmd BufLeave * let b:winview = winsaveview() 
 autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif 
-
 
 syntax on
 colorscheme pastel256
