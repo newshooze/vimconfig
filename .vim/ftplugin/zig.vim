@@ -117,10 +117,9 @@ function! s:FindTagUnderCursor(word) abort
 		call add(l:funcnames,dictitem.name)
 	endfor
 	let l:menuitems = JustifyPair(l:funcnames,l:filenames)	
-	call popup_menu(menuitems, #{callback: 'SelectTagFromMenu',line:'cursor',col:'cursor'})
+	call popup_menu(menuitems, #{callback: 'SelectTagFromMenu',line:'cursor',col:'cursor',maxheight: &lines -5})
 endfunction
 
-nnoremap <F2> :silent! call <SID>FindTagUnderCursor("<cword>")<CR>
 set tags=~/.vim/doc/zig/**/tags
 set complete+=t
 
@@ -138,6 +137,7 @@ nnoremap <buffer> <localleader>l :lopen 5<CR>
 nnoremap <buffer> <localleader>c :<C-F>
 " Open this file
 nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/zig.vim<CR>
+nnoremap <expr> q pumvisible() ? '<ESC>' : '<CR>'
 
 " Sourcing doesn't seem to work
 inoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/zig.vim<CR>

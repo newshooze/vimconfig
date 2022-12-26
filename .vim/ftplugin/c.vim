@@ -11,19 +11,26 @@ set complete+=k
 let maplocalleader = ","
 map <buffer> ( <Nop>
 map <buffer> ) <Nop>
-iabbrev <buffer> fgetfucked fgetfucked(FILE); /* int */<ESC>?(<CR>
+
+" Edit this file
 nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
+
 nnoremap <buffer> <localleader>x :view /usr/include/X11/Xlib.h<CR>
-nnoremap <buffer> <localleader>q :copen<CR>
+
 " Open quickfix list
 nnoremap <buffer> <localleader>q :copen 5<CR>
 " Open location list
 nnoremap <buffer> <localleader>l :lopen 5<CR>
-" Opne command line history
+" Open command line history
 nnoremap <buffer> <localleader>c :<C-F>
+" Open forward search history
+nnoremap <buffer> <localleader>/ /<C-F>
+" Open reverse search history
+nnoremap <buffer> <localleader>? ?<C-F>
 
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR> 
+" Edit this file
 nnoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/c.vim<CR>
 
 " Switch to header or source
@@ -51,13 +58,14 @@ command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
 
 function s:AVX() abort
-	source ~/.vim/ftplugin/xmmabbreviations.vim
-	set dict+=~/.vim/ftplugin/xmmabbreviations.vim
+	source ~/.vim/ftplugin/simd/xmmabbreviations.vim
+	set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
 endfunction
 
 command! -buffer AVX :call <SID>AVX()
 
 " stdio.h
+iabbrev <buffer> fgets fgets(buffer,size,FILE); /* char* */<ESC>?(<CR>
 iabbrev <buffer> fgetc fgetc(FILE); /* int */<ESC>?(<CR>
 iabbrev <buffer> fopen fopen("filename","r"); /* FILE* */<ESC>?(<CR>
 iabbrev <buffer> fread fread(buffer,size,n,FILE); /* size_t */<ESC>?(<CR>
@@ -69,9 +77,65 @@ iabbrev <buffer> rewind rewind(FILE); /* void */<ESC>?(<CR>
 iabbrev <buffer> popen popen("command --args","r"); /* FILE* */<ESC>?(<CR>
 iabbrev <buffer> pclose pclose(FILE); /* int */<ESC>?(<CR>
 iabbrev <buffer> rewind rewind(FILE); /* void */<ESC>?(<CR>
+iabbrev <buffer> printf printf("",); /* int */<ESC>?(<CR>
 iabbrev <buffer> fprintf fprintf(FILE,format); /* int */<ESC>?(<CR>
 iabbrev <buffer> sprintf sprintf(buffer,format); /* int */<ESC>?(<CR>
 iabbrev <buffer> snprintf snprintf(buffer,size_t,format); /* int */<ESC>?(<CR>
+
+" string.h
+iabbrev <buffer> memcpy memcpy(dest,src,n); /* void */<ESC>?(<CR>
+iabbrev <buffer> memmove memmove(dest,src,n); /* void */<ESC>?(<CR>
+iabbrev <buffer> memccpy memccpy(dest,src,c,n); /* void */<ESC>?(<CR>
+iabbrev <buffer> memset memset(dest,c,n); /* void */<ESC>?(<CR>
+iabbrev <buffer> memcmp memcmp(s1,s2,n); /* int */<ESC>?(<CR>
+iabbrev <buffer> memchr memchr(s,c,n); /* void* - Search N bytes of S for C. */<ESC>?(<CR>
+iabbrev <buffer> rawmemchr rawmemchr(void*,c); /* void* */<ESC>?(<CR>
+iabbrev <buffer> memrchr memrchr(s,c,n); /* void* - Search N bytes of S for the final occurrence of C. */<ESC>?(<CR>
+iabbrev <buffer> strcpy strcpy(dest,src); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strncpy strncpy(dest,src,n); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strcat strcat(dest,src); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strncat strncat(dest,src,n); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strcmp strcmp(s1,s2); /* int */<ESC>?(<CR>
+iabbrev <buffer> strncmp strncmp(s1,s2,n); /* int */<ESC>?(<CR>
+iabbrev <buffer> strcoll strcoll(s1,s2); /* int - Compare the collated forms of S1 and S2. */<ESC>?(<CR>
+iabbrev <buffer> strdup strdup(s); /* char* - Duplicate S, returning an identical malloc'd s */<ESC>?(<CR>
+iabbrev <buffer> strndup strndup(s,n); /* char* - Return a malloc'd copy of at most N bytes of S. */<ESC>?<CR>
+iabbrev <buffer> strchr strchr(s,c); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strchrnul strchrnul(s,c); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strcspn strcspn(s,c); /* size_t */<ESC>?(<CR>
+iabbrev <buffer> strspn strspn(s,c); /* size_t */<ESC>?(<CR>
+iabbrev <buffer> strpbrk strpbrk(s,c); /* char* - Find the first occurrence in S of any character in C. */<ESC>?(<CR>
+iabbrev <buffer> strstr strstr(haystack,needle); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strtok strtok(s,delim); /* char* */<ESC>?(<CR>
+iabbrev <buffer> strlen strlen(s); /* size_t */<ESC>?(<CR>
+iabbrev <buffer> strerror strerror(int); /* char* */<ESC>?(<CR>
+iabbrev <buffer> basename basename(filename); /* char* */<ESC>?(<CR>
+
+
+" stdlib.h
+iabbrev <buffer> aligned_alloc aligned_alloc(alignment,size); /* void* - ISOC11 */<ESC>?(<CR>
+iabbrev <buffer> abort abort(); /* void */<ESC>?(<CR>
+iabbrev <buffer> atexit atexit(void (*__func) (void)); /* int */<ESC>?(<CR> 
+iabbrev <buffer> exit exit(int); /* void */<ESC>?(<CR>
+iabbrev <buffer> getenv getenv(char*); /* char* */<ESC>?(<CR>
+iabbrev <buffer> putenv putenv(char*); /* int */<ESC>?(<CR>
+iabbrev <buffer> system system(char*); /* int */<ESC>?(<CR>
+iabbrev <buffer> qsort qsort(base,member,size,function); /* void */<ESC>?(<CR>
+iabbrev <buffer> abs abs(int); /* int */<ESC>?(<CR>
+iabbrev <buffer> labs labs(long int); /* long int */<ESC>?(<CR>
+iabbrev <buffer> div div(int,int); /* div_t */<ESC>?(<CR>
+iabbrev <buffer> ldiv ldiv(long int,long int); /* ldiv_t */<ESC>?(<CR>
+
+" time.h
+iabbrev <buffer> clock clock(); /* clock_t */<ESC>?(<CR>
+iabbrev <buffer> time time(time_t*) /* time_t */<ESC>?(<CR>
+iabbrev <buffer> difftime difftime(time_t,time_t) /* double */<ESC>?(<CR>
+iabbrev <buffer> mktime mktime(struct tm *tp) /* time_t */<ESC>?(<CR>
+iabbrev <buffer> strftime strftime(char*,size_t,format,struct *tm); /* size_t */<ESC>?(<CR>
+iabbrev <buffer> asctime asctime(struct tm*); /* char* */<ESC>?(<CR>
+iabbrev <buffer> timer_create(colckid_t,struct sigevent*,timer_t*); /* int */<ESC>?(<CR>
+
+
 
 " sys/mman.h memory mapping mmap
 iabbrev <buffer> mmap mmap(void *addr,size_t len,int prot,int flags,int fd,off_t offset); /* void* */<ESC>?(<CR>
