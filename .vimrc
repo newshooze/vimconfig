@@ -10,6 +10,7 @@ nnoremap <buffer> ) <NOP>
 nnoremap <C-q> q
 " Kill original macro mapping
 nnoremap q <NOP>
+vnoremap q <NOP>
 
 " default leader key is "\"
 " edit .vimrc with \e ( <leader>v )
@@ -88,7 +89,6 @@ let loaded_matchparen=1
 
 set shortmess+=I
 set ruler
-set undodir=~/.vim/undo
 set nobackup
 set noswapfile
 set tabstop=2
@@ -105,19 +105,6 @@ set ttimeoutlen=10
 filetype plugin on
 
 let g:loaded_matchparen=1
-
-function! ColorDemo() abort
-  for n in range(0,255)
-    exec 'hi ColorDemo ctermfg='.n.' ctermbg='.n
-    echon printf("%3d",n)
-    echohl ColorDemo
-    echon 'XXX'
-    echohl NONE
-    if (n+1) % 16 == 0
-      echo ""
-    endif
-  endfor
-endfunction
 
 set t_Co=256
 
