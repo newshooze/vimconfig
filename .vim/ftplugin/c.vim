@@ -111,7 +111,6 @@ iabbrev <buffer> strlen strlen(s); /* size_t */<ESC>?(<CR>
 iabbrev <buffer> strerror strerror(int); /* char* */<ESC>?(<CR>
 iabbrev <buffer> basename basename(filename); /* char* */<ESC>?(<CR>
 
-
 " stdlib.h
 iabbrev <buffer> aligned_alloc aligned_alloc(alignment,size); /* void* - ISOC11 */<ESC>?(<CR>
 iabbrev <buffer> abort abort(); /* void */<ESC>?(<CR>
@@ -133,7 +132,27 @@ iabbrev <buffer> difftime difftime(time_t,time_t) /* double */<ESC>?(<CR>
 iabbrev <buffer> mktime mktime(struct tm *tp) /* time_t */<ESC>?(<CR>
 iabbrev <buffer> strftime strftime(char*,size_t,format,struct *tm); /* size_t */<ESC>?(<CR>
 iabbrev <buffer> asctime asctime(struct tm*); /* char* */<ESC>?(<CR>
-iabbrev <buffer> timer_create(colckid_t,struct sigevent*,timer_t*); /* int */<ESC>?(<CR>
+iabbrev <buffer> timer_create timer_create(colckid_t,struct sigevent*,timer_t*); /* int */<ESC>?(<CR>
+iabbrev <buffer> timer_delete timer_delete(timer_t); /* int */<ESC>?(<CR>
+iabbrev <buffer> timer_gettime timer_gettime(timer_t,struct itimerspec*); /* int */<ESC>?(<CR>
+
+" unistd.h
+iabbrev <buffer> pipe pipe(int __pipedes[2]); /* int */<ESC>?(<CR>
+iabbrev <buffer> sleep sleep(unsigned int seconds); /* unsigned int */<ESC>?(<CR>
+iabbrev <buffer> usleep usleep(microseconds); /* unsigned int */<ESC>?(<CR>
+iabbrev <buffer> fchown fchown(int fd,uid_t owner,gid_t group); /* int */<ESC>?(<CR>
+iabbrev <buffer> lchown lchown(char *file,_uid_t owner,gid_t group); /* int - Change symbolic link ownership */<ESC>?(<CR>
+iabbrev <buffer> getcwd getcwd(buf,size_t bufsize); /* char */<ESC>?(<CR>
+iabbrev <buffer> execve execve(char *path,char *argv[],char* envp[]); /* int */<ESC>?(<CR>
+iabbrev <buffer> execv execv(char *path,char *argv[]); /* int - uses `environ` */<ESC>?(<CR>
+iabbrev <buffer> nice nice(int n); /* int */<ESC>>?(<CR>
+iabbrev <buffer> getpid getpid(); /* __pid_t */<ESC>?(<CR>
+iabbrev <buffer> getppid getppid(); /* __pid_t */<ESC>?(<CR>
+iabbrev <buffer> getpgrp getpgrp(); /* __pid_t */<ESC>?(<CR>
+iabbrev <buffer> __getpgid(__pid_t); /* __pid_t */<ESC>?(<CR>
+iabbrev <buffer> setpgid setpgid(__pid_t pid,__pid_t pgid); /* int */<ESC>?(<CR>
+
+
 
 
 
