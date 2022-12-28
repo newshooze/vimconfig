@@ -13,6 +13,7 @@ nnoremap q <NOP>
 vnoremap q <NOP>
 
 " default leader key is "\"
+nnoremap <leader>n :set number!<CR>
 " edit .vimrc with \e ( <leader>v )
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " edit .vimrc with \v ( <leader>v )
