@@ -33,6 +33,7 @@ nnoremap <leader>bin :call ToBin()<CR>
 nnoremap <leader>oct :call ToOct()<CR>
 nnoremap <leader>dec :call ToDec()<CR>
 nnoremap <leader>hex :call ToHex()<CR>
+nnoremap <leader>color :call ColorDemo()<CR>
 
 function! ToBin() abort
 	call TransformNumber(2)
@@ -45,6 +46,14 @@ function! ToOct() abort
 endfunction
 function! ToDec() abort
 	call TransformNumber(10)
+endfunction
+
+function! TextfileToHex() abort
+	:%!xxd
+endfunction
+
+function! HexfileToText() abort
+	:%!xxd -r
 endfunction
 
 function! ColorDemo() abort
