@@ -14,15 +14,18 @@ vnoremap q <NOP>
 
 " default leader key is "\"
 nnoremap <leader>n :set number!<CR>
-" edit .vimrc with \e ( <leader>v )
+" edit .vimrc with \e ( <leader>e )
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " edit .vimrc with \v ( <leader>v )
 nnoremap <leader>v :edit ~/.vimrc<CR>
+" Switch to hex mode
+nnoremap <leader>x :call TextfileToHex()<CR>
+" Switch to text mode
+nnoremap <leader>X :call HexfileToText()<CR>
 " Launch terminal with \t ( <leader>t )
 nnoremap <leader>t :tab term<CR>
 " Launch terminal with <C-t>
 nnoremap <C-t> :tab term<CR>
-
 " Open the Quickfix List
 " <ESC> is mapped in filetype 'qf' (quickfix) to close
 nnoremap Q :silent! copen 5<CR>:echo<CR>
