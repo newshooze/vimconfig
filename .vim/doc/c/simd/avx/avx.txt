@@ -596,7 +596,8 @@ __m256 _mm256_blend_ps (__m256 a, __m256 b, const int imm8)
 Instruction: vblendps ymm, ymm, ymm, imm8
 CPUID Flags: AVX
 Description
-Blend packed single-precision (32-bit) floating-point elements from a and b using control mask imm8, and store the results in dst.
+Blend packed single-precision (32-bit) floating-point elements from a and b
+using control mask imm8, and store the results in dst.
 Operation
 FOR j := 0 to 7
 	i := j*32
@@ -1144,7 +1145,7 @@ Cast vector of type __m256i to type __m128i. This intrinsic is only used for
 compilation and does not generate any instructions, thus it has zero latency.
 
 ===============================================================================
-                        *_mm256_ceil_pd* *vroundpd*
+                        *_mm256_ceil_pd*
 Synopsis
 __m256d _mm256_ceil_pd (__m256d a)
 #include <immintrin.h>
@@ -1162,7 +1163,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm256_ceil_ps* *vroundps*
+                        *_mm256_ceil_ps*
 Synopsis
 __m256 _mm256_ceil_ps (__m256 a)
 #include <immintrin.h>
@@ -1873,7 +1874,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_cvtneebf16_ps* *vcvtneebf162ps*
+                        *_mm_cvtneebf16_ps*
 Synopsis
 __m128 _mm_cvtneebf16_ps (const __m128bh* __A)
 #include <immintrin.h>
@@ -1891,7 +1892,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_cvtneebf16_ps* *vcvtneebf162ps*
+                        *_mm256_cvtneebf16_ps*
 Synopsis
 __m256 _mm256_cvtneebf16_ps (const __m256bh* __A)
 #include <immintrin.h>
@@ -1909,7 +1910,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_cvtneeph_ps* *vcvtneeph2ps*
+                        *_mm_cvtneeph_ps*
 Synopsis
 __m128 _mm_cvtneeph_ps (const __m128h* __A)
 #include <immintrin.h>
@@ -1927,7 +1928,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_cvtneeph_ps* *vcvtneeph2ps*
+                        *_mm256_cvtneeph_ps*
 Synopsis
 __m256 _mm256_cvtneeph_ps (const __m256h* __A)
 #include <immintrin.h>
@@ -1945,7 +1946,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_cvtneobf16_ps* *vcvtneobf162ps*
+                        *_mm_cvtneobf16_ps*
 Synopsis
 __m128 _mm_cvtneobf16_ps (const __m128bh* __A)
 #include <immintrin.h>
@@ -1962,14 +1963,16 @@ FOR j := 0 to 3
 ENDFOR
 dst[MAX:128] := 0
 =============================================================================== 
-                        *_mm256_cvtneobf16_ps* *vcvtneobf162ps*
+                        *_mm256_cvtneobf16_ps*
 Synopsis
 __m256 _mm256_cvtneobf16_ps (const __m256bh* __A)
 #include <immintrin.h>
 Instruction: vcvtneobf162ps ymm, m256
 CPUID Flags: AVX_NE_CONVERT
 Description
-Convert packed BF16 (16-bit) floating-point odd-indexed elements stored at memory locations starting at location __A to packed single-precision (32-bit) floating-point elements, and store the results in dst.
+Convert packed BF16 (16-bit) floating-point odd-indexed elements stored at
+memory locations starting at location __A to packed single-precision (32-bit)
+floating-point elements, and store the results in dst.
 Operation
 FOR j := 0 to 7
 	m := j*32
@@ -1978,14 +1981,16 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_cvtneoph_ps* *vcvtneoph2ps*
+                        *_mm_cvtneoph_ps*
 Synopsis
 __m128 _mm_cvtneoph_ps (const __m128h* __A)
 #include <immintrin.h>
 Instruction: vcvtneoph2ps xmm, m128
 CPUID Flags: AVX_NE_CONVERT
 Description
-Convert packed half-precision (16-bit) floating-point odd-indexed elements stored at memory locations starting at location __A to packed single-precision (32-bit) floating-point elements, and store the results in dst.
+Convert packed half-precision (16-bit) floating-point odd-indexed elements
+stored at memory locations starting at location __A to packed single-precision
+(32-bit) floating-point elements, and store the results in dst.
 Operation
 FOR j := 0 to 3
 	m := j*32
@@ -1994,7 +1999,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_cvtneoph_ps* *vcvtneoph2ps*
+                        *_mm256_cvtneoph_ps*
 Synopsis
 __m256 _mm256_cvtneoph_ps (const __m256h* __A)
 #include <immintrin.h>
@@ -2012,7 +2017,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_cvtneps_avx_pbh* *vcvtneps2bf16*
+                        *_mm_cvtneps_avx_pbh*
 Synopsis
 __m128bh _mm_cvtneps_avx_pbh (__m128 __A)
 #include <immintrin.h>
@@ -2028,7 +2033,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_cvtneps_avx_pbh* *vcvtneps2bf16*
+                        *_mm256_cvtneps_avx_pbh*
 Synopsis
 __m128bh _mm256_cvtneps_avx_pbh (__m256 __A)
 #include <immintrin.h>
@@ -2044,7 +2049,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm_cvtneps_pbh* *vcvtneps2bf16*
+                        *_mm_cvtneps_pbh*
 Synopsis
 __m128bh _mm_cvtneps_pbh (__m128 __A)
 #include <immintrin.h>
@@ -2060,7 +2065,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_cvtneps_pbh* *vcvtneps2bf16*
+                        *_mm256_cvtneps_pbh*
 Synopsis
 __m128bh _mm256_cvtneps_pbh (__m256 __A)
 #include <immintrin.h>
@@ -2292,7 +2297,7 @@ dst[255:128] := DP(a[255:128], b[255:128], imm8[7:0])
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbssd_epi32* *vpdpbssd*
+                        *_mm_dpbssd_epi32*
 Synopsis
 __m128i _mm_dpbssd_epi32 (__m128i __W, __m128i __A, __m128i __B)
 #include <immintrin.h>
@@ -2314,7 +2319,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbssd_epi32* *vpdpbssd*
+                        *_mm256_dpbssd_epi32*
 Synopsis
 __m256i _mm256_dpbssd_epi32 (__m256i __W, __m256i __A, __m256i __B)
 #include <immintrin.h>
@@ -2336,7 +2341,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbssds_epi32* *vpdpbssds*
+                        *_mm_dpbssds_epi32*
 Synopsis
 __m128i _mm_dpbssds_epi32 (__m128i __W, __m128i __A, __m128i __B)
 #include <immintrin.h>
@@ -2358,7 +2363,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbssds_epi32* *vpdpbssds*
+                        *_mm256_dpbssds_epi32*
 Synopsis
 __m256i _mm256_dpbssds_epi32 (__m256i __W, __m256i __A, __m256i __B)
 #include <immintrin.h>
@@ -2380,7 +2385,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbsud_epi32* *vpdpbsud*
+                        *_mm_dpbsud_epi32*
 Synopsis
 __m128i _mm_dpbsud_epi32 (__m128i __W, __m128i __A, __m128i __B)
 #include <immintrin.h>
@@ -2402,7 +2407,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbsud_epi32* *vpdpbsud*
+                        *_mm256_dpbsud_epi32*
 Synopsis
 __m256i _mm256_dpbsud_epi32 (__m256i __W, __m256i __A, __m256i __B)
 #include <immintrin.h>
@@ -2422,7 +2427,8 @@ FOR j := 0 to 7
 	dst.dword[j] := __W.dword[j] + tmp1 + tmp2 + tmp3 + tmp4
 ENDFOR
 dst[MAX:256] := 0
-                        *_mm_dpbsuds_epi32* *vpdpbsuds*
+===============================================================================
+                        *_mm_dpbsuds_epi32*
 Synopsis
 __m128i _mm_dpbsuds_epi32 (__m128i __W, __m128i __A, __m128i __B)
 #include <immintrin.h>
@@ -2444,7 +2450,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbsuds_epi32* *vpdpbsuds*
+                        *_mm256_dpbsuds_epi32*
 Synopsis
 __m256i _mm256_dpbsuds_epi32 (__m256i __W, __m256i __A, __m256i __B)
 #include <immintrin.h>
@@ -2466,7 +2472,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbusd_avx_epi32* *vpdpbusd*
+                        *_mm_dpbusd_avx_epi32*
 Synopsis
 __m128i _mm_dpbusd_avx_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2488,7 +2494,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbusd_avx_epi32* *vpdpbusd*
+                        *_mm256_dpbusd_avx_epi32*
 Synopsis
 __m256i _mm256_dpbusd_avx_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2510,7 +2516,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbusd_epi32* *vpdpbusd*
+                        *_mm_dpbusd_epi32*
 Synopsis
 __m128i _mm_dpbusd_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2532,7 +2538,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm_dpbusds_avx_epi32* *vpdpbusds*
+                        *_mm_dpbusds_avx_epi32*
 Synopsis
 __m128i _mm_dpbusds_avx_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2554,7 +2560,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbusds_avx_epi32* *vpdpbusds*
+                        *_mm256_dpbusds_avx_epi32*
 Synopsis
 __m256i _mm256_dpbusds_avx_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2576,7 +2582,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbusds_epi32* *vpdpbusds*
+                        *_mm_dpbusds_epi32*
 Synopsis
 __m128i _mm_dpbusds_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2598,7 +2604,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbusds_epi32* *vpdpbusds*
+                        *_mm256_dpbusds_epi32*
 Synopsis
 __m256i _mm256_dpbusds_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2620,7 +2626,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbuud_epi32* *vpdpbuud*
+                        *_mm_dpbuud_epi32*
 Synopsis
 __m128i _mm_dpbuud_epi32 (__m128i __W, __m128i __A, __m128i __B)
 #include <immintrin.h>
@@ -2642,7 +2648,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbuud_epi32* *vpdpbuud*
+                        *_mm256_dpbuud_epi32*
 Synopsis
 __m256i _mm256_dpbuud_epi32 (__m256i __W, __m256i __A, __m256i __B)
 #include <immintrin.h>
@@ -2664,7 +2670,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpbuuds_epi32* *vpdpbuuds*
+                        *_mm_dpbuuds_epi32*
 Synopsis
 __m128i _mm_dpbuuds_epi32 (__m128i __W, __m128i __A, __m128i __B)
 #include <immintrin.h>
@@ -2686,7 +2692,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpbuuds_epi32* *vpdpbuuds*
+                        *_mm256_dpbuuds_epi32*
 Synopsis
 __m256i _mm256_dpbuuds_epi32 (__m256i __W, __m256i __A, __m256i __B)
 #include <immintrin.h>
@@ -2708,7 +2714,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpwssd_avx_epi32* *vpdpwssd*
+                        *_mm_dpwssd_avx_epi32*
 Synopsis
 __m128i _mm_dpwssd_avx_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2728,7 +2734,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpwssd_avx_epi32* *vpdpwssd*
+                        *_mm256_dpwssd_avx_epi32*
 Synopsis
 __m256i _mm256_dpwssd_avx_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2748,7 +2754,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpwssd_epi32* *vpdpwssd*
+                        *_mm_dpwssd_epi32*
 Synopsis
 __m128i _mm_dpwssd_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2768,7 +2774,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpwssd_epi32* *vpdpwssd*
+                        *_mm256_dpwssd_epi32*
 Synopsis
 __m256i _mm256_dpwssd_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2788,7 +2794,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpwssds_avx_epi32* *vpdpwssds*
+                        *_mm_dpwssds_avx_epi32*
 Synopsis
 __m128i _mm_dpwssds_avx_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2808,7 +2814,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpwssds_avx_epi32* *vpdpwssds*
+                        *_mm256_dpwssds_avx_epi32*
 Synopsis
 __m256i _mm256_dpwssds_avx_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2828,7 +2834,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 =============================================================================== 
-                        *_mm_dpwssds_epi32* *vpdpwssds*
+                        *_mm_dpwssds_epi32*
 Synopsis
 __m128i _mm_dpwssds_epi32 (__m128i src, __m128i a, __m128i b)
 #include <immintrin.h>
@@ -2848,7 +2854,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 =============================================================================== 
-                        *_mm256_dpwssds_epi32* *vpdpwssds*
+                        *_mm256_dpwssds_epi32*
 Synopsis
 __m256i _mm256_dpwssds_epi32 (__m256i src, __m256i a, __m256i b)
 #include <immintrin.h>
@@ -2904,7 +2910,7 @@ Operation
 dst[63:0] := (a[255:0] >> (index[1:0] * 64))[63:0]
 
 ===============================================================================
-                        *_mm256_extract_epi8* *vextractf128*
+                        *_mm256_extract_epi8*
 Synopsis
 int _mm256_extract_epi8 (__m256i a, const int index)
 #include <immintrin.h>
@@ -2916,7 +2922,7 @@ Operation
 dst[7:0] := (a[255:0] >> (index[4:0] * 8))[7:0]
 
 ===============================================================================
-                        *_mm256_extractf128_pd* *vextractf128*
+                        *_mm256_extractf128_pd*
 Synopsis
 __m128d _mm256_extractf128_pd (__m256d a, const int imm8)
 #include <immintrin.h>
@@ -2969,7 +2975,7 @@ ESAC
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_extracti128_si256* *vextracti128*
+                        *_mm256_extracti128_si256*
 Synopsis
 __m128i _mm256_extracti128_si256 (__m256i a, const int imm8)
 #include <immintrin.h>
@@ -2986,7 +2992,7 @@ ESAC
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_floor_pd* *vroundpd*
+                        *_mm256_floor_pd*
 Synopsis
 __m256d _mm256_floor_pd (__m256d a)
 #include <immintrin.h>
@@ -3004,7 +3010,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm256_floor_ps* *vroundps*
+                        *_mm256_floor_ps*
 Synopsis
 __m256 _mm256_floor_ps (__m256 a)
 #include <immintrin.h>
@@ -3022,7 +3028,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmadd_pd* *vfmadd132pd*
+                        *_mm_fmadd_pd*
 Synopsis
 __m128d _mm_fmadd_pd (__m128d a, __m128d b, __m128d c)
 #include <immintrin.h>
@@ -3041,7 +3047,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_fmadd_pd* *vfmadd132pd*
+                        *_mm256_fmadd_pd*
 Synopsis
 __m256d _mm256_fmadd_pd (__m256d a, __m256d b, __m256d c)
 #include <immintrin.h>
@@ -3060,7 +3066,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmadd_ps* *vfmadd132ps*
+                        *_mm_fmadd_ps*
 Synopsis
 __m128 _mm_fmadd_ps (__m128 a, __m128 b, __m128 c)
 #include <immintrin.h>
@@ -3079,7 +3085,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_fmadd_ps* *vfmadd132ps*
+                        *_mm256_fmadd_ps*
 Synopsis
 __m256 _mm256_fmadd_ps (__m256 a, __m256 b, __m256 c)
 #include <immintrin.h>
@@ -3098,7 +3104,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmadd_sd* *vfmadd132sd*
+                        *_mm_fmadd_sd*
 Synopsis
 __m128d _mm_fmadd_sd (__m128d a, __m128d b, __m128d c)
 #include <immintrin.h>
@@ -3116,7 +3122,7 @@ dst[127:64] := a[127:64]
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_fmadd_ss* *vfmadd132ss*
+                        *_mm_fmadd_ss*
 Synopsis
 __m128 _mm_fmadd_ss (__m128 a, __m128 b, __m128 c)
 #include <immintrin.h>
@@ -3134,7 +3140,7 @@ dst[127:32] := a[127:32]
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_fmaddsub_pd* *vfmaddsub132pd*
+                        *_mm_fmaddsub_pd*
 Synopsis
 __m128d _mm_fmaddsub_pd (__m128d a, __m128d b, __m128d c)
 #include <immintrin.h>
@@ -3158,7 +3164,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_fmaddsub_pd* *vfmaddsub132pd*
+                        *_mm256_fmaddsub_pd*
 Synopsis
 __m256d _mm256_fmaddsub_pd (__m256d a, __m256d b, __m256d c)
 #include <immintrin.h>
@@ -3206,7 +3212,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_fmaddsub_ps* *vfmaddsub132ps*
+                        *_mm256_fmaddsub_ps*
 Synopsis
 __m256 _mm256_fmaddsub_ps (__m256 a, __m256 b, __m256 c)
 #include <immintrin.h>
@@ -3230,7 +3236,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmsub_pd* *vfmsub132pd*
+                        *_mm_fmsub_pd*
 Synopsis
 __m128d _mm_fmsub_pd (__m128d a, __m128d b, __m128d c)
 #include <immintrin.h>
@@ -3249,7 +3255,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_fmsub_pd* *vfmsub132pd*
+                        *_mm256_fmsub_pd*
 Synopsis
 __m256d _mm256_fmsub_pd (__m256d a, __m256d b, __m256d c)
 #include <immintrin.h>
@@ -3268,7 +3274,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmsub_ps* *vfmsub132ps*
+                        *_mm_fmsub_ps*
 Synopsis
 __m128 _mm_fmsub_ps (__m128 a, __m128 b, __m128 c)
 #include <immintrin.h>
@@ -3287,7 +3293,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_fmsub_ps* *vfmsub132ps*
+                        *_mm256_fmsub_ps*
 Synopsis
 __m256 _mm256_fmsub_ps (__m256 a, __m256 b, __m256 c)
 #include <immintrin.h>
@@ -3306,7 +3312,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmsub_sd* *vfmsub132sd*
+                        *_mm_fmsub_sd*
 (__m128d a, __m128d b, __m128d c)
 Synopsis
 __m128d _mm_fmsub_sd (__m128d a, __m128d b, __m128d c)
@@ -3326,7 +3332,7 @@ dst[127:64] := a[127:64]
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_fmsub_ss* *vfmsub132ss*
+                        *_mm_fmsub_ss*
 Synopsis
 __m128 _mm_fmsub_ss (__m128 a, __m128 b, __m128 c)
 #include <immintrin.h>
@@ -3345,7 +3351,7 @@ dst[127:32] := a[127:32]
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_fmsubadd_pd* *vfmsubadd132pd*
+                        *_mm_fmsubadd_pd*
 Synopsis
 __m128d _mm_fmsubadd_pd (__m128d a, __m128d b, __m128d c)
 #include <immintrin.h>
@@ -3369,7 +3375,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-*_mm256_fmsubadd_pd* *vfmsubadd132pd*
+*_mm256_fmsubadd_pd*
 Synopsis
 __m256d _mm256_fmsubadd_pd (__m256d a, __m256d b, __m256d c)
 #include <immintrin.h>
@@ -3393,7 +3399,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_fmsubadd_ps* *vfmsubadd132ps*
+                        *_mm_fmsubadd_ps*
 Synopsis
 __m128 _mm_fmsubadd_ps (__m128 a, __m128 b, __m128 c)
 #include <immintrin.h>
@@ -3907,7 +3913,7 @@ dst[255:240] := Saturate16(b[239:224] - b[255:240])
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_i32gather_epi32* *vpgatherdd*
+                        *_mm_i32gather_epi32*
 Synopsis
 __m128i _mm_i32gather_epi32 (int const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -3928,7 +3934,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_mask_i32gather_epi32* *vpgatherdd*
+                        *_mm_mask_i32gather_epi32*
 Synopsis
 __m128i _mm_mask_i32gather_epi32 (__m128i src, int const* base_addr, __m128i vindex, __m128i mask, const int scale)
 #include <immintrin.h>
@@ -3955,14 +3961,17 @@ mask[MAX:128] := 0
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_i32gather_epi32* *vpgatherdd*
+                        *_mm256_i32gather_epi32*
 Synopsis
 __m256i _mm256_i32gather_epi32 (int const* base_addr, __m256i vindex, const int scale)
 #include <immintrin.h>
 Instruction: vpgatherdd ymm, vm32x, ymm
 CPUID Flags: AVX2
 Description
-Gather 32-bit integers from memory using 32-bit indices. 32-bit elements are loaded from addresses starting at base_addr and offset by each 32-bit element in vindex (each index is scaled by the factor in scale). Gathered elements are merged into dst. scale should be 1, 2, 4 or 8.
+Gather 32-bit integers from memory using 32-bit indices. 32-bit elements are
+loaded from addresses starting at base_addr and offset by each 32-bit element
+in vindex (each index is scaled by the factor in scale). Gathered elements are
+merged into dst. scale should be 1, 2, 4 or 8.
 Operation
 FOR j := 0 to 7
 	i := j*32
@@ -3973,7 +3982,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm256_mask_i32gather_epi32* *vpgatherdd*
+                        *_mm256_mask_i32gather_epi32*
 Synopsis
 __m256i _mm256_mask_i32gather_epi32 (__m256i src, int const* base_addr, __m256i vindex, __m256i mask, const int scale)
 #include <immintrin.h>
@@ -4000,7 +4009,7 @@ mask[MAX:256] := 0
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_i32gather_epi64* *vpgatherdq*
+                        *_mm_i32gather_epi64*
 Synopsis
 __m128i _mm_i32gather_epi64 (__int64 const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4021,7 +4030,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_mask_i32gather_epi64* *vpgatherdq*
+                        *_mm_mask_i32gather_epi64*
 Synopsis
 __m128i _mm_mask_i32gather_epi64 (__m128i src, __int64 const* base_addr, __m128i vindex, __m128i mask, const int scale)
 #include <immintrin.h>
@@ -4048,7 +4057,7 @@ mask[MAX:128] := 0
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_i32gather_epi64* *vpgatherdq*
+                        *_mm256_i32gather_epi64*
 Synopsis
 __m256i _mm256_i32gather_epi64 (__int64 const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4069,14 +4078,18 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm256_mask_i32gather_epi64* *vpgatherdq*
+                        *_mm256_mask_i32gather_epi64*
 Synopsis
 __m256i _mm256_mask_i32gather_epi64 (__m256i src, __int64 const* base_addr, __m128i vindex, __m256i mask, const int scale)
 #include <immintrin.h>
 Instruction: vpgatherdq ymm, vm32x, ymm
 CPUID Flags: AVX2
 Description
-Gather 64-bit integers from memory using 32-bit indices. 64-bit elements are loaded from addresses starting at base_addr and offset by each 32-bit element in vindex (each index is scaled by the factor in scale). Gathered elements are merged into dst using mask (elements are copied from src when the highest bit is not set in the corresponding element). scale should be 1, 2, 4 or 8.
+Gather 64-bit integers from memory using 32-bit indices. 64-bit elements are
+loaded from addresses starting at base_addr and offset by each 32-bit element
+in vindex (each index is scaled by the factor in scale). Gathered elements are
+merged into dst using mask (elements are copied from src when the highest bit
+is not set in the corresponding element). scale should be 1, 2, 4 or 8.
 Operation
 FOR j := 0 to 3
 	i := j*64
@@ -4092,7 +4105,7 @@ mask[MAX:256] := 0
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_i32gather_pd* *vgatherdpd*
+                        *_mm_i32gather_pd*
 Synopsis
 __m128d _mm_i32gather_pd (double const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4113,7 +4126,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_mask_i32gather_pd* *vgatherdpd*
+                        *_mm_mask_i32gather_pd*
 Synopsis
 __m128d _mm_mask_i32gather_pd (__m128d src, double const* base_addr, __m128i vindex, __m128d mask, const int scale)
 #include <immintrin.h>
@@ -4141,7 +4154,7 @@ mask[MAX:128] := 0
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_i32gather_pd* *vgatherdpd*
+                        *_mm256_i32gather_pd*
 Synopsis
 __m256d _mm256_i32gather_pd (double const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4162,7 +4175,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm256_mask_i32gather_pd* *vgatherdpd*
+                        *_mm256_mask_i32gather_pd*
 Synopsis
 __m256d _mm256_mask_i32gather_pd (__m256d src, double const* base_addr, __m128i vindex, __m256d mask, const int scale)
 #include <immintrin.h>
@@ -4190,7 +4203,7 @@ mask[MAX:256] := 0
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_i32gather_ps* *vgatherdps*
+                        *_mm_i32gather_ps*
 Synopsis
 __m128 _mm_i32gather_ps (float const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4211,7 +4224,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_mask_i32gather_ps* *vgatherdps*
+                        *_mm_mask_i32gather_ps*
 Synopsis
 __m128 _mm_mask_i32gather_ps (__m128 src, float const* base_addr, __m128i vindex, __m128 mask, const int scale)
 #include <immintrin.h>
@@ -4239,7 +4252,7 @@ mask[MAX:128] := 0
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_i32gather_ps* *vgatherdps*
+                        *_mm256_i32gather_ps*
 Synopsis
 __m256 _mm256_i32gather_ps (float const* base_addr, __m256i vindex, const int scale)
 #include <immintrin.h>
@@ -4260,7 +4273,7 @@ ENDFOR
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm256_mask_i32gather_ps* *vgatherdps*
+                        *_mm256_mask_i32gather_ps*
 Synopsis
 __m256 _mm256_mask_i32gather_ps (__m256 src, float const* base_addr, __m256i vindex, __m256 mask, const int scale)
 #include <immintrin.h>
@@ -4288,7 +4301,7 @@ mask[MAX:256] := 0
 dst[MAX:256] := 0
 
 ===============================================================================
-                        *_mm_i64gather_epi32* *vpgatherqd*
+                        *_mm_i64gather_epi32*
 Synopsis
 __m128i _mm_i64gather_epi32 (int const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4309,7 +4322,7 @@ ENDFOR
 dst[MAX:64] := 0
 
 ===============================================================================
-                        *_mm_mask_i64gather_epi32* *vpgatherqd*
+                        *_mm_mask_i64gather_epi32*
 Synopsis
 __m128i _mm_mask_i64gather_epi32 (__m128i src, int const* base_addr, __m128i vindex, __m128i mask, const int scale)
 #include <immintrin.h>
@@ -4336,7 +4349,7 @@ mask[MAX:64] := 0
 dst[MAX:64] := 0
 
 ===============================================================================
-                        *_mm256_i64gather_epi32* *vpgatherqd*
+                        *_mm256_i64gather_epi32*
 Synopsis
 __m128i _mm256_i64gather_epi32 (int const* base_addr, __m256i vindex, const int scale)
 #include <immintrin.h>
@@ -4357,7 +4370,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm256_mask_i64gather_epi32* *vpgatherqd*
+                        *_mm256_mask_i64gather_epi32*
 Synopsis
 __m128i _mm256_mask_i64gather_epi32 (__m128i src, int const* base_addr, __m256i vindex, __m128i mask, const int scale)
 #include <immintrin.h>
@@ -4384,7 +4397,7 @@ mask[MAX:128] := 0
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_i64gather_epi64* *vpgatherqq*
+                        *_mm_i64gather_epi64*
 Synopsis
 __m128i _mm_i64gather_epi64 (__int64 const* base_addr, __m128i vindex, const int scale)
 #include <immintrin.h>
@@ -4405,7 +4418,7 @@ ENDFOR
 dst[MAX:128] := 0
 
 ===============================================================================
-                        *_mm_mask_i64gather_epi64* *vpgatherqq*
+                        *_mm_mask_i64gather_epi64*
 Synopsis
 __m128i _mm_mask_i64gather_epi64 (__m128i src, __int64 const* base_addr, __m128i vindex, __m128i mask, const int scale)
 #include <immintrin.h>
