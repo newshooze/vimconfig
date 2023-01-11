@@ -13,11 +13,16 @@ nnoremap q <NOP>
 vnoremap q <NOP>
 
 " default leader key is "\"
+" Source vimrc
+nnoremap <leader>s :source ~/.vimrc<CR>
+" Toggle line numbers
 nnoremap <leader>n :set number!<CR>
 " edit .vimrc with \e ( <leader>e )
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " edit .vimrc with \v ( <leader>v )
 nnoremap <leader>v :edit ~/.vimrc<CR>
+" Edit misc functions
+nnoremap <leader>f :edit ~/.vim/ftdetect/functions.vim<CR>
 " Switch to hex mode
 nnoremap <leader>x :call TextfileToHex()<CR>
 " Switch to text mode
@@ -29,9 +34,11 @@ nnoremap <C-t> :tab term<CR>
 " Open the Quickfix List
 " <ESC> is mapped in filetype 'qf' (quickfix) to close
 nnoremap Q :silent! copen 5<CR>:echo<CR>
-nnoremap <leader>q  <ESC>:silent! copen 5<CR>:echo<CR>
+nnoremap <leader>q  :silent! copen 5<CR>:echo<CR>
 " Open command line window
-nnoremap <leader>c <ESC>:<C-F>
+nnoremap <leader>c :<C-F>
+" Open search history
+nnoremap <leader>/ /<C-F>
 
 " Move between windows
 nnoremap <leader>h <C-W>h 
@@ -103,6 +110,7 @@ set autoread
 set autowriteall
 set incsearch
 set nofoldenable
+set nopaste
 " Make escape work instantly
 set ttimeoutlen=10
 
