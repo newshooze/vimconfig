@@ -496,20 +496,20 @@ inoreabbrev <silent> <buffer> XftInitFtLibrary <C-R>=<SID>Abbreviation("XftInitF
 inoreabbrev <silent> <buffer> XftInit <C-R>=<SID>Abbreviation("XftInit(_Xconstchar*config); /* FcBool  */")<CR>
 inoreabbrev <silent> <buffer> XftListFonts <C-R>=<SID>Abbreviation("XftListFonts(display,intscreen,...)_X_SENTINEL(0); /* FcFontSet *  */")<CR>
 inoreabbrev <silent> <buffer> XftLockFace <C-R>=<SID>Abbreviation("XftLockFace(XftFont*pub); /* FT_Face  */")<CR>
-inoreabbrev <silent> <buffer> XftTextExtents16 XftTextExtents16(display,XftFont*pub,_XconstFcChar16*string,intlen,XGlyphInfo*extents); /* void  */
-inoreabbrev <silent> <buffer> XftTextExtents32 XftTextExtents32(display,XftFont*pub,_XconstFcChar32*string,intlen,XGlyphInfo*extents); /* void  */
-inoreabbrev <silent> <buffer> XftTextExtents8 XftTextExtents8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); /* void  */
-inoreabbrev <silent> <buffer> XftTextExtentsUtf16 XftTextExtentsUtf16(display,XftFont*pub,_XconstFcChar8*string,FcEndianendian,intlen,XGlyphInfo*extents); /* void  */
-inoreabbrev <silent> <buffer> XftTextExtentsUtf8 XftTextExtentsUtf8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender16BE XftTextRender16BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender16LE XftTextRender16LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender16 XftTextRender16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar16*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender32BE XftTextRender32BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender32LE XftTextRender32LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender32 XftTextRender32(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar32*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRender8 XftTextRender8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRenderUtf16 XftTextRenderUtf16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,FcEndianendian,intlen); /* void  */
-inoreabbrev <silent> <buffer> XftTextRenderUtf8 XftTextRenderUtf8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */
+inoreabbrev <silent> <buffer> XftTextExtents16 <C-R>=<SID>Abbreviation("XftTextExtents16(display,XftFont*pub,_XconstFcChar16*string,intlen,XGlyphInfo*extents); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextExtents32 <C-R>=<SID>Abbreviation("XftTextExtents32(display,XftFont*pub,_XconstFcChar32*string,intlen,XGlyphInfo*extents); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextExtents8 <C-R>=<SID>Abbreviation("XftTextExtents8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextExtentsUtf16 <C-R>=<SID>Abbreviation("XftTextExtentsUtf16(display,XftFont*pub,_XconstFcChar8*string,FcEndianendian,intlen,XGlyphInfo*extents); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextExtentsUtf8 <C-R>=<SID>Abbreviation("XftTextExtentsUtf8(display,XftFont*pub,_XconstFcChar8*string,intlen,XGlyphInfo*extents); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender16BE <C-R>=<SID>Abbreviation("XftTextRender16BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender16LE <C-R>=<SID>Abbreviation("XftTextRender16LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender16 <C-R>=<SID>Abbreviation("XftTextRender16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar16*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender32BE <C-R>=<SID>Abbreviation("XftTextRender32BE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender32LE <C-R>=<SID>Abbreviation("XftTextRender32LE(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender32 <C-R>=<SID>Abbreviation("XftTextRender32(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar32*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRender8 <C-R>=<SID>Abbreviation("XftTextRender8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRenderUtf16 <C-R>=<SID>Abbreviation("XftTextRenderUtf16(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,FcEndianendian,intlen); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftTextRenderUtf8 <C-R>=<SID>Abbreviation("XftTextRenderUtf8(display,intop,Picturesrc,XftFont*pub,Picturedst,intsrcx,intsrcy,intx,inty,_XconstFcChar8*string,intlen); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XftUnlockFace <C-R>=<SID>Abbreviation("XftUnlockFace(XftFont*pub); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XftXlfdParse <C-R>=<SID>Abbreviation("XftXlfdParse(_Xconstchar*xlfd_orig,Boolignore_scalable,Boolcomplete); /* FcPattern *  */")<CR>
 
@@ -908,14 +908,14 @@ inoreabbrev <silent> <buffer> XmbTextEscapement <C-R>=<SID>Abbreviation("XmbText
 inoreabbrev <silent> <buffer> XmbTextExtents <C-R>=<SID>Abbreviation("XmbTextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); /* int  */")<CR>
 inoreabbrev <silent> <buffer> XmbTextPerCharExtents <C-R>=<SID>Abbreviation("XmbTextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); /* Status  */")<CR>
 inoreabbrev <silent> <buffer> XrmInitialize <C-R>=<SID>Abbreviation("XrmInitialize(); /* void  */")<CR>
-inoreabbrev <silent> <buffer> Xutf8DrawImageString Xutf8DrawImageString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */
-inoreabbrev <silent> <buffer> Xutf8DrawString Xutf8DrawString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */
-inoreabbrev <silent> <buffer> Xutf8DrawText Xutf8DrawText(Display*,Drawable,GC,int,int,XmbTextItem*,int); /* void  */
-inoreabbrev <silent> <buffer> Xutf8LookupString Xutf8LookupString(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*); /* int  */
-inoreabbrev <silent> <buffer> Xutf8ResetIC Xutf8ResetIC(XIC); /* char * */
-inoreabbrev <silent> <buffer> Xutf8TextEscapement Xutf8TextEscapement(XFontSet,_Xconst char*,int); /* int  */
-inoreabbrev <silent> <buffer> Xutf8TextExtents Xutf8TextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); /* int  */
-inoreabbrev <silent> <buffer> Xutf8TextPerCharExtents Xutf8TextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); /* Status  */
+inoreabbrev <silent> <buffer> Xutf8DrawImageString <C-R>=<SID>Abbreviation("Xutf8DrawImageString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */")<CR>
+inoreabbrev <silent> <buffer> Xutf8DrawString <C-R>=<SID>Abbreviation("Xutf8DrawString(Display*,Drawable,XFontSet,GC,int,int,_Xconst char*,int); /* void  */")<CR>
+inoreabbrev <silent> <buffer> Xutf8DrawText <C-R>=<SID>Abbreviation("Xutf8DrawText(Display*,Drawable,GC,int,int,XmbTextItem*,int); /* void  */")<CR>
+inoreabbrev <silent> <buffer> Xutf8LookupString <C-R>=<SID>Abbreviation("Xutf8LookupString(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*); /* int  */")<CR>
+inoreabbrev <silent> <buffer> Xutf8ResetIC <C-R>=<SID>Abbreviation("Xutf8ResetIC(XIC); /* char * */")<CR>
+inoreabbrev <silent> <buffer> Xutf8TextEscapement <C-R>=<SID>Abbreviation("Xutf8TextEscapement(XFontSet,_Xconst char*,int); /* int  */")<CR>
+inoreabbrev <silent> <buffer> Xutf8TextExtents <C-R>=<SID>Abbreviation("Xutf8TextExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*); /* int  */")<CR>
+inoreabbrev <silent> <buffer> Xutf8TextPerCharExtents <C-R>=<SID>Abbreviation("Xutf8TextPerCharExtents(XFontSet,_Xconst char*,int,XRectangle*,XRectangle*,int,int*,XRectangle*,XRectangle*); /* Status  */")<CR>
 inoreabbrev <silent> <buffer> XwcDrawImageString <C-R>=<SID>Abbreviation("XwcDrawImageString(Display*,Drawable,XFontSet,GC,int,int,_Xconst wchar_t*,int); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XwcDrawString <C-R>=<SID>Abbreviation("XwcDrawString(Display*,Drawable,XFontSet,GC,int,int,_Xconst wchar_t*,int); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XwcDrawText <C-R>=<SID>Abbreviation("XwcDrawText(Display*,Drawable,GC,int,int,XwcTextItem*,int); /* void  */")<CR>
