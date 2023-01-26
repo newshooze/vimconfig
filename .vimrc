@@ -29,6 +29,10 @@ nnoremap <leader>x :call TextfileToHex()<CR>
 nnoremap <leader>X :call HexfileToText()<CR>
 " Launch terminal with \t ( <leader>t )
 nnoremap <leader>t :tab term<CR>
+" Start python3
+nnoremap <leader>p :!python3<CR>
+" Do a REPL on the current line
+nnoremap <leader>repl :.w !sh<CR>
 " Launch terminal with <C-t>
 nnoremap <C-t> :tab term<CR>
 " Open the Quickfix List
@@ -102,8 +106,9 @@ set shortmess+=I
 set ruler
 set nobackup
 set noswapfile
-set tabstop=2
+set expandtab
 set shiftwidth=2
+set tabstop=2
 set nowrap
 set noshowmatch
 set autoread
