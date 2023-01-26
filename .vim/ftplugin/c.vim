@@ -30,6 +30,9 @@ nnoremap <buffer> <localleader>c :<C-F>
 nnoremap <buffer> <localleader>/ /<C-F>
 " Open reverse search history
 nnoremap <buffer> <localleader>? ?<C-F>
+" Close the make window
+nnoremap <buffer> <silent> <ESC> :silent call WipeOutputWindows()<CR><ESC>
+nnoremap <buffer> <silent> q :silent call WipeOutputWindows()<CR><ESC>
 
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
@@ -59,10 +62,77 @@ nnoremap <buffer> <F12> :read ~/.vim/template/c.vim<CR>gg^
 command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
 command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
+command! -buffer Make :call Make("")
+command! -buffer MakeClean :call Make("clean")
 
 function s:AVX() abort
 	source ~/.vim/ftplugin/simd/xmmabbreviations.vim
 	set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
+endfunction
+
+"Close the make window
+autocmd BufWinEnter makeoutput nnoremap <buffer> <ESC> :bwipe<CR>
+autocmd BufWinEnter makeoutput nnoremap <buffer> q :bwipe<CR>
+
+function! WipeMakeWindow()
+  silent "bwipeout makeoutput"
+endfunction
+
+function! WipeQuickFixWindow()
+  silent cclose
+endfunction
+
+function! WipeOutputWindows()
+  call WipeMakeWindow()
+  call WipeQuickFixWindow()
+endfunction
+
+function! MakeExitFunction(job,status)
+  if bufexists("makeoutput")
+    silent exe "bwipeout makeoutput"
+    copen 5
+    exe "wincmd p"
+  endif
+endfunction
+
+function! MakeJobFunction(channel,msg) abort
+  if bufexists("makeoutput")
+    let l:makewindownumber = bufwinnr("makeoutput")
+    let l:makewindowid = win_getid(l:makewindownumber)
+    " Scroll the make window
+    silent call win_execute(l:makewindowid,"normal G0")
+  endif
+  if a:msg =~ "error"
+    caddexpr a:msg
+  endif
+endfunction
+
+function! Make(args) abort
+echo a:args
+    silent wall
+    " Close any existing quickfix and make buffers
+    cclose
+    if bufexists("makeoutput")
+      silent exe "bwipeout makeoutput"
+    endif
+    let l:makeargs = ["make"]
+    if len(a:args) 
+      call add(l:makeargs,a:args)
+    endif
+    let l:joboptions = {}
+    let l:joboptions["out_io"] = "buffer"
+    let l:joboptions["err_io"] = "buffer"
+    let l:joboptions["out_name"] = "makeoutput"
+    let l:joboptions["err_name"] = "makeoutput"
+    let l:joboptions["callback"] = function('MakeJobFunction')
+    let l:joboptions["exit_cb"] = function('MakeExitFunction')
+    let s:makejob = job_start(l:makeargs,l:joboptions)
+    " Clear the quickfix window
+    cexpr ""
+    " Create the scrolling output buffer
+    botright 5split makeoutput
+    " Switch back to previous workspace
+    exe "wincmd p"
 endfunction
 
 command! -buffer AVX :call <SID>AVX()
@@ -536,7 +606,7 @@ inoreabbrev <silent> <buffer> XftDefaultSet <C-R>=<SID>Abbreviation("XftDefaultS
 inoreabbrev <silent> <buffer> XftDefaultSubstitute <C-R>=<SID>Abbreviation("XftDefaultSubstitute(display,intscreen,FcPattern*pattern); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XftDirSave <C-R>=<SID>Abbreviation("XftDirSave(FcFontSet*set,_Xconstchar*dir); /* FcBool  */")<CR>
 inoreabbrev <silent> <buffer> XftDirScan <C-R>=<SID>Abbreviation("XftDirScan(FcFontSet*set,_Xconstchar*dir,FcBoolforce); /* FcBool  */")<CR>
-inoreabbrev <silent> <buffer> XftDrawChange <C-R>=<SID>Abbreviation("XftDrawChange(XftDraw*draw,Drawabledrawable); /* void  */")<CR>
+inoreabbrev <silent> <buffer> XftDrawChange <C-R>=<SID>Abbreviation("XftDrawChange(XftDraw*draw,Drawable drawable); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XftDrawCharFontSpec <C-R>=<SID>Abbreviation("XftDrawCharFontSpec(XftDraw*draw,_XconstXftColor*color,_XconstXftCharFontSpec*chars,intlen); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XftDrawCharSpec <C-R>=<SID>Abbreviation("XftDrawCharSpec(XftDraw*draw,_XconstXftColor*color,XftFont*pub,_XconstXftCharSpec*chars,intlen); /* void  */")<CR>
 inoreabbrev <silent> <buffer> XftDrawColormap <C-R>=<SID>Abbreviation("XftDrawColormap(XftDraw*draw); /* Colormap  */")<CR>
