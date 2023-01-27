@@ -2,7 +2,8 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-set errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GInfile included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory `%f',%X%*\a[%*\d]: Leaving directory `%f',%D%*\a: Entering directory `%f',%X%*\a: Leaving directory `%f',%DMaking %*\a in %f,%f|%l| %m
+"set errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GInfile included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory `%f',%X%*\a[%*\d]: Leaving directory `%f',%D%*\a: Entering directory `%f',%X%*\a: Leaving directory `%f',%DMaking %*\a in %f,%f|%l| %m
+set errorformat=%f:%l:%c:%m
 
 set tags=~/.vim/doc/c/**/tags
 set dict=~/.vim/ftplugin/c.vim
@@ -30,9 +31,6 @@ nnoremap <buffer> <localleader>c :<C-F>
 nnoremap <buffer> <localleader>/ /<C-F>
 " Open reverse search history
 nnoremap <buffer> <localleader>? ?<C-F>
-" Close the make window
-nnoremap <buffer> <silent> <ESC> :silent call WipeOutputWindows()<CR><ESC>
-nnoremap <buffer> <silent> q :silent call WipeOutputWindows()<CR><ESC>
 
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
@@ -49,11 +47,11 @@ inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F6> <ESC>:make run<CR>
 nnoremap <buffer> <F6> <ESC>:make run<CR>
 " Make
-inoremap <buffer> <F8> <ESC>:make<CR>
-nnoremap <buffer> <F8> <ESC>:make<CR>
+inoremap <buffer> <F8> <ESC>:Make<CR>
+nnoremap <buffer> <F8> <ESC>:Make<CR>
 " Make Clean
-inoremap <buffer> <S-F8> <ESC>:make clean<CR>
-nnoremap <buffer> <S-F8> <ESC>:make clean<CR>
+inoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
+nnoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 
 nnoremap <buffer> <F10> :read ~/.vim/template/SDL2.vim<CR>gg^
 nnoremap <buffer> <F11> :read ~/.vim/template/x11.vim<CR>gg^
@@ -65,34 +63,44 @@ command! -buffer Tem :read ~/.vim/template/c.vim
 command! -buffer Make :call Make("")
 command! -buffer MakeClean :call Make("clean")
 
-function s:AVX() abort
-	source ~/.vim/ftplugin/simd/xmmabbreviations.vim
-	set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
-endfunction
-
 "Close the make window
+nnoremap <buffer> <silent> <ESC> :silent call KillOutputWindows()<CR><ESC>
+nnoremap <buffer> <silent> q :silent call KillOutputWindows()<CR><ESC>
+
 autocmd BufWinEnter makeoutput nnoremap <buffer> <ESC> :bwipe<CR>
 autocmd BufWinEnter makeoutput nnoremap <buffer> q :bwipe<CR>
 
-function! WipeMakeWindow()
+function! KillMakeWindow() abort
   silent "bwipeout makeoutput"
 endfunction
 
-function! WipeQuickFixWindow()
+function! KillQuickFixWindow() abort
   silent cclose
 endfunction
 
-function! WipeOutputWindows()
-  call WipeMakeWindow()
-  call WipeQuickFixWindow()
+function! KillOutputWindows() abort
+  call KillMakeWindow()
+  call KillQuickFixWindow()
 endfunction
 
-function! MakeExitFunction(job,status)
+let s:makewarningcount = 0
+let s:makeerrorcount = 0
+let s:quickfixsize = 5
+
+function! MakeExitFunction(job,status) abort
   if bufexists("makeoutput")
     silent exe "bwipeout makeoutput"
-    copen 5
+    silent exe "copen " s:quickfixsize
     exe "wincmd p"
   endif
+  if s:makewarningcount + s:makeerrorcount == 0
+    let l:olderrorformat = &errorformat
+    let errorformat = ""
+    caddexpr "No warnings or errors"
+    let errorformat = l:olderrorformat
+  endif
+  let s:makewarningcount = 0
+  let s:makeerrorcount = 0
 endfunction
 
 function! MakeJobFunction(channel,msg) abort
@@ -102,13 +110,17 @@ function! MakeJobFunction(channel,msg) abort
     " Scroll the make window
     silent call win_execute(l:makewindowid,"normal G0")
   endif
-  if a:msg =~ "error"
+  if a:msg =~ " warning: "
+    caddexpr a:msg
+    let s:makewarningcount = s:makewarningcount + 1
+  endif
+  if a:msg =~ " error: "
+    let s:makeerrorcount = s:makeerrorcount + 1
     caddexpr a:msg
   endif
 endfunction
 
 function! Make(args) abort
-echo a:args
     silent wall
     " Close any existing quickfix and make buffers
     cclose
@@ -133,6 +145,11 @@ echo a:args
     botright 5split makeoutput
     " Switch back to previous workspace
     exe "wincmd p"
+endfunction
+
+function s:AVX() abort
+	source ~/.vim/ftplugin/simd/xmmabbreviations.vim
+	set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
 endfunction
 
 command! -buffer AVX :call <SID>AVX()
