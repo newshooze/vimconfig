@@ -32,6 +32,8 @@ nnoremap <buffer> <localleader>/ /<C-F>
 " Open reverse search history
 nnoremap <buffer> <localleader>? ?<C-F>
 
+nnoremap <buffer> cn :cnext<CR>
+nnoremap <buffer> cp :cprevious<CR>
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
 " Source this file
@@ -43,7 +45,7 @@ nnoremap <buffer> <S-F4> <ESC>:e %:r.c<CR>
 " Compile current filename.c and link to executable
 nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
-" Run 
+" Run
 inoremap <buffer> <F6> <ESC>:make run<CR>
 nnoremap <buffer> <F6> <ESC>:make run<CR>
 " Make
@@ -61,17 +63,20 @@ command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
 command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
 command! -buffer Make :call Make("")
-command! -buffer MakeClean :call Make("clean")
+command! -buffer MakeClean :call MakeClean()
 
 "Close the make window
-nnoremap <buffer> <silent> <ESC> :silent call KillOutputWindows()<CR><ESC>
-nnoremap <buffer> <silent> q :silent call KillOutputWindows()<CR><ESC>
+"nnoremap <buffer> <silent> <ESC> :silent call KillOutputWindows()<CR><ESC>
+"nnoremap <buffer> <silent> q :silent call KillOutputWindows()<CR><ESC>
 
 autocmd BufWinEnter makeoutput nnoremap <buffer> <ESC> :bwipe<CR>
 autocmd BufWinEnter makeoutput nnoremap <buffer> q :bwipe<CR>
 
+nnoremap <buffer> <ESC> :call KillOutputWindows()<CR>
+
+
 function! KillMakeWindow() abort
-  silent "bwipeout makeoutput"
+  silent! exe "bwipeout makeoutput"
 endfunction
 
 function! KillQuickFixWindow() abort
@@ -83,9 +88,56 @@ function! KillOutputWindows() abort
   call KillQuickFixWindow()
 endfunction
 
+let s:quickfixsize = 5
+
+function! MakeCleanJobFunction(channel,msg) abort
+  if bufexists("makeoutput")
+    let l:makewindownumber = bufwinnr("makeoutput")
+    let l:makewindowid = win_getid(l:makewindownumber)
+    " Scroll the make window
+    silent call win_execute(l:makewindowid,"normal G0")
+  endif
+endfunction
+
+function! MakeCleanExitFunction(job,status) abort
+endfunction
+
+" TODO - Run in a popup window
+function! RunAsync(arglist) abort
+  let l:programargs = a:arglist 
+  let l:joboptions = {}
+  let l:joboptions["out_io"] = "buffer"
+  let l:joboptions["err_io"] = "buffer"
+  let l:joboptions["out_name"] = "runoutput"
+  let l:joboptions["err_name"] = "runoutput"
+  let l:joboptions["callback"] = function('RunJobFunction')
+  let l:joboptions["exit_cb"] = function('RunExitFunction')
+  let s:makejob = job_start(l:programargs,l:joboptions)
+endfunction
+
+function! MakeClean() abort
+  silent wall
+  cclose
+  cexpr ""
+  let l:makeargs = ["make","clean"]
+  let l:joboptions = {}
+  let l:joboptions["out_io"] = "buffer"
+  let l:joboptions["err_io"] = "buffer"
+  let l:joboptions["out_name"] = "makeoutput"
+  let l:joboptions["err_name"] = "makeoutput"
+  let l:joboptions["callback"] = function('MakeCleanJobFunction')
+  let l:joboptions["exit_cb"] = function('MakeCleanExitFunction')
+  let s:makejob = job_start(l:makeargs,l:joboptions)
+  " Clear the quickfix window
+  cexpr ""
+  " Create the scrolling output buffer
+  botright 5split makeoutput
+  " Switch back to previous workspace
+  exe "wincmd p"
+endfunction
+
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
-let s:quickfixsize = 5
 
 function! MakeExitFunction(job,status) abort
   if bufexists("makeoutput")
@@ -96,7 +148,7 @@ function! MakeExitFunction(job,status) abort
   if s:makewarningcount + s:makeerrorcount == 0
     let l:olderrorformat = &errorformat
     let errorformat = ""
-    caddexpr "No warnings or errors"
+    caddexpr "No warnings or errors."
     let errorformat = l:olderrorformat
   endif
   let s:makewarningcount = 0
@@ -115,8 +167,8 @@ function! MakeJobFunction(channel,msg) abort
     let s:makewarningcount = s:makewarningcount + 1
   endif
   if a:msg =~ " error: "
-    let s:makeerrorcount = s:makeerrorcount + 1
     caddexpr a:msg
+    let s:makeerrorcount = s:makeerrorcount + 1
   endif
 endfunction
 
@@ -148,24 +200,24 @@ function! Make(args) abort
 endfunction
 
 function s:AVX() abort
-	source ~/.vim/ftplugin/simd/xmmabbreviations.vim
-	set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
+  source ~/.vim/ftplugin/simd/xmmabbreviations.vim
+  set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
 endfunction
 
 command! -buffer AVX :call <SID>AVX()
 
 function! s:EatSpace() abort
-	let c = nr2char(getchar(0))
-	return (c =~ '\s') ? '' : c
+  let c = nr2char(getchar(0))
+  return (c =~ '\s') ? '' : c
 endfunction
 
 function! s:Abbreviation(text) abort
-	let l:line = getline('.')
-	call setline('.',strpart(line,0,col('.')-1) . a:text . strpart(line,col('.') -1))
-	call <SID>EatSpace()
-	normal f(ll
-	stopinsert
-	return "" 
+  let l:line = getline('.')
+  call setline('.',strpart(line,0,col('.')-1) . a:text . strpart(line,col('.') -1))
+  call <SID>EatSpace()
+  normal f(ll
+  stopinsert
+  return "" 
 endfunction
 
 " stdio.h
@@ -566,7 +618,7 @@ inoreabbrev <silent> <buffer> gzopen_w <C-R>=<SID>Abbreviation("gzopen_w(const w
 inoreabbrev <silent> <buffer> gzvprintf <C-R>=<SID>Abbreviation("gzvprintf Z_ARG(gzFile file,const char *format,va_list va); /* int */")<CR>
 
 " XRender defs
-inoreabbrev <silent> <buffer> XRenderAddGlyphs <C-R>=<SID>Abbreviation("XRenderAddGlyphs(display,GlyphSet	glyphset,_Xconst Glyph *gids,_Xconst XGlyphInfo	*glyphs,int nglyphs,_Xconst char*images,int nbyte_images); /* void */ ")<CR>
+inoreabbrev <silent> <buffer> XRenderAddGlyphs <C-R>=<SID>Abbreviation("XRenderAddGlyphs(display,GlyphSet  glyphset,_Xconst Glyph *gids,_Xconst XGlyphInfo  *glyphs,int nglyphs,_Xconst char*images,int nbyte_images); /* void */ ")<CR>
 inoreabbrev <silent> <buffer> XRenderAddTraps <C-R>=<SID>Abbreviation("XRenderAddTraps(display,picture,xOff,yOff,XTrap*,ntrap); /* void */")<CR>
 inoreabbrev <silent> <buffer> XRenderChangePicture <C-R>=<SID>Abbreviation("XRenderChangePicture(display,picture,CP,XRenderPictureAttributes*); /* void */")<CR>
 inoreabbrev <silent> <buffer> XRenderCompositeDoublePoly <C-R>=<SID>Abbreviation("XRenderCompositeDoublePoly(display,PictOp,src,dst,XRenderPictFormat*,xSrc,ySrc,xDst,yDst,XPointDouble*,npoint,int winding); /* void */")<CR>
@@ -601,7 +653,7 @@ inoreabbrev <silent> <buffer> XRenderParseColor <C-R>=<SID>Abbreviation("XRender
 inoreabbrev <silent> <buffer> XRenderQueryExtension <C-R>=<SID>Abbreviation("XRenderQueryExtension(display,int *event_basep,int *error_basep); /* Bool */ ")<CR>
 inoreabbrev <silent> <buffer> XRenderQueryFilters <C-R>=<SID>Abbreviation("XRenderQueryFilters(display,drawable); /* XFilters* */ ")<CR>
 inoreabbrev <silent> <buffer> XRenderQueryFormats <C-R>=<SID>Abbreviation("XRenderQueryFormats(display); /* Status */")<CR>
-inoreabbrev <silent> <buffer> XRenderQueryPictIndexValues <C-R>=<SID>Abbreviation("XRenderQueryPictIndexValues(display,	*format,int *num); /* XIndexValue* */")<CR>
+inoreabbrev <silent> <buffer> XRenderQueryPictIndexValues <C-R>=<SID>Abbreviation("XRenderQueryPictIndexValues(display,  *format,int *num); /* XIndexValue* */")<CR>
 inoreabbrev <silent> <buffer> XRenderQuerySubpixelOrder <C-R>=<SID>Abbreviation("XRenderQuerySubpixelOrder(display,int screen); /* int */")<CR>
 inoreabbrev <silent> <buffer> XRenderQueryVersion <C-R>=<SID>Abbreviation("XRenderQueryVersion(display,int *major_versionp, int *minor_versionp); /* Status */")<CR>
 inoreabbrev <silent> <buffer> XRenderReferenceGlyphSet <C-R>=<SID>Abbreviation("XRenderReferenceGlyphSet(display,GlyphSet existing); /* GlyphSet */")<CR>
@@ -2226,9 +2278,9 @@ inoreabbrev <silent> <buffer> SDL_UpperBlit <C-R>=<SID>Abbreviation("SDL_UpperBl
 inoreabbrev <silent> <buffer> SDL_UpperBlitScaled <C-R>=<SID>Abbreviation("SDL_UpperBlitScaled (SDL_Surface * src,const SDL_Rect * srcrect,SDL_Surface * dst,SDL_Rect * dstrect); /* int  */")<CR>
 inoreabbrev <silent> <buffer> SDL_VideoInit <C-R>=<SID>Abbreviation("SDL_VideoInit(const char *driver_name); /* int  */")<CR>
 inoreabbrev <silent> <buffer> SDL_VideoQuit <C-R>=<SID>Abbreviation("SDL_VideoQuit(); /* void  */")<CR>
-inoreabbrev <silent> <buffer> SDL_Vulkan_CreateSurface <C-R>=<SID>Abbreviation("SDL_Vulkan_CreateSurface(												SDL_Window *window,												VkInstance instance,												VkSurfaceKHR* surface); /* SDL_bool  */")<CR>
+inoreabbrev <silent> <buffer> SDL_Vulkan_CreateSurface <C-R>=<SID>Abbreviation("SDL_Vulkan_CreateSurface(                        SDL_Window *window,                        VkInstance instance,                        VkSurfaceKHR* surface); /* SDL_bool  */")<CR>
 inoreabbrev <silent> <buffer> SDL_Vulkan_GetDrawableSize <C-R>=<SID>Abbreviation("SDL_Vulkan_GetDrawableSize(SDL_Window * window,int *w,int *h); /* void  */")<CR>
-inoreabbrev <silent> <buffer> SDL_Vulkan_GetInstanceExtensions <C-R>=<SID>Abbreviation("SDL_Vulkan_GetInstanceExtensions(														SDL_Window *window,														unsigned int *pCount,														const char **pNames); /* SDL_bool  */")<CR>
+inoreabbrev <silent> <buffer> SDL_Vulkan_GetInstanceExtensions <C-R>=<SID>Abbreviation("SDL_Vulkan_GetInstanceExtensions(                            SDL_Window *window,                            unsigned int *pCount,                            const char **pNames); /* SDL_bool  */")<CR>
 inoreabbrev <silent> <buffer> SDL_Vulkan_GetVkGetInstanceProcAddr <C-R>=<SID>Abbreviation("SDL_Vulkan_GetVkGetInstanceProcAddr(); /* void * */")<CR>
 inoreabbrev <silent> <buffer> SDL_Vulkan_LoadLibrary <C-R>=<SID>Abbreviation("SDL_Vulkan_LoadLibrary(const char *path); /* int  */")<CR>
 inoreabbrev <silent> <buffer> SDL_Vulkan_UnloadLibrary <C-R>=<SID>Abbreviation("SDL_Vulkan_UnloadLibrary(); /* void  */")<CR>
