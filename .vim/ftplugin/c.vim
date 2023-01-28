@@ -2,7 +2,7 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-"set errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GInfile included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory `%f',%X%*\a[%*\d]: Leaving directory `%f',%D%*\a: Entering directory `%f',%X%*\a: Leaving directory `%f',%DMaking %*\a in %f,%f|%l| %m
+
 set errorformat=%f:%l:%c:%m
 
 set tags=~/.vim/doc/c/**/tags
@@ -71,8 +71,11 @@ command! -buffer MakeClean :call MakeClean()
 
 autocmd BufWinEnter makeoutput nnoremap <buffer> <ESC> :bwipe<CR>
 autocmd BufWinEnter makeoutput nnoremap <buffer> q :bwipe<CR>
+autocmd BufWinEnter runoutput nnoremap <buffer> <ESC> :bwipe<CR>
+autocmd BufWinEnter runoutput nnoremap <buffer> q :bwipe<CR>
 
 nnoremap <buffer> <ESC> :call KillOutputWindows()<CR>
+nnoremap <buffer> q <ESC> :call KillOutputWindows()<CR>
 
 
 function! KillMakeWindow() abort
@@ -83,12 +86,82 @@ function! KillQuickFixWindow() abort
   silent cclose
 endfunction
 
+function! KillRunOutputWindow() abort
+  silent! exe "bwipeout runoutput"
+endfunction
+
 function! KillOutputWindows() abort
   call KillMakeWindow()
   call KillQuickFixWindow()
+  call KillRunOutputWindow()
+  call popup_close(g:runpopup)
 endfunction
 
 let s:quickfixsize = 5
+let g:runpopup = 0
+let g:runoutputtext = []
+let g:popupoutputtext = []
+
+function! RunAsyncInPopupFunction(channel,msg) abort
+  call add(g:popupoutputtext,a:msg)
+  call popup_settext(g:runpopup,g:popupoutputtext)
+  silent call win_execute(g:runpopup,'normal G0')
+endfunction
+
+function! RunAsyncInPopup(arglist,optionsdictionary)
+  let l:programargs = a:arglist
+  let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
+  let l:joboptions["callback"] = function('RunAsyncInPopupFunction')
+  let g:runpopup = popup_create('', #{
+  \ pos: 'botleft',
+  \ title: '',
+  \ border: [1,0,0,0],
+  \ padding: [0,0,0,1],
+  \ line: &lines,
+  \ col: 0,
+  \ minheight: 5,
+  \ maxheight: 5,
+  \ minwidth: &columns,
+  \ maxwidth: &columns,
+  \ close: 'none',
+  \ wrap: 'FALSE',
+  \ })
+  let s:runinpopupjob = job_start(l:programargs,l:joboptions)
+  let g:popupoutputtext = []
+endfunction
+
+function! RunAsyncJobFunction(channel,msg) abort
+  if bufexists("runoutput")
+    let l:runwindownumber = bufwinnr("runoutput")
+    let l:runwindowid = win_getid(l:runwindownumber)
+    " Scroll the make window
+    silent call win_execute(l:runwindowid,"normal G0")
+    call add(g:runoutputtext,a:msg)
+    call popup_settext(g:compilepopup,g:runoutputtext)
+    call win_execute(g:compilepopup,'normal! G')
+  endif
+endfunction
+
+function! RunAsyncExitFunction(job,status) abort
+endfunction
+
+function! RunAsync(arglist,optionsdictionary) abort
+  let l:programargs = a:arglist 
+  let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
+  let l:joboptions["out_io"] = "buffer"
+  let l:joboptions["err_io"] = "buffer"
+  let l:joboptions["out_name"] = "runoutput"
+  let l:joboptions["err_name"] = "runoutput"
+  let l:joboptions["callback"] = function('RunAsyncJobFunction')
+  let l:joboptions["exit_cb"] = function('RunAsyncExitFunction')
+  let s:makejob = job_start(l:programargs,l:joboptions)
+  botright 5split runoutput
+  exe "wincmd p"
+endfunction
 
 function! MakeCleanJobFunction(channel,msg) abort
   if bufexists("makeoutput")
@@ -102,25 +175,14 @@ endfunction
 function! MakeCleanExitFunction(job,status) abort
 endfunction
 
-" TODO - Run in a popup window
-function! RunAsync(arglist) abort
-  let l:programargs = a:arglist 
-  let l:joboptions = {}
-  let l:joboptions["out_io"] = "buffer"
-  let l:joboptions["err_io"] = "buffer"
-  let l:joboptions["out_name"] = "runoutput"
-  let l:joboptions["err_name"] = "runoutput"
-  let l:joboptions["callback"] = function('RunJobFunction')
-  let l:joboptions["exit_cb"] = function('RunExitFunction')
-  let s:makejob = job_start(l:programargs,l:joboptions)
-endfunction
-
 function! MakeClean() abort
   silent wall
   cclose
   cexpr ""
   let l:makeargs = ["make","clean"]
   let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
   let l:joboptions["out_io"] = "buffer"
   let l:joboptions["err_io"] = "buffer"
   let l:joboptions["out_name"] = "makeoutput"
@@ -184,6 +246,8 @@ function! Make(args) abort
       call add(l:makeargs,a:args)
     endif
     let l:joboptions = {}
+    let l:joboptions["out_msg"] = "0"
+    let l:joboptions["err_msg"] = "0"
     let l:joboptions["out_io"] = "buffer"
     let l:joboptions["err_io"] = "buffer"
     let l:joboptions["out_name"] = "makeoutput"
@@ -194,8 +258,9 @@ function! Make(args) abort
     " Clear the quickfix window
     cexpr ""
     " Create the scrolling output buffer
-    botright 5split makeoutput
+    "botright 5split makeoutput
     " Switch back to previous workspace
+    copen 5
     exe "wincmd p"
 endfunction
 
