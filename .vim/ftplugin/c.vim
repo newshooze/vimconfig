@@ -14,23 +14,23 @@ map <buffer> ( <Nop>
 map <buffer> ) <Nop>
 
 " Edit this file
-nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
+nnoremap <silent> <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
 " Browse Xlib source
-nnoremap <buffer> <localleader>x :view /usr/include/X11/Xlib.h<CR>
+nnoremap <silent> <buffer> <localleader>x :view /usr/include/X11/Xlib.h<CR>
 " Edit makefile in ./
-nnoremap <buffer> <localleader>m :e makefile<CR>
+nnoremap <silent> <buffer> <localleader>m :e makefile<CR>
 " Vimgrep word under cursor
 nnoremap <buffer> <localleader>g :vimgrep /<C-R><C-W>/ ./* <CR>
 " Open quickfix list
-nnoremap <buffer> <localleader>q :copen 5<CR>
+nnoremap <silent> <buffer> <localleader>q :copen 5<CR>
 " Open location list
-nnoremap <buffer> <localleader>l :lopen 5<CR>
+nnoremap <silent> <buffer> <localleader>l :lopen 5<CR>
 " Open command line history
-nnoremap <buffer> <localleader>c :<C-F>
+nnoremap <silent> <buffer> <localleader>c :<C-F>
 " Open forward search history
-nnoremap <buffer> <localleader>/ /<C-F>
+nnoremap <silent> <buffer> <localleader>/ /<C-F>
 " Open reverse search history
-nnoremap <buffer> <localleader>? ?<C-F>
+nnoremap <silent> <buffer> <localleader>? ?<C-F>
 
 nnoremap <buffer> cn :cnext<CR>
 nnoremap <buffer> cp :cprevious<CR>
@@ -46,8 +46,8 @@ nnoremap <buffer> <S-F4> <ESC>:e %:r.c<CR>
 nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 " Run
-inoremap <buffer> <F6> <ESC>:make run<CR>
-nnoremap <buffer> <F6> <ESC>:make run<CR>
+inoremap <buffer> <F6> <ESC>:MakeRun<CR>
+nnoremap <buffer> <F6> <ESC>:MakeRun<CR>
 " Make
 inoremap <buffer> <F8> <ESC>:Make<CR>
 nnoremap <buffer> <F8> <ESC>:Make<CR>
@@ -62,63 +62,58 @@ nnoremap <buffer> <F12> :read ~/.vim/template/c.vim<CR>gg^
 command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
 command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
-command! -buffer Make :call Make("")
-command! -buffer MakeClean :call MakeClean()
+command! -buffer Make :call <SID>KillOutputWindows() | :call <SID>Make()
+command! -buffer MakeRun :call <SID>KillOutputWindows() | :call <SID>RunAsync(["make","run"],"")
+command! -buffer MakeClean :call <SID>KillOutputWindows() | :call <SID>RunAsync(["make","clean"],"")
+command! -buffer -nargs=+ Run :call <SID>KillOutputWindows() | :call <SID>RunAsync([<f-args>],"")
+command! -buffer -nargs=+ RunPop :call <SID>KillOutputWindows() | :call <SID>RunAsyncInPopup([<f-args>],"")
 
-"Close the make window
-"nnoremap <buffer> <silent> <ESC> :silent call KillOutputWindows()<CR><ESC>
-"nnoremap <buffer> <silent> q :silent call KillOutputWindows()<CR><ESC>
+nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
+nnoremap <silent> <buffer> q <ESC> :silent call <SID>KillOutputWindows()<CR>
+autocmd BufEnter runoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
+autocmd BufEnter runoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
 
-autocmd BufWinEnter makeoutput nnoremap <buffer> <ESC> :bwipe<CR>
-autocmd BufWinEnter makeoutput nnoremap <buffer> q :bwipe<CR>
-autocmd BufWinEnter runoutput nnoremap <buffer> <ESC> :bwipe<CR>
-autocmd BufWinEnter runoutput nnoremap <buffer> q :bwipe<CR>
-
-nnoremap <buffer> <ESC> :call KillOutputWindows()<CR>
-nnoremap <buffer> q <ESC> :call KillOutputWindows()<CR>
-
-
-function! KillMakeWindow() abort
-  silent! exe "bwipeout makeoutput"
+function! s:KillMakeWindow() abort
+  silent! execute "bwipeout " &makeprg
 endfunction
 
-function! KillQuickFixWindow() abort
+function! s:KillQuickFixWindow() abort
   silent cclose
 endfunction
 
-function! KillRunOutputWindow() abort
-  silent! exe "bwipeout runoutput"
+function! s:KillRunOutputWindow() abort
+  silent! execute "bwipeout runoutput"
 endfunction
 
-function! KillOutputWindows() abort
-  call KillMakeWindow()
-  call KillQuickFixWindow()
-  call KillRunOutputWindow()
-  call popup_close(g:runpopup)
+function! s:KillOutputWindows() abort
+  call <SID>KillMakeWindow()
+  call <SID>KillQuickFixWindow()
+  call <SID>KillRunOutputWindow()
+  call popup_close(s:runpopup)
 endfunction
 
 let s:quickfixsize = 5
-let g:runpopup = 0
-let g:runoutputtext = []
-let g:popupoutputtext = []
+let s:runpopup = 0
+let s:runoutputtext = []
+let s:popupoutputtext = []
 
-function! RunAsyncInPopupFunction(channel,msg) abort
-  call add(g:popupoutputtext,a:msg)
-  call popup_settext(g:runpopup,g:popupoutputtext)
-  silent call win_execute(g:runpopup,'normal G0')
+function! s:RunAsyncInPopupFunction(channel,msg) abort
+  call add(s:popupoutputtext,a:msg)
+  call popup_settext(s:runpopup,s:popupoutputtext)
+  silent call win_execute(s:runpopup,'normal G0')
 endfunction
 
-function! RunAsyncInPopup(arglist,optionsdictionary)
+function! s:RunAsyncInPopup(arglist,optionsdictionary)
   let l:programargs = a:arglist
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
   let l:joboptions["err_msg"] = "0"
-  let l:joboptions["callback"] = function('RunAsyncInPopupFunction')
-  let g:runpopup = popup_create('', #{
+  let l:joboptions["callback"] = function('<SID>RunAsyncInPopupFunction')
+  let s:runpopup = popup_create('', #{
   \ pos: 'botleft',
   \ title: '',
-  \ border: [1,0,0,0],
-  \ padding: [0,0,0,1],
+  \ border: [0,0,0,0],
+  \ padding: [0,0,0,0],
   \ line: &lines,
   \ col: 0,
   \ minheight: 5,
@@ -129,25 +124,24 @@ function! RunAsyncInPopup(arglist,optionsdictionary)
   \ wrap: 'FALSE',
   \ })
   let s:runinpopupjob = job_start(l:programargs,l:joboptions)
-  let g:popupoutputtext = []
+  let s:popupoutputtext = []
 endfunction
 
-function! RunAsyncJobFunction(channel,msg) abort
+function! s:RunAsyncJobFunction(channel,msg) abort
   if bufexists("runoutput")
     let l:runwindownumber = bufwinnr("runoutput")
     let l:runwindowid = win_getid(l:runwindownumber)
-    " Scroll the make window
-    silent call win_execute(l:runwindowid,"normal G0")
-    call add(g:runoutputtext,a:msg)
-    call popup_settext(g:compilepopup,g:runoutputtext)
-    call win_execute(g:compilepopup,'normal! G')
+    "Scroll the make window
+    "call append(s:runoutputtext,a:msg)
+    "call setbufline("runoutput",0,s:runoutputtext)
+    "silent call win_execute(l:runwindowid,"normal G0")
   endif
 endfunction
 
-function! RunAsyncExitFunction(job,status) abort
+function! s:RunAsyncExitFunction(job,status) abort
 endfunction
 
-function! RunAsync(arglist,optionsdictionary) abort
+function! s:RunAsync(arglist,optionsdictionary) abort
   let l:programargs = a:arglist 
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
@@ -156,70 +150,32 @@ function! RunAsync(arglist,optionsdictionary) abort
   let l:joboptions["err_io"] = "buffer"
   let l:joboptions["out_name"] = "runoutput"
   let l:joboptions["err_name"] = "runoutput"
-  let l:joboptions["callback"] = function('RunAsyncJobFunction')
-  let l:joboptions["exit_cb"] = function('RunAsyncExitFunction')
-  let s:makejob = job_start(l:programargs,l:joboptions)
+  let l:joboptions["callback"] = function('<SID>RunAsyncJobFunction')
+  let l:joboptions["exit_cb"] = function('<SID>RunAsyncExitFunction')
+  let s:runasyncjob = job_start(l:programargs,l:joboptions)
   botright 5split runoutput
-  exe "wincmd p"
-endfunction
-
-function! MakeCleanJobFunction(channel,msg) abort
-  if bufexists("makeoutput")
-    let l:makewindownumber = bufwinnr("makeoutput")
-    let l:makewindowid = win_getid(l:makewindownumber)
-    " Scroll the make window
-    silent call win_execute(l:makewindowid,"normal G0")
-  endif
-endfunction
-
-function! MakeCleanExitFunction(job,status) abort
-endfunction
-
-function! MakeClean() abort
-  silent wall
-  cclose
-  cexpr ""
-  let l:makeargs = ["make","clean"]
-  let l:joboptions = {}
-  let l:joboptions["out_msg"] = "0"
-  let l:joboptions["err_msg"] = "0"
-  let l:joboptions["out_io"] = "buffer"
-  let l:joboptions["err_io"] = "buffer"
-  let l:joboptions["out_name"] = "makeoutput"
-  let l:joboptions["err_name"] = "makeoutput"
-  let l:joboptions["callback"] = function('MakeCleanJobFunction')
-  let l:joboptions["exit_cb"] = function('MakeCleanExitFunction')
-  let s:makejob = job_start(l:makeargs,l:joboptions)
-  " Clear the quickfix window
-  cexpr ""
-  " Create the scrolling output buffer
-  botright 5split makeoutput
-  " Switch back to previous workspace
-  exe "wincmd p"
+  execute "wincmd p"
 endfunction
 
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
 
-function! MakeExitFunction(job,status) abort
-  if bufexists("makeoutput")
-    silent exe "bwipeout makeoutput"
-    silent exe "copen " s:quickfixsize
-    exe "wincmd p"
+function! s:MakeExitFunction(job,status) abort
+  if bufexists(&makeprg)
+    silent execute "bwipeout " &makeprg
+    silent execute "copen " s:quickfixsize
+    execute "wincmd p"
   endif
   if s:makewarningcount + s:makeerrorcount == 0
-    let l:olderrorformat = &errorformat
-    let errorformat = ""
     caddexpr "No warnings or errors."
-    let errorformat = l:olderrorformat
   endif
   let s:makewarningcount = 0
   let s:makeerrorcount = 0
 endfunction
 
-function! MakeJobFunction(channel,msg) abort
-  if bufexists("makeoutput")
-    let l:makewindownumber = bufwinnr("makeoutput")
+function! s:MakeJobFunction(channel,msg) abort
+  if bufexists(&makeprg)
+    let l:makewindownumber = bufwinnr(&makeprg)
     let l:makewindowid = win_getid(l:makewindownumber)
     " Scroll the make window
     silent call win_execute(l:makewindowid,"normal G0")
@@ -234,33 +190,28 @@ function! MakeJobFunction(channel,msg) abort
   endif
 endfunction
 
-function! Make(args) abort
+function! s:Make() abort
     silent wall
     " Close any existing quickfix and make buffers
     cclose
-    if bufexists("makeoutput")
-      silent exe "bwipeout makeoutput"
-    endif
-    let l:makeargs = ["make"]
-    if len(a:args) 
-      call add(l:makeargs,a:args)
+    if bufexists(&makeprg)
+      silent execute "bwipeout " &makeprg
     endif
     let l:joboptions = {}
     let l:joboptions["out_msg"] = "0"
     let l:joboptions["err_msg"] = "0"
     let l:joboptions["out_io"] = "buffer"
     let l:joboptions["err_io"] = "buffer"
-    let l:joboptions["out_name"] = "makeoutput"
-    let l:joboptions["err_name"] = "makeoutput"
-    let l:joboptions["callback"] = function('MakeJobFunction')
-    let l:joboptions["exit_cb"] = function('MakeExitFunction')
-    let s:makejob = job_start(l:makeargs,l:joboptions)
+    let l:joboptions["out_name"] = &makeprg
+    let l:joboptions["err_name"] = &makeprg
+    let l:joboptions["callback"] = function('<SID>MakeJobFunction')
+    let l:joboptions["exit_cb"] = function('<SID>MakeExitFunction')
+    let s:makejob = job_start(&makeprg,l:joboptions)
     " Clear the quickfix window
     cexpr ""
     " Create the scrolling output buffer
-    "botright 5split makeoutput
+    execute "botright 5split " &makeprg
     " Switch back to previous workspace
-    copen 5
     exe "wincmd p"
 endfunction
 
@@ -437,8 +388,7 @@ inoreabbrev <silent> <buffer> pthread_exit <C-R>=<SID>Abbreviation("pthread_exit
 inoreabbrev <silent> <buffer> pthread_getconcurrency <C-R>=<SID>Abbreviation("pthread_getconcurrency(void); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_getschedparam <C-R>=<SID>Abbreviation("pthread_getschedparam(pthread_t, int *, struct sched_param *); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_getspecific(pthread_key_t); /* void* */
-inoreabbrev <silent> <buffer> pthread_join <C-R>=<SID>Abbreviation("pthread_join(pthread_t, void **); /* int */")<CR>
-inoreabbrev <silent> <buffer> pthread_key_create <C-R>=<SID>Abbreviation("pthread_key_create(pthread_key_t *, void (*)(void *)); /* int */")<CR>
+inoreabbrev <silent> <buffer> pthread_join <C-R>=<SID>Abbreviation("pthread_join(pthread_t, void **); /* int */")<CR> inoreabbrev <silent> <buffer> pthread_key_create <C-R>=<SID>Abbreviation("pthread_key_create(pthread_key_t *, void (*)(void *)); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_key_delete <C-R>=<SID>Abbreviation("pthread_key_delete(pthread_key_t); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_mutex_destroy <C-R>=<SID>Abbreviation("pthread_mutex_destroy(pthread_mutex_t *); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_mutex_getprioceiling <C-R>=<SID>Abbreviation("pthread_mutex_getprioceiling(const pthread_mutex_t *, int *); /* int */")<CR>
