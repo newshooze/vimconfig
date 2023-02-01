@@ -19,6 +19,8 @@ nnoremap <silent> <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
 nnoremap <silent> <buffer> <localleader>x :view /usr/include/X11/Xlib.h<CR>
 " Edit makefile in ./
 nnoremap <silent> <buffer> <localleader>m :e makefile<CR>
+" Execute a REPL on the current line
+nnoremap <silent> <buffer> <localleader>r :.w !sh<CR>
 " Vimgrep word under cursor
 nnoremap <buffer> <localleader>g :vimgrep /<C-R><C-W>/ ./* <CR>
 " Open quickfix list
@@ -54,6 +56,9 @@ nnoremap <buffer> <F8> <ESC>:Make<CR>
 " Make Clean
 inoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 nnoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
+
+nnoremap <buffer> <F9> :!gcc -S -c %<CR>:botright vsplit %:r.s<CR>
+nnoremap <buffer> <S-F9> :!gcc -mavx -S %<CR>:botright vsplit %:r.s<CR>
 
 nnoremap <buffer> <F10> :read ~/.vim/template/SDL2.vim<CR>gg^
 nnoremap <buffer> <F11> :read ~/.vim/template/x11.vim<CR>gg^
@@ -246,7 +251,7 @@ inoreabbrev <silent> <buffer> fclose <C-R>=<SID>Abbreviation("fclose(FILE); /* i
 inoreabbrev <silent> <buffer> fseek <C-R>=<SID>Abbreviation("fseek(FILE,offset,wence); /* int - wence is SEEK_SET,SEEK_CUR,SEEK_END */")<CR>
 inoreabbrev <silent> <buffer> ftell <C-R>=<SID>Abbreviation("ftell(FILE); /* long */")<CR>
 inoreabbrev <silent> <buffer> rewind <C-R>=<SID>Abbreviation("rewind(FILE); /* void */")<CR>
-inoreabbrev <silent> <buffer> popen <C-R>=<SID>Abbreviation("popen("command --args","r"); /* FILE* */")<CR>
+inoreabbrev <silent> <buffer> popen <C-R>=<SID>Abbreviation("popen(\"command --args\",\"r\"); /* FILE* */")<CR>
 inoreabbrev <silent> <buffer> pclose <C-R>=<SID>Abbreviation("pclose(FILE); /* int */")<CR>
 inoreabbrev <silent> <buffer> rewind <C-R>=<SID>Abbreviation("rewind(FILE); /* void */")<CR>
 inoreabbrev <silent> <buffer> printf <C-R>=<SID>Abbreviation("printf(\"\"); /* int */ ")<CR>
