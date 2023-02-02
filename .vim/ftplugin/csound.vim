@@ -13,7 +13,7 @@ endif
 "set errorformat=error\:file:%f%m:line%l
 set helpfile=~/.vim/doc/csound/csound.txt
 "set dict=~/.vim/ftplugin/csound.vim
-set complete=k~/.vim/doc/csound/csound.txt,k~/.vim/ftplugin/csound.vim
+set complete+=k~/.vim/doc/csound/csound.txt,k~/.vim/ftplugin/csound.vim
 set hidden
 let maplocalleader = ","
 
@@ -28,6 +28,7 @@ nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
 inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
 nnoremap <buffer> <F8> <ESC>:RunCsoundAsync<CR>
+inoremap <buffer> <F8> <ESC>:RunCsoundAsync<CR>
 
 nnoremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
 nnoremap <buffer> <LocalLeader>q :copen 5<CR>
@@ -75,13 +76,18 @@ function! InsertScoreBlockFunction(...)
   if a:0 > 0 && a:1 =~ "[0-9]" && a:1 > 0
     let starttime = a:1 - 1
   else
-    let starttime = 15
+    let starttime = 0
   endif
-  while starttime > -1
+  if a:0 > 1
+    let endtime = starttime + a:2
+  else
+    let endtime = starttime + 8
+  endif
+  while endtime - starttime > 0
                           " p1      p2   p3   p4   p5   p6   p7  p8   p9
                           "i n     start dur amp midinn pan lpf hpf reverb
-    call append(line('.'),'i 1 ' . starttime . ' 1 1 43 .5 200 8000 .5')
-    let starttime = starttime - 1
+    call append(line('.'),'i 1 ' . endtime . ' 1 1 43 .5 200 8000 .5')
+    let endtime = endtime - 1
   endwhile
 endfunction
 
