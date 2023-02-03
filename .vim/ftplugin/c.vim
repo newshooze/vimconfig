@@ -2,12 +2,10 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-
 set errorformat=%f:%l:%c:%m
 
 set tags=~/.vim/doc/c/**/tags
-set dict=~/.vim/ftplugin/c.vim
-set complete+=k
+set complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
 
 let maplocalleader = ","
 map <buffer> ( <Nop>
@@ -57,8 +55,7 @@ nnoremap <buffer> <F8> <ESC>:Make<CR>
 inoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 nnoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 
-nnoremap <buffer> <F9> :!gcc -S -c %<CR>:botright vsplit %:r.s<CR>
-nnoremap <buffer> <S-F9> :!gcc -mavx -S %<CR>:botright vsplit %:r.s<CR>
+nnoremap <buffer> <F9> :AssemblyOutput<CR>
 
 nnoremap <buffer> <F10> :read ~/.vim/template/SDL2.vim<CR>gg^
 nnoremap <buffer> <F11> :read ~/.vim/template/x11.vim<CR>gg^
@@ -72,28 +69,31 @@ command! -buffer MakeRun :call <SID>KillOutputWindows() | :call <SID>RunAsync(["
 command! -buffer MakeClean :call <SID>KillOutputWindows() | :call <SID>RunAsync(["make","clean"],"")
 command! -buffer -nargs=+ Run :call <SID>KillOutputWindows() | :call <SID>RunAsync([<f-args>],"")
 command! -buffer -nargs=+ RunPop :call <SID>KillOutputWindows() | :call <SID>RunAsyncInPopup([<f-args>],"")
+command! -buffer AssemblyOutput :call <SID>KillOutputWindows() | :call <SID>AssemblyOutput()
 
 nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 nnoremap <silent> <buffer> q <ESC> :silent call <SID>KillOutputWindows()<CR>
-autocmd BufEnter runoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
+autocmd! BufEnter runoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 autocmd BufEnter runoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
+execute "autocmd! BufEnter " &makeprg " nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>"
+execute "autocmd BufEnter " &makeprg " nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>"
 
-function! s:KillMakeWindow() abort
-  silent! execute "bwipeout " &makeprg
+function! s:EchoWarningMessage(msg) abort
+  echohl WarningMsg
+  echo a:msg
+  echohl None
 endfunction
 
-function! s:KillQuickFixWindow() abort
-  silent cclose
-endfunction
-
-function! s:KillRunOutputWindow() abort
-  silent! execute "bwipeout runoutput"
+function! s:EchoErrorMessage(msg) abort
+  echohl ErrorMsg
+  echo a:msg
+  echohl None 
 endfunction
 
 function! s:KillOutputWindows() abort
-  call <SID>KillMakeWindow()
-  call <SID>KillQuickFixWindow()
-  call <SID>KillRunOutputWindow()
+  silent! execute "bwipeout! " &makeprg
+  silent! execute "bwipeout! runoutput"
+  silent cclose
   call popup_close(s:runpopup)
 endfunction
 
@@ -165,12 +165,24 @@ endfunction
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
 
+" The status in these callbacks is the return
+" value for the executed program. It is NOT
+" the status of the vim job from job_status()
+"
+function! s:MakeExitWithErrorsFunction(job,status)
+  let l:joblist = job_info(a:job)["cmd"]
+  let l:jobcmd = join(l:joblist," ")
+  let l:joberror = job_info(a:job)["stoponexit"]
+  let l:errormessage = "Error " . l:jobcmd . " returned " . a:status . ": " . l:joberror
+  call <SID>EchoErrorMessage(l:errormessage)
+endfunction
+
 function! s:MakeExitFunction(job,status) abort
   if bufexists(&makeprg)
-    silent execute "bwipeout " &makeprg
+    silent execute "bwipeout! " &makeprg
     silent execute "copen " s:quickfixsize
-    execute "wincmd p"
   endif
+  execute "wincmd p"
   if s:makewarningcount + s:makeerrorcount == 0
     caddexpr "No warnings or errors."
   endif
@@ -182,9 +194,20 @@ function! s:MakeJobFunction(channel,msg) abort
   if bufexists(&makeprg)
     let l:makewindownumber = bufwinnr(&makeprg)
     let l:makewindowid = win_getid(l:makewindownumber)
+    call appendbufline(&makeprg,"$",a:msg)
     " Scroll the make window
     silent call win_execute(l:makewindowid,"normal G0")
+    if a:msg =~ " no makefile found"
+      let l:joboptions = {}
+      let l:joboptions["exit_cb"] = function('<SID>MakeExitWithErrorsFunction')
+      " This alters a value in the job_info dictionary
+      " to pass an error message to the exit function
+      let l:joboptions["stoponexit"] = "No makefile found"
+      call job_setoptions(s:makejob,l:joboptions)
+      call job_stop(s:makejob)
+    endif
   endif
+  " Add warnings and errors to the quickfix buffer
   if a:msg =~ " warning: "
     caddexpr a:msg
     let s:makewarningcount = s:makewarningcount + 1
@@ -200,15 +223,15 @@ function! s:Make() abort
     " Close any existing quickfix and make buffers
     cclose
     if bufexists(&makeprg)
-      silent execute "bwipeout " &makeprg
+      silent execute "bwipeout! " &makeprg
     endif
     let l:joboptions = {}
     let l:joboptions["out_msg"] = "0"
     let l:joboptions["err_msg"] = "0"
-    let l:joboptions["out_io"] = "buffer"
-    let l:joboptions["err_io"] = "buffer"
-    let l:joboptions["out_name"] = &makeprg
-    let l:joboptions["err_name"] = &makeprg
+    let l:joboptions["out_io"] = "pipe"
+    let l:joboptions["err_io"] = "pipe"
+    let l:joboptions["out_mode"] = "nl"
+    let l:joboptions["err_mode"] = "nl"
     let l:joboptions["callback"] = function('<SID>MakeJobFunction')
     let l:joboptions["exit_cb"] = function('<SID>MakeExitFunction')
     let s:makejob = job_start(&makeprg,l:joboptions)
@@ -218,6 +241,32 @@ function! s:Make() abort
     execute "botright 5split " &makeprg
     " Switch back to previous workspace
     exe "wincmd p"
+endfunction
+
+function! s:AssemblyOutputExitFunction(job,status)
+  let l:assemblyfile = expand('%:r') . '.s'
+  if !filereadable(l:assemblyfile)
+    echo "File " . l:assemblyfile . " could not be read."
+    return
+  endif 
+  execute "botright vsplit " l:assemblyfile
+  execute "set filetype=asm"
+endfunction
+
+function! s:AssemblyOutput()
+  silent wall
+  " Close any existing quickfix and make buffers
+  cclose
+  let l:assemblyfile = expand('%:t')
+  let l:command = ["gcc","-S"] + [l:assemblyfile]
+"  let l:command += [l:assemblyfile]
+  let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
+  let l:joboptions["out_io"] = "null"
+  let l:joboptions["err_io"] = "null"
+  let l:joboptions["exit_cb"] = function('<SID>AssemblyOutputExitFunction')
+  let s:assemblyjob = job_start(l:command,l:joboptions)
 endfunction
 
 function s:AVX() abort
