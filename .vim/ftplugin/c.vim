@@ -73,10 +73,11 @@ command! -buffer AssemblyOutput :call <SID>KillOutputWindows() | :call <SID>Asse
 
 nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 nnoremap <silent> <buffer> q <ESC> :silent call <SID>KillOutputWindows()<CR>
+
 autocmd! BufEnter runoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 autocmd BufEnter runoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
-execute "autocmd! BufEnter " &makeprg " nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>"
-execute "autocmd BufEnter " &makeprg " nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>"
+autocmd! BufEnter makeoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
+autocmd BufEnter makeoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
 
 function! s:EchoWarningMessage(msg) abort
   echohl WarningMsg
@@ -91,7 +92,7 @@ function! s:EchoErrorMessage(msg) abort
 endfunction
 
 function! s:KillOutputWindows() abort
-  silent! execute "bwipeout! " &makeprg
+  silent! execute "bwipeout! makeoutput" 
   silent! execute "bwipeout! runoutput"
   silent cclose
   call popup_close(s:runpopup)
@@ -165,49 +166,20 @@ endfunction
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
 
-" The status in these callbacks is the return
-" value for the executed program. It is NOT
-" the status of the vim job from job_status()
-"
-function! s:MakeExitWithErrorsFunction(job,status)
-  let l:joblist = job_info(a:job)["cmd"]
-  let l:jobcmd = join(l:joblist," ")
-  let l:joberror = job_info(a:job)["stoponexit"]
-  let l:errormessage = "Error " . l:jobcmd . " returned " . a:status . ": " . l:joberror
-  call <SID>EchoErrorMessage(l:errormessage)
-endfunction
-
 function! s:MakeExitFunction(job,status) abort
-  if bufexists(&makeprg)
-    silent execute "bwipeout! " &makeprg
-    silent execute "copen " s:quickfixsize
-  endif
-  execute "wincmd p"
-  if s:makewarningcount + s:makeerrorcount == 0
-    caddexpr "No warnings or errors."
+  if bufexists("makeoutput")
+    if s:makewarningcount > 0 ||  s:makeerrorcount > 0
+      silent execute "bwipeout! makeoutput" 
+      silent execute "copen " s:quickfixsize
+      execute "wincmd p"
+    endif
   endif
   let s:makewarningcount = 0
   let s:makeerrorcount = 0
+  unlet s:makejob
 endfunction
 
 function! s:MakeJobFunction(channel,msg) abort
-  if bufexists(&makeprg)
-    let l:makewindownumber = bufwinnr(&makeprg)
-    let l:makewindowid = win_getid(l:makewindownumber)
-    call appendbufline(&makeprg,"$",a:msg)
-    " Scroll the make window
-    silent call win_execute(l:makewindowid,"normal G0")
-    if a:msg =~ " no makefile found"
-      let l:joboptions = {}
-      let l:joboptions["exit_cb"] = function('<SID>MakeExitWithErrorsFunction')
-      " This alters a value in the job_info dictionary
-      " to pass an error message to the exit function
-      let l:joboptions["stoponexit"] = "No makefile found"
-      call job_setoptions(s:makejob,l:joboptions)
-      call job_stop(s:makejob)
-    endif
-  endif
-  " Add warnings and errors to the quickfix buffer
   if a:msg =~ " warning: "
     caddexpr a:msg
     let s:makewarningcount = s:makewarningcount + 1
@@ -222,23 +194,23 @@ function! s:Make() abort
     silent wall
     " Close any existing quickfix and make buffers
     cclose
-    if bufexists(&makeprg)
-      silent execute "bwipeout! " &makeprg
+    if bufexists("makeoutput")
+      silent execute "bwipeout! makeoutput"
     endif
     let l:joboptions = {}
     let l:joboptions["out_msg"] = "0"
     let l:joboptions["err_msg"] = "0"
-    let l:joboptions["out_io"] = "pipe"
-    let l:joboptions["err_io"] = "pipe"
-    let l:joboptions["out_mode"] = "nl"
-    let l:joboptions["err_mode"] = "nl"
+    let l:joboptions["out_io"] = "buffer"
+    let l:joboptions["err_io"] = "buffer"
+    let l:joboptions["out_name"] = "makeoutput"
+    let l:joboptions["err_name"] = "makeoutput"
     let l:joboptions["callback"] = function('<SID>MakeJobFunction')
     let l:joboptions["exit_cb"] = function('<SID>MakeExitFunction')
     let s:makejob = job_start(&makeprg,l:joboptions)
     " Clear the quickfix window
     cexpr ""
     " Create the scrolling output buffer
-    execute "botright 5split " &makeprg
+    execute "botright 5split makeoutput" 
     " Switch back to previous workspace
     exe "wincmd p"
 endfunction
