@@ -4,11 +4,10 @@ if exists("syntax_on")
   syntax reset
 endif
 let g:colors_name="pastel256"
-
 hi Boolean ctermfg=150 ctermbg=NONE cterm=NONE
 hi Character ctermfg=223 ctermbg=NONE cterm=NONE
 hi ColorColumn ctermfg=NONE ctermbg=237 cterm=NONE
-hi Comment ctermfg=242 ctermbg=NONE cterm=italic
+hi Comment ctermfg=248 ctermbg=NONE cterm=italic
 hi Constant ctermfg=147 ctermbg=NONE cterm=NONE
 hi CursorColumn ctermfg=NONE ctermbg=236 cterm=NONE
 hi CursorLine ctermfg=NONE ctermbg=236 cterm=NONE
@@ -33,10 +32,10 @@ hi NonText ctermfg=193 ctermbg=NONE cterm=NONE
 hi Normal ctermfg=253 ctermbg=233 cterm=NONE
 hi Number ctermfg=182 ctermbg=NONE cterm=NONE
 hi Operator ctermfg=174 ctermbg=NONE cterm=NONE
-hi PMenu ctermfg=233 ctermbg=153 cterm=NONE
-hi PMenuSel ctermfg=233 ctermbg=150 cterm=NONE
-hi PmenuSbar ctermfg=186 ctermbg=186 cterm=NONE
-hi PmenuThumb ctermfg=229 ctermbg=229 cterm=NONE
+hi PMenu ctermfg=251 ctermbg=237 cterm=NONE
+hi PMenuSel ctermfg=233 ctermbg=251 cterm=NONE
+hi PmenuSbar ctermfg=239 ctermbg=239 cterm=NONE
+hi PmenuThumb ctermfg=235 ctermbg=235 cterm=NONE
 hi PreProc ctermfg=150 ctermbg=NONE cterm=NONE
 hi Question ctermfg=150 ctermbg=NONE cterm=NONE
 hi Search ctermfg=15 ctermbg=NONE cterm=underline,bold
@@ -58,7 +57,7 @@ hi Title ctermfg=110 ctermbg=NONE cterm=bold
 hi Todo ctermfg=174 ctermbg=NONE cterm=bold
 hi Type ctermfg=146 ctermbg=NONE cterm=NONE
 hi Underlined ctermfg=NONE ctermbg=NONE cterm=underline
-hi VertSplit ctermfg=233 ctermbg=233 cterm=NONE
+hi VertSplit ctermfg=242 ctermbg=242 cterm=NONE
 hi Visual ctermfg=NONE ctermbg=241 cterm=NONE
 hi VisualNOS ctermfg=NONE ctermbg=237 cterm=NONE
 hi WarningMsg ctermfg=174 ctermbg=NONE cterm=NONE
