@@ -45,13 +45,19 @@ nnoremap <buffer> <S-F4> <ESC>:e %:r.c<CR>
 " Compile current filename.c and link to executable
 nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
-" Run
+" run
 inoremap <buffer> <F6> <ESC>:MakeRun<CR>
 nnoremap <buffer> <F6> <ESC>:MakeRun<CR>
-" Make
+" make
+inoremap <buffer> <F7> :RunPop make<CR>
+nnoremap <buffer> <F7> :RunPop make<CR>
+" make clean
+inoremap <buffer> <S-F7> :RunPop make clean<CR>
+nnoremap <buffer> <S-F7> :RunPop make clean<CR>
+" make
 inoremap <buffer> <F8> <ESC>:Make<CR>
 nnoremap <buffer> <F8> <ESC>:Make<CR>
-" Make Clean
+" make clean
 inoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 nnoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 
@@ -76,6 +82,8 @@ nnoremap <silent> <buffer> q <ESC> :silent call <SID>KillOutputWindows()<CR>
 
 autocmd! BufEnter runoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 autocmd BufEnter runoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
+" Scroll run output to the bottom
+autocmd BufEnter runoutput normal G
 autocmd! BufEnter makeoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 autocmd BufEnter makeoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
 
@@ -92,10 +100,10 @@ function! s:EchoErrorMessage(msg) abort
 endfunction
 
 function! s:KillOutputWindows() abort
-  silent! execute "bwipeout! makeoutput" 
-  silent! execute "bwipeout! runoutput"
   silent cclose
   call popup_close(s:runpopup)
+  silent! execute "bwipeout! makeoutput" 
+  silent! execute "bwipeout! runoutput"
 endfunction
 
 let s:quickfixsize = 5
@@ -218,7 +226,8 @@ endfunction
 function! s:AssemblyOutputExitFunction(job,status)
   let l:assemblyfile = expand('%:r') . '.s'
   if !filereadable(l:assemblyfile)
-    echo "File " . l:assemblyfile . " could not be read."
+    let l:message = "File " . l:assemblyfile . " could not be read."
+    call <SID>EchoErrorMessage(l:message)
     return
   endif 
   execute "botright vsplit " l:assemblyfile
