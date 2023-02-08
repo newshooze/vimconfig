@@ -10,7 +10,7 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-"set errorformat=error\:file:%f%m:line%l
+set errorformat=error\s%m\sfrom\sfile\s%f\s,line\s%l:%s%m
 set helpfile=~/.vim/doc/csound/csound.txt
 "set dict=~/.vim/ftplugin/csound.vim
 set complete+=k~/.vim/doc/csound/csound.txt,k~/.vim/ftplugin/csound.vim

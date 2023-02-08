@@ -82,10 +82,11 @@ nnoremap <silent> <buffer> q <ESC> :silent call <SID>KillOutputWindows()<CR>
 
 autocmd! BufEnter runoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 autocmd BufEnter runoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
-" Scroll run output to the bottom
+" Go to the bottom on entry
 autocmd BufEnter runoutput normal G
 autocmd! BufEnter makeoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
 autocmd BufEnter makeoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
+autocmd BufEnter makeoutput normal G
 
 function! s:EchoWarningMessage(msg) abort
   echohl WarningMsg
@@ -145,10 +146,6 @@ function! s:RunAsyncJobFunction(channel,msg) abort
   if bufexists("runoutput")
     let l:runwindownumber = bufwinnr("runoutput")
     let l:runwindowid = win_getid(l:runwindownumber)
-    "Scroll the make window
-    "call append(s:runoutputtext,a:msg)
-    "call setbufline("runoutput",0,s:runoutputtext)
-    "silent call win_execute(l:runwindowid,"normal G0")
   endif
 endfunction
 
@@ -223,31 +220,35 @@ function! s:Make() abort
     exe "wincmd p"
 endfunction
 
-function! s:AssemblyOutputExitFunction(job,status)
-  let l:assemblyfile = expand('%:r') . '.s'
-  if !filereadable(l:assemblyfile)
-    let l:message = "File " . l:assemblyfile . " could not be read."
-    call <SID>EchoErrorMessage(l:message)
-    return
-  endif 
-  execute "botright vsplit " l:assemblyfile
-  execute "set filetype=asm"
-endfunction
-
 function! s:AssemblyOutput()
   silent wall
   " Close any existing quickfix and make buffers
   cclose
-  let l:assemblyfile = expand('%:t')
-  let l:command = ["gcc","-S"] + [l:assemblyfile]
-"  let l:command += [l:assemblyfile]
+  let l:sourcefile= expand('%:t')
+  let l:command = [
+  \ "gcc",
+  \ "-S",
+  \ "-O3",
+  \ "-Wall",
+  \ "-Wextra",
+  \ "-fno-rtti",
+  \ "-fverbose-asm",
+  \ "-fno-exceptions",
+  \ "-fno-asynchronous-unwind-tables",
+  \ l:sourcefile,
+  \ "-o-"
+  \ ]
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
   let l:joboptions["err_msg"] = "0"
-  let l:joboptions["out_io"] = "null"
+  let l:joboptions["out_io"] = "buffer"
   let l:joboptions["err_io"] = "null"
+  let l:joboptions["out_name"] = "assemblyoutput"
   let l:joboptions["exit_cb"] = function('<SID>AssemblyOutputExitFunction')
   let s:assemblyjob = job_start(l:command,l:joboptions)
+  let l:assemblyfile = expand('%:r') . '.s'
+  execute "botright vsplit assemblyoutput"
+  execute "set filetype=asm"
 endfunction
 
 function s:AVX() abort
