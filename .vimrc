@@ -23,6 +23,8 @@ nnoremap <leader>e :edit ~/.vimrc<CR>
 nnoremap <leader>v :edit ~/.vimrc<CR>
 " Edit misc functions
 nnoremap <leader>f :edit ~/.vim/ftdetect/functions.vim<CR>
+" Edit makefile
+nnoremap <leader>m :edit makefile<CR>
 " Switch to hex mode
 nnoremap <leader>x :call TextfileToHex()<CR>
 " Switch to text mode
@@ -32,9 +34,13 @@ nnoremap <leader>t :tab term<CR>
 " Start python3
 nnoremap <leader>p :!python3<CR>
 " Do a REPL on the current line
-nnoremap <leader>repl :.w !sh<CR>
+nnoremap <leader>r :.w !sh<CR>
+" Do a REPL on visual selection
+vnoremap <leader>r :w !sh<CR>
 " Launch terminal with <C-t>
 nnoremap <C-t> :tab term<CR>
+" Doom terminal
+nnoremap ` <ESC>:tab term<CR>
 " Open the Quickfix List
 " <ESC> is mapped in filetype 'qf' (quickfix) to close
 nnoremap Q :silent! copen 5<CR>:echo<CR>
@@ -43,6 +49,9 @@ nnoremap <leader>q  :silent! copen 5<CR>:echo<CR>
 nnoremap <leader>c :<C-F>
 " Open search history
 nnoremap <leader>/ /<C-F>
+
+nnoremap <S-K> :tag <C-r><C-W><CR>
+nnoremap <C-K> :!man <C-r><C-W><CR>
 
 " Move between windows
 nnoremap <leader>h <C-W>h 
@@ -81,19 +90,21 @@ autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
 autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
-" Close system header files easily
-autocmd BufRead /usr/include/* nnoremap q <ESC>:bd<CR>
-" Restore q
-autocmd BufLeave /usr/include/* nnoremap q <NOP>
+" All man pages from man 3 in vimhelp form
+autocmd BufRead ~/.vim/doc/c/mantovimhelp/*.txt setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/c/mantovimhelp/*.txt setlocal filetype=help
+
+autocmd! BufEnter /usr/include/* nnoremap <buffer> q :bd<CR>
+autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bd<CR>
 
 " Move through command line history
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
 
 tnoremap <ESC> <C-\><C-N><CR>
-" Close terminal with escape
+" Close terminal with 2 escapes
 tnoremap <ESC><ESC> exit<CR>
-
+tnoremap ` exit<CR>
 autocmd BufLeave * let b:winview = winsaveview() 
 autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif 
 
@@ -102,6 +113,7 @@ colorscheme pastel256
 
 let loaded_matchparen=1
 
+set tags=~/.vim/doc/**/tags
 set shortmess+=I
 set ruler
 set nobackup
@@ -122,8 +134,6 @@ set ttimeoutlen=10
 filetype plugin on
 
 let g:loaded_matchparen=1
-
-set t_Co=256
 
 " Virtual console cursor block
 let &t_ve= "\e[?25h\e[?16;143;255c"
