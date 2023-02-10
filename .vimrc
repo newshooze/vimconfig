@@ -19,8 +19,8 @@ nnoremap <leader>s :source ~/.vimrc<CR>
 nnoremap <leader>n :set number!<CR>
 " edit .vimrc with \e ( <leader>e )
 nnoremap <leader>e :edit ~/.vimrc<CR>
-" edit .vimrc with \v ( <leader>v )
-nnoremap <leader>v :edit ~/.vimrc<CR>
+" Do math on the command line
+nnoremap <leader>v :silent! echo eval(getline(line('.')))<CR>
 " Edit misc functions
 nnoremap <leader>f :edit ~/.vim/ftdetect/functions.vim<CR>
 " Edit makefile
@@ -37,10 +37,13 @@ nnoremap <leader>p :!python3<CR>
 nnoremap <leader>r :.w !sh<CR>
 " Do a REPL on visual selection
 vnoremap <leader>r :w !sh<CR>
+" Select line
+nnoremap vv 0v$
 " Launch terminal with <C-t>
 nnoremap <C-t> :tab term<CR>
 " Doom terminal
-nnoremap ` <ESC>:tab term<CR>
+inoremap ` <ESC>:tab term<CR>
+nnoremap ` :tab term<CR>
 " Open the Quickfix List
 " <ESC> is mapped in filetype 'qf' (quickfix) to close
 nnoremap Q :silent! copen 5<CR>:echo<CR>
@@ -90,9 +93,9 @@ autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
 autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
-" All man pages from man 3 in vimhelp form
-autocmd BufRead ~/.vim/doc/c/mantovimhelp/*.txt setlocal nomodifiable
-autocmd BufRead ~/.vim/doc/c/mantovimhelp/*.txt setlocal filetype=help
+" Close most docs easily
+autocmd BufRead ~/.vim/doc/c/**/* setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/c/**/* setlocal filetype=help
 
 autocmd! BufEnter /usr/include/* nnoremap <buffer> q :bd<CR>
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bd<CR>
@@ -104,6 +107,7 @@ cnoremap <C-P> <Down>
 tnoremap <ESC> <C-\><C-N><CR>
 " Close terminal with 2 escapes
 tnoremap <ESC><ESC> exit<CR>
+" Close terminal Doom style
 tnoremap ` exit<CR>
 autocmd BufLeave * let b:winview = winsaveview() 
 autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif 
