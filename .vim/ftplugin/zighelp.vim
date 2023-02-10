@@ -14,16 +14,16 @@ autocmd BufLeave * if &ft=='zighelp' | mark H | endif
 autocmd BufEnter * if &ft=='zighelp' | normal <C-g> | endif
 
 function! CloseZigHelp() abort
-	let s:bufnumber = bufnr("$")
-	while s:bufnumber > 0
-		if bufexists(s:bufnumber)
-			if getbufvar(s:bufnumber,"&ft") == 'zighelp'
-				silent! exe ":bdelete " . s:bufnumber
-			endif
-		endif
-		let s:bufnumber = s:bufnumber - 1
-	endwhile
-	echo
+  let s:bufnumber = bufnr("$")
+  while s:bufnumber > 0
+    if bufexists(s:bufnumber)
+      if getbufvar(s:bufnumber,"&ft") == 'zighelp'
+        silent! exe ":bdelete " . s:bufnumber
+      endif
+    endif
+    let s:bufnumber = s:bufnumber - 1
+  endwhile
+  echo
 endfunction
 
 set tags=~/.vim/doc/zig/**/tags

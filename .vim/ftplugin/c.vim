@@ -8,8 +8,8 @@ set tags=~/.vim/doc/c/**/tags
 set complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
 
 let maplocalleader = ","
-map <buffer> ( <Nop>
-map <buffer> ) <Nop>
+nnoremap <buffer> ( <Nop>
+nnoremap <buffer> ) <Nop>
 
 " Edit this file
 nnoremap <silent> <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
@@ -31,7 +31,6 @@ nnoremap <silent> <buffer> <localleader>c :<C-F>
 nnoremap <silent> <buffer> <localleader>/ /<C-F>
 " Open reverse search history
 nnoremap <silent> <buffer> <localleader>? ?<C-F>
-
 nnoremap <buffer> cn :cnext<CR>
 nnoremap <buffer> cp :cprevious<CR>
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
@@ -49,8 +48,8 @@ inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F6> <ESC>:MakeRun<CR>
 nnoremap <buffer> <F6> <ESC>:MakeRun<CR>
 " make
-inoremap <buffer> <F7> :RunPop make<CR>
-nnoremap <buffer> <F7> :RunPop make<CR>
+inoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
+nnoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
 " make clean
 inoremap <buffer> <S-F7> :RunPop make clean<CR>
 nnoremap <buffer> <S-F7> :RunPop make clean<CR>
@@ -117,7 +116,7 @@ function! s:RunAsyncInPopupFunction(channel,msg) abort
   call popup_settext(s:runpopup,s:popupoutputtext)
   silent call win_execute(s:runpopup,'normal G0')
 endfunction
-
+" TODO - Implement command! -range for popup height
 function! s:RunAsyncInPopup(arglist,optionsdictionary)
   let l:programargs = a:arglist
   let l:joboptions = {}
@@ -133,6 +132,7 @@ function! s:RunAsyncInPopup(arglist,optionsdictionary)
   \ col: 0,
   \ minheight: 5,
   \ maxheight: 5,
+  \ scrollbar: 1,
   \ minwidth: &columns,
   \ maxwidth: &columns,
   \ close: 'none',
@@ -244,7 +244,6 @@ function! s:AssemblyOutput()
   let l:joboptions["out_io"] = "buffer"
   let l:joboptions["err_io"] = "null"
   let l:joboptions["out_name"] = "assemblyoutput"
-  let l:joboptions["exit_cb"] = function('<SID>AssemblyOutputExitFunction')
   let s:assemblyjob = job_start(l:command,l:joboptions)
   let l:assemblyfile = expand('%:r') . '.s'
   execute "botright vsplit assemblyoutput"
@@ -423,7 +422,7 @@ inoreabbrev <silent> <buffer> pthread_equal <C-R>=<SID>Abbreviation("pthread_equ
 inoreabbrev <silent> <buffer> pthread_exit <C-R>=<SID>Abbreviation("pthread_exit(void *); /* void */")<CR>
 inoreabbrev <silent> <buffer> pthread_getconcurrency <C-R>=<SID>Abbreviation("pthread_getconcurrency(void); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_getschedparam <C-R>=<SID>Abbreviation("pthread_getschedparam(pthread_t, int *, struct sched_param *); /* int */")<CR>
-inoreabbrev <silent> <buffer> pthread_getspecific(pthread_key_t); /* void* */
+inoreabbrev <silent> <buffer> pthread_getspecific <C-R>=<SID>Abbreviation("pthread_getspecific(pthread_key_t); /* void* */")<CR>
 inoreabbrev <silent> <buffer> pthread_join <C-R>=<SID>Abbreviation("pthread_join(pthread_t, void **); /* int */")<CR> inoreabbrev <silent> <buffer> pthread_key_create <C-R>=<SID>Abbreviation("pthread_key_create(pthread_key_t *, void (*)(void *)); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_key_delete <C-R>=<SID>Abbreviation("pthread_key_delete(pthread_key_t); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_mutex_destroy <C-R>=<SID>Abbreviation("pthread_mutex_destroy(pthread_mutex_t *); /* int */")<CR>
