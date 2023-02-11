@@ -24,8 +24,6 @@ nnoremap <leader>n :set number!<CR>
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " Do math on the command line
 nnoremap <leader>v :silent! call EvaluateLine()<CR>
-" Edit misc functions
-nnoremap <leader>f :edit ~/.vim/ftdetect/functions.vim<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Switch to hex mode
@@ -94,28 +92,26 @@ autocmd CmdWinEnter * nnoremap <buffer> \c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
 
 " Full screen help
-autocmd BufEnter * if &bt=='help' | exec ":only" | endif
+autocmd BufEnter * if &bt=='help' | execute ":only" | endif
 " Return to previous help topic with 'H
 autocmd BufLeave * if &bt=='help' | mark H | endif
 
 " Zighelp zighelp
-autocmd BufRead ~/.vim/doc/zig/**/* setlocal nomodifiable
-autocmd BufRead ~/.vim/doc/zig/**/* setlocal filetype=zighelp
+autocmd BufRead ~/.vim/doc/zig/**/*.zig set nomodifiable
+autocmd BufRead ~/.vim/doc/zig/**/*.zig set filetype=zighelp
 
-autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
-autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
-
-autocmd BufRead /usr/lib/zig/**/*.zig setlocal nomodifiable
-autocmd BufRead /usr/lib/zig/**/*.zig setlocal filetype=zighelp
+" System librarys 
+autocmd BufRead /usr/lib/zig/**/*.zig set nomodifiable
+autocmd BufRead /usr/lib/zig/**/*.zig set filetype=zighelp
 
 " Zig manual
-autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
-autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
-autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
+autocmd BufRead ~/.vim/doc/zig/zigmanual.txt set nomodifiable
+autocmd BufRead ~/.vim/doc/zig/zigmanual.txt set filetype=help
+autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt set iskeyword+=-
 
 " Close most docs easily
-autocmd BufRead ~/.vim/doc/c/**/* setlocal nomodifiable
-autocmd BufRead ~/.vim/doc/c/**/* setlocal filetype=help
+autocmd BufRead ~/.vim/doc/c/**/*.txt set nomodifiable
+autocmd BufRead ~/.vim/doc/c/**/*.txt set filetype=help
 
 autocmd BufEnter /usr/include/* nnoremap <buffer> q :bwipeout!<CR>
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
@@ -130,6 +126,9 @@ autocmd BufEnter makeoutput nnoremap <silent> <buffer> q :bwipeout!<CR>
 " Go to the bottom on entry
 autocmd BufEnter makeoutput normal G
 
+autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif 
+autocmd BufLeave * let b:winview = winsaveview() 
+
 " Move through command line history
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
@@ -140,8 +139,6 @@ tnoremap <ESC><ESC> exit<CR>
 " Close terminal Doom style
 tnoremap ` exit<CR>
 
-autocmd BufLeave * let b:winview = winsaveview() 
-autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif 
 
 syntax on
 colorscheme pastel256
@@ -291,7 +288,7 @@ function! Make() abort
   " Create the scrolling output buffer
   execute "botright 5split makeoutput" 
   " Switch back to previous workspace
-  exe "wincmd p"
+  execute "wincmd p"
 endfunction
 
 function! AssemblyOutput()
@@ -368,7 +365,7 @@ function! TransformNumber(radix) abort
   if a:radix == 16 
     let l:ret = printf("0x%x",l:word)  
   endif
-  exe "silent! s/" . l:word . "/" . l:ret . "/"
+  execute "silent! s/" . l:word . "/" . l:ret . "/"
   call setpos(".",l:pos)
 endfunction
 
@@ -415,7 +412,7 @@ function! AVXmm256setepi8(word)
     endif
   endfor
   let l:output = l:output . ");"
-  exe "normal i" . l:output
+  execute "normal i" . l:output
 endfunction
 
 function! s:EchoWarningMessage(msg) abort
@@ -432,7 +429,7 @@ endfunction
 
 function! ColorDemo() abort
   for n in range(0,255)
-    exec 'hi ColorDemo ctermfg='.n.' ctermbg='.n
+    execute 'hi ColorDemo ctermfg='.n.' ctermbg='.n
     echon printf("%3d",n)
     echohl ColorDemo
     echon 'XXX'
@@ -449,7 +446,7 @@ function! BufferMenuSelect(id,result) abort
   endif
   " Menu selection result is 1 based.
   " vim lists are zero based.
-  exec "buffer " . s:listedbuffers[a:result - 1]
+  execute "buffer " . s:listedbuffers[a:result - 1]
   unlet s:listedbuffers
 endfunction
 
