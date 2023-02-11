@@ -343,79 +343,79 @@ function! TrimTrailingWhitespace() abort
 endfunction
 
 function! RainingText() abort
-	let l:lines = &lines
-	let l:columns = &columns
-	echo "RainingText called"
+  let l:lines = &lines
+  let l:columns = &columns
+  echo "RainingText called"
 endfunction
 
 function! WordUnderCursor() abort
-	return expand("<cword>")
+  return expand("<cword>")
 endfunction
 
 function! TransformNumber(radix) abort
-	let l:pos = getpos(".")
-	let l:word = WordUnderCursor()
-	let l:ret = deepcopy(l:word)
-	if a:radix == 2
-		let l:ret = printf("%08b",l:word)
-	endif
-	if a:radix == 8
-		let l:ret = printf("%o",l:word)
-	endif
-	if a:radix == 10 
-		let l:ret = printf("%d",l:word)	
-	endif
-	if a:radix == 16 
-		let l:ret = printf("0x%x",l:word)	
-	endif
-	exe "silent! s/" . l:word . "/" . l:ret . "/"
-	call setpos(".",l:pos)
+  let l:pos = getpos(".")
+  let l:word = WordUnderCursor()
+  let l:ret = deepcopy(l:word)
+  if a:radix == 2
+    let l:ret = printf("%08b",l:word)
+  endif
+  if a:radix == 8
+    let l:ret = printf("%o",l:word)
+  endif
+  if a:radix == 10 
+    let l:ret = printf("%d",l:word)  
+  endif
+  if a:radix == 16 
+    let l:ret = printf("0x%x",l:word)  
+  endif
+  exe "silent! s/" . l:word . "/" . l:ret . "/"
+  call setpos(".",l:pos)
 endfunction
 
 function! ToBin() abort
-	call TransformNumber(2)
+  call TransformNumber(2)
 endfunction
 function! ToHex() abort
-	call TransformNumber(16)
+  call TransformNumber(16)
 endfunction
 function! ToOct() abort
-	call TransformNumber(8)
+  call TransformNumber(8)
 endfunction
 function! ToDec() abort
-	call TransformNumber(10)
+  call TransformNumber(10)
 endfunction
 
 
 function! TextfileToHex() abort
-	:%!xxd
+  :%!xxd
 endfunction
 
 function! HexfileToText() abort
-	:%!xxd -r
+  :%!xxd -r
 endfunction
 
 function! TabsToTwoSpaces() abort
-	:%s/\t/  /g
+  :%s/\t/  /g
 endfunction
 
 command! TabsToTwoSpaces call TabsToTwoSpaces()
 
 function! AVXmm256setepi8(word)
   " Put a string in a 256 bit register variable
-	let l:output = "_mm256_set_epi8("
-	let l:wordlength = len(a:word)
-	for index in range(0,32)
-		if index < l:wordlength
-			let l:output = l:output . "'" . a:word[index] . "'"	
-		else
-			let l:output = l:output . "'" . "\\0" . "'"
-		endif
-		if index < 32
-			let l:output = l:output . ","
-		endif
-	endfor
-	let l:output = l:output . ");"
-	exe "normal i" . l:output
+  let l:output = "_mm256_set_epi8("
+  let l:wordlength = len(a:word)
+  for index in range(0,32)
+    if index < l:wordlength
+      let l:output = l:output . "'" . a:word[index] . "'"  
+    else
+      let l:output = l:output . "'" . "\\0" . "'"
+    endif
+    if index < 32
+      let l:output = l:output . ","
+    endif
+  endfor
+  let l:output = l:output . ");"
+  exe "normal i" . l:output
 endfunction
 
 function! s:EchoWarningMessage(msg) abort
