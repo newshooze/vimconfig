@@ -4,7 +4,7 @@ FILEINDEX=0
 DOCDIR=/usr/share/man/man3  # FIXME
 VIMVERSION=7.4
 FILECOUNT=$(echo "$DOCDIR"/*.gz | wc -w)
-for FILE in /usr/share/man/man3/*.gz; do
+for FILE in $DOCDIR/*.gz; do
 echo "$FILE"
   FILENAME=${FILE##*/}
   BASENAME=$(echo "$FILENAME" | sed 's/\..*$//g')
