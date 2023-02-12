@@ -5,25 +5,23 @@ nnoremap <silent> <S-T> :bprevious<CR>
 " These are annoying
 nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
-
 " Control q begins a macro
 nnoremap <C-q> q
 " Kill original macro mapping
 nnoremap q <NOP>
 vnoremap q <NOP>
 " default leader key is "\"
-"
-" Show a buffer menu
-nnoremap <leader>b :call BufferMenu()<CR>
-nnoremap ,b :silent! call BufferMenu()<CR>
 " Source vimrc
 nnoremap <leader>s :source ~/.vimrc<CR>
+" Show a buffer menu
+nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
+nnoremap <silent> ,b :silent! call BufferMenu()<CR>
 " Toggle line numbers
 nnoremap <leader>n :set number!<CR>
 " edit .vimrc with \e ( <leader>e )
 nnoremap <leader>e :edit ~/.vimrc<CR>
-" Do math on the command line
-nnoremap <leader>v :silent! call EvaluateLine()<CR>
+" Evaluate a buffer line 
+nnoremap <leader>= :silent! call EvaluateLine()<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Switch to hex mode
@@ -34,9 +32,9 @@ nnoremap <leader>X :call HexfileToText()<CR>
 nnoremap <leader>t :tab term<CR>
 " Start python3
 nnoremap <leader>p :!python3<CR>
-" Do a REPL on the current line
+" Do a REPL on the current line (shell command)
 nnoremap <leader>r :.w !sh<CR>
-" Do a REPL on visual selection
+" Do a REPL on visual selection (shell command)
 vnoremap <leader>r :w !sh<CR>
 " Select line
 nnoremap vv 0v$
@@ -84,7 +82,7 @@ nnoremap <leader>color :call ColorDemo()<CR>
 inoremap <C-F> <C-x><C-F> 
 " Complete line
 inoremap  <C-L> <C-x><C-L>
-
+ 
 " Close command history window in several ways.
 autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> ,c :q<CR>
@@ -97,21 +95,23 @@ autocmd BufEnter * if &bt=='help' | execute ":only" | endif
 autocmd BufLeave * if &bt=='help' | mark H | endif
 
 " Zighelp zighelp
-autocmd BufRead ~/.vim/doc/zig/**/*.zig set nomodifiable
-autocmd BufRead ~/.vim/doc/zig/**/*.zig set filetype=zighelp
+autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
+autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
 
 " System librarys 
-autocmd BufRead /usr/lib/zig/**/*.zig set nomodifiable
-autocmd BufRead /usr/lib/zig/**/*.zig set filetype=zighelp
+autocmd BufRead /usr/lib/zig/**/*.zig setlocal nomodifiable
+autocmd BufRead /usr/lib/zig/**/*.zig setlocal filetype=zighelp
+autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
 
 " Zig manual
-autocmd BufRead ~/.vim/doc/zig/zigmanual.txt set nomodifiable
-autocmd BufRead ~/.vim/doc/zig/zigmanual.txt set filetype=help
-autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt set iskeyword+=-
+autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
+autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
 " Close most docs easily
-autocmd BufRead ~/.vim/doc/c/**/*.txt set nomodifiable
-autocmd BufRead ~/.vim/doc/c/**/*.txt set filetype=help
+autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal filetype=help
 
 autocmd BufEnter /usr/include/* nnoremap <buffer> q :bwipeout!<CR>
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
@@ -138,7 +138,6 @@ tnoremap <ESC> <C-\><C-N><CR>
 tnoremap <ESC><ESC> exit<CR>
 " Close terminal Doom style
 tnoremap ` exit<CR>
-
 
 syntax on
 colorscheme pastel256
@@ -452,12 +451,26 @@ endfunction
 
 function! BufferMenu() abort
   let s:listedbuffers = []
+  let l:maxbufferstringlength = 0
   for l:buffer in getbufinfo()
     if l:buffer.listed
-      call add(s:listedbuffers,l:buffer.name)
+      let l:bufferstringlength = strlen(l:buffer.name)
+      if l:bufferstringlength > l:maxbufferstringlength
+        let l:maxbufferstringlength = l:bufferstringlength
+      endif
+      if l:buffer.bufnr == bufnr()
+        call add(s:listedbuffers,"* " . l:buffer.name)
+      else
+        call add(s:listedbuffers,"  " . l:buffer.name)
+      endif
     endif
   endfor
-  call popup_menu(s:listedbuffers, #{callback: 'BufferMenuSelect'})
+  let l:menuoptions = {}
+  let l:menuoptions["callback"] = function('BufferMenuSelect')
+  let l:menuoptions["maxheight"] = &lines - 4
+  let l:menuoptions["minheight"] = 1
+  let l:menuoptions["minwidth"] = l:maxbufferstringlength + 2
+  call popup_menu(s:listedbuffers,l:menuoptions)
 endfunction
 
 function! DialogAtCursor(message) abort
