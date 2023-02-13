@@ -99,7 +99,7 @@ autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
 
-" System librarys 
+" System libraries 
 autocmd BufRead /usr/lib/zig/**/*.zig setlocal nomodifiable
 autocmd BufRead /usr/lib/zig/**/*.zig setlocal filetype=zighelp
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
@@ -173,7 +173,7 @@ let s:popupoutputtext = []
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
 
-function! KillOutputWindows() abort
+function! KillOutputWindows()
   silent cclose
   call popup_close(s:runpopup)
   " Close ALL popups (popup_clear)
