@@ -1,7 +1,6 @@
 " Cycle forward and backward through open files
 nnoremap <silent> <S-Y> :bnext<CR>
 nnoremap <silent> <S-T> :bprevious<CR>
-
 " These are annoying
 nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
@@ -36,6 +35,8 @@ nnoremap <leader>p :!python3<CR>
 nnoremap <leader>r :.w !sh<CR>
 " Do a REPL on visual selection (shell command)
 vnoremap <leader>r :w !sh<CR>
+" Execute vimscript on a line
+nnoremap <leader>R :exe join(getbufline(bufname(),line(".")))<CR>
 " Select line
 nnoremap vv 0v$
 " Launch terminal with <C-t>
