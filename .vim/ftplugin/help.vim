@@ -32,9 +32,9 @@ nnoremap <TAB> <ESC>:silent! call NextLink()<CR>:echo ""<CR>
 " Shift+Tab jumps to previous hyperlink in help files
 nnoremap <S-TAB> <ESC>:silent! call PrevLink()<CR>:echo ""<CR>
 " Jump to next help topic
-nnoremap <C-N> /*[a-zA-Z0-9-]*\*<CR>
+nnoremap <C-N> /^ \+\*[a-zA-Z0-9-]*\*$<CR>
 " Jump to previous help topic
-nnoremap <C-P> ?*[a-zA-Z0-9-]*\*<CR>
+nnoremap <C-P> ?^ \+\*[a-zA-Z0-9-_]*\*$<CR>
 
 " Don't load another plugin for this buffer
 let b:did_ftplugin = 1
