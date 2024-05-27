@@ -2,9 +2,9 @@
 " Maintainer: Vinny
 " Revision: 2024-5-13
 
-if exists("b:did_ftplugin")
-  finish
-endif
+"if exists("b:did_ftplugin")
+"  finish
+"endif
 
 set errorformat=%f:%l:%c:%m
 
