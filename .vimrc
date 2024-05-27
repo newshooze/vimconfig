@@ -1,3 +1,6 @@
+if exists("b:did_ftplugin")
+  finish
+endif
 " Cycle forward and backward through open files
 nnoremap <silent> <S-Y> :bnext<CR>
 nnoremap <silent> <S-T> :bprevious<CR>
@@ -11,7 +14,7 @@ nnoremap q <NOP>
 vnoremap q <NOP>
 " default leader key is "\"
 " Source vimrc
-nnoremap <leader>s :source ~/.vimrc<CR>
+nnoremap <leader>s :unlet b:did_ftplugin<CR>:source ~/.vimrc<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 nnoremap <silent> ,b :silent! call BufferMenu()<CR>
@@ -21,6 +24,9 @@ nnoremap <leader>n :set number!<CR>
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " Evaluate a buffer line 
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
+vnoremap <leader>= :silent! call EvaluateLine()<CR>
+" grep word under cursor
+nnoremap <leader>g :call Grep(WordUnderCursor(),getcwd())<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Switch to hex mode
@@ -38,16 +44,18 @@ vnoremap <leader>r :w !sh<CR>
 " Execute vimscript on a line
 nnoremap <leader>R :exe join(getbufline(bufname(),line(".")))<CR>
 " Select line
-nnoremap vv 0v$
+nnoremap vv 0v$o
 " Launch terminal with <C-t>
 nnoremap <C-t> :tab term<CR>
 " Doom terminal
 inoremap ` <ESC>:tab term<CR>
 nnoremap ` :tab term<CR>
 " Open the Quickfix List
-" <ESC> is mapped in filetype 'qf' (quickfix) to close
 nnoremap Q :silent! copen 5<CR>:echo<CR>
-nnoremap <leader>q  :silent! copen 5<CR>:echo<CR>
+nnoremap <leader>q :silent! copen 5<CR>:echo<CR>
+nnoremap ,q :silent! copen 5<CR>:echo<CR>
+" Open the location list
+nnoremap <leader>l :lopen 5<CR>:echo<CR>
 " Open command line window
 nnoremap <leader>c :<C-F>
 " Open search history
@@ -59,7 +67,6 @@ nnoremap <leader>? ?<C-F>
 nnoremap <S-K> :tag <C-r><C-W><CR>
 " Manual (man) for word under cursor
 nnoremap <C-K> :!man <C-r><C-W><CR>
-
 " Escape and q removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
 nnoremap <silent> q <ESC> :silent! call KillOutputWindows()<CR>
@@ -71,13 +78,13 @@ nnoremap <leader>k <C-W>k
 nnoremap <leader>l <C-W>l
 
 " Transform numbers in place
-nnoremap <leader>bin :call ToBin()<CR>
-nnoremap <leader>oct :call ToOct()<CR>
-nnoremap <leader>dec :call ToDec()<CR>
-nnoremap <leader>hex :call ToHex()<CR>
+"nnoremap <leader>bin :call ToBin()<CR>
+"nnoremap <leader>oct :call ToOct()<CR>
+"nnoremap <leader>dec :call ToDec()<CR>
+"nnoremap <leader>hex :call ToHex()<CR>
 
 " Do a 8 bit color demo
-nnoremap <leader>color :call ColorDemo()<CR>
+"nnoremap <leader>color :call ColorDemo()<CR>
 
 " Complete file name with <C-f>
 inoremap <C-F> <C-x><C-F> 
@@ -173,15 +180,18 @@ let s:runoutputtext = []
 let s:popupoutputtext = []
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
+let s:grepjob = 0
 
 function! KillOutputWindows()
-  silent cclose
+  silent lclose " Close location list
+  silent cclose " Close quickfix window
   call popup_close(s:runpopup)
   " Close ALL popups (popup_clear)
   call popup_clear(1)
   silent! execute "bwipeout! makeoutput" 
   silent! execute "bwipeout! runoutput"
   silent! execute "bwipeout! assemblyoutput"
+  silent! execute "bwipeout! grepoutput"
 endfunction
 
 function! RunAsyncJobFunction(channel,msg) abort
@@ -291,13 +301,54 @@ function! Make() abort
   execute "wincmd p"
 endfunction
 
+function! GrepExitFunction(job,status)
+endfunction
+
+function! GrepJobFunction(channel,msg)
+  caddexpr a:msg
+endfunction
+
+function! Grep(pattern,directory)
+  silent wall
+  call KillOutputWindows()
+  let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
+  let l:joboptions["callback"] = function('GrepJobFunction')
+  let l:joboptions["exit_cb"] = function('GrepExitFunction')
+  cexpr ""
+  silent execute "copen " s:quickfixsize
+  let l:command = [
+  \ "grep",
+  \ "-R",
+  \ "-n",
+  \ "-i",
+  \ "-I",
+  \ "-s",
+  \ a:pattern,
+  \ a:directory,
+  \ ]
+  let s:grepjob = job_start(l:command,l:joboptions)
+endfunction
+" ---------------------------------------------------------------
+function! ObjDump(objectfile)
+  enew
+  read !objdump -d a:objectfile
+  set ft=asm
+endfunction
+
 function! AssemblyOutput()
   silent wall
   " Close any existing quickfix and make buffers
   call KillOutputWindows()
-  let l:sourcefile= expand('%:t')
+  let l:sourcefile = expand('%:t')
+  let l:sourcefileextension = expand('%:e')
+  let l:compiler = "gcc"
+  if l:sourcefileextension == "cpp"
+    let l:compiler = "g++"
+  endif
   let l:command = [
-  \ "gcc",
+  \ l:compiler,
   \ "-S",
   \ "-O3",
   \ "-Wall",
@@ -326,6 +377,7 @@ function! EatSpace() abort
   return (c =~ '\s') ? '' : c
 endfunction
 
+" Used for completion in c/c++ files
 function! Abbreviation(text) abort
   let l:line = getline('.')
   call setline('.',strpart(line,0,col('.')-1) . a:text . strpart(line,col('.') -1))
@@ -339,49 +391,29 @@ function! TrimTrailingWhitespace() abort
   %s!\s\+$!!g
 endfunction
 
-function! RainingText() abort
-  let l:lines = &lines
-  let l:columns = &columns
-  echo "RainingText called"
-endfunction
-
 function! WordUnderCursor() abort
   return expand("<cword>")
 endfunction
 
-function! TransformNumber(radix) abort
-  let l:pos = getpos(".")
-  let l:word = WordUnderCursor()
-  let l:ret = deepcopy(l:word)
-  if a:radix == 2
-    let l:ret = printf("%08b",l:word)
-  endif
-  if a:radix == 8
-    let l:ret = printf("%o",l:word)
-  endif
-  if a:radix == 10 
-    let l:ret = printf("%d",l:word)  
-  endif
-  if a:radix == 16 
-    let l:ret = printf("0x%x",l:word)  
-  endif
-  execute "silent! s/" . l:word . "/" . l:ret . "/"
-  call setpos(".",l:pos)
+function! BinaryToDecimal(word)
+  return str2nr(a:word,2)
+endfunction
+function! OctalToDecimal(word)
+  return str2nr(a:word,8)
+endfunction
+function! HexToDecimal(word)
+  return str2nr(a:word,16)
 endfunction
 
-function! ToBin() abort
-  call TransformNumber(2)
+function! DecimalToBinary(word)
+  return printf("%08b",a:word)
 endfunction
-function! ToHex() abort
-  call TransformNumber(16)
+function! DecimalToOctal(word)
+  return printf("%o",a:word)
 endfunction
-function! ToOct() abort
-  call TransformNumber(8)
+function! DecimalToHex(word)
+  return printf("0x%x",a:word)
 endfunction
-function! ToDec() abort
-  call TransformNumber(10)
-endfunction
-
 
 function! TextfileToHex() abort
   :%!xxd
@@ -441,18 +473,20 @@ function! ColorDemo() abort
 endfunction
 
 function! BufferMenuSelect(id,result) abort
-  if(a:result < 0)
+  if(a:result < 1)
     return
   endif
   " Menu selection result is 1 based.
-  " vim lists are zero based.
-  execute "buffer " . s:listedbuffers[a:result - 1]
+  " Remove any space or asterisks at the beginning of buffer name
+  let l:buffername = trim(s:listedbuffers[a:result -1],"* ",1)
+  execute "buffer " . l:buffername
   unlet s:listedbuffers
 endfunction
 
 function! BufferMenu() abort
   let s:listedbuffers = []
   let l:maxbufferstringlength = 0
+  call KillOutputWindows()
   for l:buffer in getbufinfo()
     if l:buffer.listed
       let l:bufferstringlength = strlen(l:buffer.name)
@@ -460,6 +494,7 @@ function! BufferMenu() abort
         let l:maxbufferstringlength = l:bufferstringlength
       endif
       if l:buffer.bufnr == bufnr()
+        " Put an asterisk next to the current buffer
         call add(s:listedbuffers,"* " . l:buffer.name)
       else
         call add(s:listedbuffers,"  " . l:buffer.name)
@@ -493,5 +528,16 @@ function! EvaluateLine() abort
   call DialogAtCursor(l:message)
 endfunction
 
+function! ToggleQuickFix() abort
+  let l:windows = filter(getwininfo(),'v:val.quickfix && !v:val.loclist')
+  if l:windows
+    silent cclose
+  else
+    silent copen
+  endif
+endfunction
 " Virtual console cursor block
+" This doesn't seem to work
 let &t_ve= "\e[?25h\e[?16;143;255c"
+
+let b:did_ftplugin = 1
