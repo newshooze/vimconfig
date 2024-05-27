@@ -1,10 +1,15 @@
+" File: c.vim
+" Maintainer: Vinny
+" Revision: 2024-5-13
+
 if exists("b:did_ftplugin")
   finish
 endif
+
 set errorformat=%f:%l:%c:%m
 
-set tags=~/.vim/doc/c/**/tags
-set complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
+setlocal tags=~/.vim/doc/c/**/tags
+setlocal complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
 
 let maplocalleader = ","
 nnoremap <buffer> ( <Nop>
@@ -19,25 +24,29 @@ nnoremap <silent> <buffer> <localleader>m :e makefile<CR>
 " Execute a REPL on the current line
 nnoremap <silent> <buffer> <localleader>r :.w !sh<CR>
 " Vimgrep word under cursor
-nnoremap <buffer> <localleader>g :vimgrep /<C-R><C-W>/ ./* <CR>
-" Show a buffer menu
-nnoremap <buffer> <localleader>b :call BufferMenu()<CR>
+nnoremap <silent> <buffer> <localleader>vg :vimgrep /<C-R><C-W>/ ./* <CR>:copen 5<CR>
+" grep
+nnoremap <silent> <buffer> <localleader>vg :call Grep(WordUnderCursor(),getcwd())<CR>
 " Open quickfix list
-nnoremap <silent> <buffer> <localleader>q :copen 5<CR>
-" Open location list
-nnoremap <silent> <buffer> <localleader>l :lopen 5<CR>
+"nnoremap <silent> <buffer> <localleader>q :copen 5<CR>
 " Open command line history
 nnoremap <silent> <buffer> <localleader>c :<C-F>
 " Open forward search history
 nnoremap <silent> <buffer> <localleader>/ /<C-F>
 " Open reverse search history
 nnoremap <silent> <buffer> <localleader>? ?<C-F>
+" Window navigation
+nnoremap <silent> <buffer> <localleader>h <C-W>h
+nnoremap <silent> <buffer> <localleader>j <C-W>j
+nnoremap <silent> <buffer> <localleader>k <C-W>k
+nnoremap <silent> <buffer> <localleader>l <C-W>l
+
 nnoremap <buffer> cn :cnext<CR>
 nnoremap <buffer> cp :cprevious<CR>
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
 " Source this file
-nnoremap <buffer> <F3> <ESC>:unlet b:did_ftplugin<CR>:source ~/.vim/ftplugin/c.vim<CR>
+nnoremap <buffer> <F3> <ESC>:unlet b:did_c_ftplugin<CR>:source ~/.vim/ftplugin/c.vim<CR>
 
 " Switch to header or source
 nnoremap <buffer> <F4> <ESC>:e %:r.h<CR>
@@ -51,8 +60,7 @@ nnoremap <buffer> <F6> <ESC>:MakeRun<CR>
 " make
 inoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
 nnoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
-" make clean
-inoremap <buffer> <S-F7> :RunPop make clean<CR>
+
 nnoremap <buffer> <S-F7> :RunPop make clean<CR>
 " make
 inoremap <buffer> <F8> <ESC>:Make<CR>
@@ -84,9 +92,8 @@ function AVX() abort
 endfunction
 
 command! -buffer AVX :call AVX()
-
-
 " stdio.h
+"
 inoreabbrev <silent> <buffer> fgets <C-r>=Abbreviation("fgets(char*,size,FILE);")<CR>
 inoreabbrev <silent> <buffer> fgetc <C-R>=Abbreviation("fgetc(FILE); /* int */")<CR>
 inoreabbrev <silent> <buffer> fopen <C-R>=Abbreviation("fopen(\"filename\",\"r\"); /* FILE* */")<CR>
@@ -238,7 +245,8 @@ inoreabbrev <silent> <buffer> pthread_exit <C-R>=Abbreviation("pthread_exit(void
 inoreabbrev <silent> <buffer> pthread_getconcurrency <C-R>=Abbreviation("pthread_getconcurrency(void); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_getschedparam <C-R>=Abbreviation("pthread_getschedparam(pthread_t, int *, struct sched_param *); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_getspecific <C-R>=Abbreviation("pthread_getspecific(pthread_key_t); /* void* */")<CR>
-inoreabbrev <silent> <buffer> pthread_join <C-R>=Abbreviation("pthread_join(pthread_t, void **); /* int */")<CR> inoreabbrev <silent> <buffer> pthread_key_create <C-R>=Abbreviation("pthread_key_create(pthread_key_t *, void (*)(void *)); /* int */")<CR>
+inoreabbrev <silent> <buffer> pthread_join <C-R>=Abbreviation("pthread_join(pthread_t, void **); /* int */")<CR>
+inoreabbrev <silent> <buffer> pthread_key_create <C-R>=Abbreviation("pthread_key_create(pthread_key_t *, void (*)(void *)); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_key_delete <C-R>=Abbreviation("pthread_key_delete(pthread_key_t); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_mutex_destroy <C-R>=Abbreviation("pthread_mutex_destroy(pthread_mutex_t *); /* int */")<CR>
 inoreabbrev <silent> <buffer> pthread_mutex_getprioceiling <C-R>=Abbreviation("pthread_mutex_getprioceiling(const pthread_mutex_t *, int *); /* int */")<CR>
@@ -2317,5 +2325,4 @@ inoreabbrev <silent> <buffer> TTF_SizeText <C-R>=Abbreviation("TTF_SizeText(TTF_
 inoreabbrev <silent> <buffer> TTF_SizeUNICODE <C-R>=Abbreviation("TTF_SizeUNICODE(TTF_Font *font,const Uint16 *text,int *w,int *h); /* int  */")<CR>
 inoreabbrev <silent> <buffer> TTF_SizeUTF <C-R>=Abbreviation("TTF_SizeUTF8(TTF_Font *font,const char *text,int *w,int *h); /* int  */")<CR>
 inoreabbrev <silent> <buffer> TTF_WasInit <C-R>=Abbreviation("TTF_WasInit(); /* int  */")<CR>
-
 let b:did_ftplugin = 1
