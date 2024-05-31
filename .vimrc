@@ -556,7 +556,7 @@ function! EvaluateLine() abort
 endfunction
 
 function! QuickFixVisible() abort
-  let wins = filter(getwininfo(), 'v:val.quickfix && !v:val.loclist')
+  let wins = filter(getwininfo(), 'v:val.quickfix')
   return empty(wins) ? 0 : 1
 endfunction
 
