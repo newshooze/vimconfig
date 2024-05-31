@@ -5,10 +5,7 @@ nnoremap <silent> <S-T> :bprevious<CR>
 nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
 " Control q begins a macro
-nnoremap <C-q> q
-" Kill original macro mapping
-nnoremap q <NOP>
-vnoremap q <NOP>
+"nnoremap <C-q> q
 " default leader key is "\"
 " Source vimrc
 nnoremap <leader>s :source ~/.vimrc<CR>
@@ -20,7 +17,9 @@ nnoremap <leader>n :set number!<CR>
 " edit .vimrc with \e ( <leader>e )
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " Evaluate a buffer line 
+" Example: Hit <leader>= on a line that contains '2+2'
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
+" This doesn't work yet
 vnoremap <leader>= :silent! call EvaluateLine()<CR>
 " grep word under cursor ( All files in current directory (1 means depth of 1 ))
 nnoremap <leader>g :call VinGrep(WordUnderCursor(),getcwd(),1)<CR>
@@ -38,12 +37,10 @@ nnoremap <leader>X :call HexfileToText()<CR>
 nnoremap <leader>t :tab term<CR>
 " Start python3
 nnoremap <leader>p :!python3<CR>
-" Do a REPL on the current line (shell command)
-nnoremap <leader>r :.w !sh<CR>
 " Do a REPL on visual selection (shell command)
-vnoremap <leader>r :w !sh<CR>
-" Execute vimscript on a line
-nnoremap <leader>R :exe join(getbufline(bufname(),line(".")))<CR>
+vnoremap <leader>vr :w !sh<CR>
+" Execute vimscript REPL on a line
+nnoremap <leader>r :exe join(getbufline(bufname(),line(".")))<CR>
 " Select line
 nnoremap vv 0v$o
 " Launch terminal with <C-t>
@@ -52,9 +49,8 @@ nnoremap <C-t> :tab term<CR>
 inoremap ` <ESC>:tab term<CR>
 nnoremap ` :tab term<CR>
 " Open the Quickfix List
-nnoremap Q :silent! copen 5<CR>:echo<CR>
-nnoremap <leader>q :silent! copen 5<CR>:echo<CR>
-nnoremap ,q :silent! copen 5<CR>:echo<CR>
+nnoremap q :call ToggleQuickFix()<CR>
+"nnoremap ,q :call ToggleQuickFix()<CR>
 " Open the location list
 nnoremap <leader>l :lopen 5<CR>:echo<CR>
 " Open command line window
@@ -70,7 +66,6 @@ nnoremap <S-K> :tag <C-r><C-W><CR>
 nnoremap <C-K> :!man <C-r><C-W><CR>
 " Escape and q removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
-nnoremap <silent> q <ESC> :silent! call KillOutputWindows()<CR>
 
 " Move between windows
 nnoremap <leader>h <C-W>h 
@@ -98,17 +93,12 @@ nnoremap cn :cnext<CR>
 nnoremap cp :cprevious<CR>
 
 " Close command history window in several ways.
+" This also closes search history windows
 autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
-autocmd CmdWinEnter * nnoremap <buffer> ,c :q<CR>
-autocmd CmdWinEnter * nnoremap <buffer> \c :q<CR>
-autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
-
 " Close search history window in several ways
 autocmd CmdWinEnter * nnoremap <buffer> \/ :q<CR>
-autocmd CmdWinEnter * nnoremap <buffer> ,/ :q<CR>
 " Close reverse search history in several ways
 autocmd CmdWinEnter * nnoremap <buffer> \? :q<CR>
-autocmd CmdWinEnter * nnoremap <buffer> ,? :q<CR>
 
 " Full screen help
 autocmd BufEnter * if &bt=='help' | execute ":only" | endif
@@ -134,16 +124,13 @@ autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal filetype=help
 
-autocmd BufEnter /usr/include/* nnoremap <buffer> q :bwipeout!<CR>
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
 
 autocmd BufEnter runoutput nnoremap <silent> <buffer> <ESC> :bwipeout!<CR>
-autocmd BufEnter runoutput nnoremap <silent> <buffer> q :bwipeout!<CR>
 " Go to the bottom on entry
 autocmd BufEnter runoutput normal G
 
 autocmd BufEnter makeoutput nnoremap <silent> <buffer> <ESC> :bwipeout!<CR>
-autocmd BufEnter makeoutput nnoremap <silent> <buffer> q :bwipeout!<CR>
 " Go to the bottom on entry
 autocmd BufEnter makeoutput normal G
 
@@ -336,7 +323,7 @@ endfunction
 
 command! -nargs=+ VinGrep call VinGrep(<f-args>)
   
-"function VinGrep(pattern,directory,depth)
+" Default parameters in Vim 8xx only
 function VinGrep(pattern,directory=".",depth=1)
   silent wall
   call KillOutputWindows()
@@ -556,7 +543,7 @@ function! EvaluateLine() abort
 endfunction
 
 function! QuickFixVisible() abort
-  let wins = filter(getwininfo(), 'v:val.quickfix')
+  let wins = filter(getwininfo(), 'v:val.quickfix && !v:val.loclist')
   return empty(wins) ? 0 : 1
 endfunction
 
