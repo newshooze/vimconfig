@@ -1,6 +1,3 @@
-if exists("b:did_ftplugin")
-  finish
-endif
 " Cycle forward and backward through open files
 nnoremap <silent> <S-Y> :bnext<CR>
 nnoremap <silent> <S-T> :bprevious<CR>
@@ -14,7 +11,7 @@ nnoremap q <NOP>
 vnoremap q <NOP>
 " default leader key is "\"
 " Source vimrc
-nnoremap <leader>s :unlet b:did_ftplugin<CR>:source ~/.vimrc<CR>
+nnoremap <leader>s :source ~/.vimrc<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 nnoremap <silent> ,b :silent! call BufferMenu()<CR>
@@ -25,8 +22,12 @@ nnoremap <leader>e :edit ~/.vimrc<CR>
 " Evaluate a buffer line 
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
 vnoremap <leader>= :silent! call EvaluateLine()<CR>
-" grep word under cursor
-nnoremap <leader>g :call Grep(WordUnderCursor(),getcwd())<CR>
+" grep word under cursor ( All files in current directory (1 means depth of 1 ))
+nnoremap <leader>g :call VinGrep(WordUnderCursor(),getcwd(),1)<CR>
+" grep word under cursor ( All files recursivly (-1 means recursive ))
+nnoremap <leader>gr :call VinGrep(WordUnderCursor(),getcwd(),-1)<CR>
+" grep this file only (use vimgrep (not async))
+nnoremap <leader>gf :vimgrep! <cword> %<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Switch to hex mode
@@ -85,17 +86,29 @@ nnoremap <leader>l <C-W>l
 
 " Do a 8 bit color demo
 "nnoremap <leader>color :call ColorDemo()<CR>
-
 " Complete file name with <C-f>
 inoremap <C-F> <C-x><C-F> 
 " Complete line
 inoremap  <C-L> <C-x><C-L>
- 
+
+
+" These default key combos do too many suprise deletes
+nnoremap dn <NOP>
+nnoremap cn :cnext<CR>
+nnoremap cp :cprevious<CR>
+
 " Close command history window in several ways.
 autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> ,c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> \c :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> q :q<CR>
+
+" Close search history window in several ways
+autocmd CmdWinEnter * nnoremap <buffer> \/ :q<CR>
+autocmd CmdWinEnter * nnoremap <buffer> ,/ :q<CR>
+" Close reverse search history in several ways
+autocmd CmdWinEnter * nnoremap <buffer> \? :q<CR>
+autocmd CmdWinEnter * nnoremap <buffer> ,? :q<CR>
 
 " Full screen help
 autocmd BufEnter * if &bt=='help' | execute ":only" | endif
@@ -107,7 +120,7 @@ autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal filetype=zighelp
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
 
-" System libraries 
+" Zig System libraries 
 autocmd BufRead /usr/lib/zig/**/*.zig setlocal nomodifiable
 autocmd BufRead /usr/lib/zig/**/*.zig setlocal filetype=zighelp
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
@@ -151,12 +164,13 @@ syntax on
 colorscheme pastel256
 
 let loaded_matchparen=1
-
+set errorformat=%f:%l:%c:\ %m,%f:%l:%c:%m
 set tags=~/.vim/doc/**/tags
 set shortmess+=I
 set ruler
 set nobackup
 set noswapfile
+set autochdir
 set expandtab
 set shiftwidth=2
 set tabstop=2
@@ -181,6 +195,7 @@ let s:popupoutputtext = []
 let s:makewarningcount = 0
 let s:makeerrorcount = 0
 let s:grepjob = 0
+let s:grepresults = 0
 
 function! KillOutputWindows()
   silent lclose " Close location list
@@ -192,6 +207,7 @@ function! KillOutputWindows()
   silent! execute "bwipeout! runoutput"
   silent! execute "bwipeout! assemblyoutput"
   silent! execute "bwipeout! grepoutput"
+  silent! execute "KillGrepJob()"
 endfunction
 
 function! RunAsyncJobFunction(channel,msg) abort
@@ -301,36 +317,42 @@ function! Make() abort
   execute "wincmd p"
 endfunction
 
-function! GrepExitFunction(job,status)
+" This doesn't work
+function! KillGrepJob()
+  if job_status(s:grepjob) == "run"
+    call job_stop(s:grepjob,"kill")
+  endif
+  unlet s:grepjob
 endfunction
 
-function! GrepJobFunction(channel,msg)
+function! VinGrepExitFunction(job,status)
+endfunction
+
+function! VinGrepJobFunction(channel,msg)
+  let s:grepresults = s:grepresults + 1
   caddexpr a:msg
+  cbottom
 endfunction
 
-function! Grep(pattern,directory)
+command! -nargs=+ VinGrep call VinGrep(<f-args>)
+  
+"function VinGrep(pattern,directory,depth)
+function VinGrep(pattern,directory=".",depth=1)
   silent wall
   call KillOutputWindows()
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
   let l:joboptions["err_msg"] = "0"
-  let l:joboptions["callback"] = function('GrepJobFunction')
-  let l:joboptions["exit_cb"] = function('GrepExitFunction')
+  let l:joboptions["callback"] = function('VinGrepJobFunction')
+  let l:joboptions["exit_cb"] = function('VinGrepExitFunction')
   cexpr ""
   silent execute "copen " s:quickfixsize
-  let l:command = [
-  \ "grep",
-  \ "-R",
-  \ "-n",
-  \ "-i",
-  \ "-I",
-  \ "-s",
-  \ a:pattern,
-  \ a:directory,
-  \ ]
+  wincmd p
+  let l:command = 'vingrep ' . a:pattern . ' ' . a:directory .' ' . a:depth
+  echo l:command
   let s:grepjob = job_start(l:command,l:joboptions)
 endfunction
-" ---------------------------------------------------------------
+
 function! ObjDump(objectfile)
   enew
   read !objdump -d a:objectfile
@@ -483,6 +505,11 @@ function! BufferMenuSelect(id,result) abort
   unlet s:listedbuffers
 endfunction
 
+" TODO make this list files in a directory
+function! FileMenu()
+  
+endfunction
+
 function! BufferMenu() abort
   let s:listedbuffers = []
   let l:maxbufferstringlength = 0
@@ -528,16 +555,15 @@ function! EvaluateLine() abort
   call DialogAtCursor(l:message)
 endfunction
 
+function! QuickFixVisible() abort
+  let wins = filter(getwininfo(), 'v:val.quickfix && !v:val.loclist')
+  return empty(wins) ? 0 : 1
+endfunction
+
 function! ToggleQuickFix() abort
-  let l:windows = filter(getwininfo(),'v:val.quickfix && !v:val.loclist')
-  if l:windows
-    silent cclose
+  if QuickFixVisible()
+    cclose
   else
-    silent copen
+    copen 5
   endif
 endfunction
-" Virtual console cursor block
-" This doesn't seem to work
-let &t_ve= "\e[?25h\e[?16;143;255c"
-
-let b:did_ftplugin = 1
