@@ -1,31 +1,35 @@
 " File: qf.vim
 " quickfix window settings
 " Maintainer: Vinny
-" Revision: 2024-5-14 
+" Revision: 2024-5-28 
 
 if exists("b:did_ftplugin")
   finish
 endif
-nnoremap <silent> <buffer> <S-Y> <NOP>
-nnoremap <silent> <buffer> <S-T> <NOP>
 
 let maplocalleader = ","
 
+" Delete the current line in the quickfix list
+nnoremap <buffer> <silent> dd :call <SID>DeleteLineFunction(line('.'))<CR>
+nnoremap <buffer> <silent> dG :DeleteToEnd<CR>
+nnoremap <buffer> <silent> da :call <SID>DeleteAllLinesFunction()<CR>
+nnoremap <buffer> <silent> <C-k> :resize +2<CR>
+nnoremap <buffer> <silent> <C-j> :resize -2<CR>
+nnoremap <buffer> <silent> <S-k> :resize +2<CR>
+nnoremap <buffer> <silent> <S-j> :resize -2<CR>
+
+" THESE ARE SET IN .vimrc FOR ALL FILES
+" Go to next quickfix error
+"nnoremap <buffer> cn :cnext<CR>
+"nnoremap <buffer> <localleader>n :bd<CR>:cnext<CR>
+
+" Go to previous quickfix error
+"nnoremap <buffer> cp :cprevious<CR>
+"nnoremap <buffer> <localleader>p :bd<CR>:cprev<CR>
+
 nnoremap <buffer> <localleader>e :bd<CR>:edit ~/.vim/ftplugin/qf.vim<CR>
 nnoremap <buffer> <localleader>s :unlet b:did_ftplugin<CR>:source ~/.vim/ftplugin/qf.vim<CR>
-nnoremap <buffer> <localleader>q :bd<CR>
-nnoremap <buffer> \q :bd<CR>
-
-function! s:ChangeWindowHeight(howmuch) abort
-  let l:cursorpos = getpos('.')
-	let b:height = winheight(winnr())
-	let b:newheight = b:height + a:howmuch
-	if b:newheight < 1 || b:newheight > 25
-    return
-  endif
-	silent exec "copen " . b:newheight
-  call setpos('.',l:cursorpos)
-endfunction
+nnoremap <buffer> m :call DialogCentered(getline('.'))<CR>
 
 function! s:AddItemFunction(item)
   caddexpr(a:item)
@@ -40,8 +44,6 @@ function! s:AddItems()
   endwhile
 endfunction
 
-nnoremap <buffer> gq :call <SID>AddItems()<CR>
-nnoremap <silent> <buffer> cc :caddexpr("Hello")<CR>
 
 " quickfix items are zero based (dictionary)
 function! s:DeleteLineFunction(line) abort
@@ -81,25 +83,4 @@ command! -nargs=+ DeleteLines call <SID>DeleteLinesFunction(<f-args>)
 command! DeleteToEnd call <SID>DeleteToEndFunction()
 command! DeleteAllLines call <SID>DeleteAllLinesFunction()
 
-" Delete the current line in the quickfix list
-nnoremap <buffer> <silent> dd :call <SID>DeleteLineFunction(line('.'))<CR>
-nnoremap <buffer> <silent> dG :DeleteToEnd<CR>
-nnoremap <buffer> <silent> da :call <SID>DeleteAllLinesFunction()<CR>
-nnoremap <buffer> <silent> <localleader>k :bprevious<CR>
-nnoremap <buffer> <silent> <localleader>j :bnext<CR>
-nnoremap <buffer> <silent> <C-k> :call <SID>ChangeWindowHeight(2)<CR>
-nnoremap <buffer> <silent> <C-j> :call <SID>ChangeWindowHeight(-2)<CR>
-nnoremap <buffer> <silent> <S-k> :call <SID>ChangeWindowHeight(2)<CR>
-nnoremap <buffer> <silent> <S-j> :call <SID>ChangeWindowHeight(-2)<CR>
-
-
-" Go to next quickfix error
-nnoremap <buffer> cn :cnext<CR>
-nnoremap <buffer> n :bd<CR>:cnext<CR>
-nnoremap <buffer> <localleader>n :bd<CR>:cnext<CR>
-
-" Go to previous quickfix error
-nnoremap <buffer> cp :cprevious<CR>
-nnoremap <buffer> p :bd<CR>:cprev<CR>
-nnoremap <buffer> <localleader>p :bd<CR>:cprev<CR>
 let b:did_ftplugin = 1
