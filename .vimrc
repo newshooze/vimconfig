@@ -1,32 +1,29 @@
 " Cycle forward and backward through open files
-nnoremap <silent> <S-Y> :bnext<CR>
-nnoremap <silent> <S-T> :bprevious<CR>
+nnoremap <silent> <S-Y> :bnext!<CR>
+nnoremap <silent> <S-T> :bprevious!<CR>
 " These are annoying
 nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
 " Control q begins a macro
-"nnoremap <C-q> q
+nnoremap <C-q> q
 " default leader key is "\"
 " Source vimrc
 nnoremap <leader>s :source ~/.vimrc<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
-nnoremap <silent> ,b :silent! call BufferMenu()<CR>
 " Toggle line numbers
 nnoremap <leader>n :set number!<CR>
-" edit .vimrc with \e ( <leader>e )
+" edit .vimrc
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " Evaluate a buffer line 
 " Example: Hit <leader>= on a line that contains '2+2'
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
-" This doesn't work yet
-vnoremap <leader>= :silent! call EvaluateLine()<CR>
-" grep word under cursor ( All files in current directory (1 means depth of 1 ))
-nnoremap <leader>g :call VinGrep(WordUnderCursor(),getcwd(),1)<CR>
+" grep word under cursor
+nnoremap <silent> <leader>g :<C-U>call VinGrep(WordUnderCursor(),getcwd(),v:count1)<CR>
 " grep word under cursor ( All files recursivly (-1 means recursive ))
 nnoremap <leader>gr :call VinGrep(WordUnderCursor(),getcwd(),-1)<CR>
 " grep this file only (use vimgrep (not async))
-nnoremap <leader>gf :vimgrep! <cword> %<CR>
+nnoremap <leader>gf :vimgrep! <cword> **/*<CR>:copen 5<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Switch to hex mode
@@ -40,17 +37,15 @@ nnoremap <leader>p :!python3<CR>
 " Do a REPL on visual selection (shell command)
 vnoremap <leader>vr :w !sh<CR>
 " Execute vimscript REPL on a line
-nnoremap <leader>r :exe join(getbufline(bufname(),line(".")))<CR>
+nnoremap <leader>repl :exe getline(".")<CR>
 " Select line
 nnoremap vv 0v$o
 " Launch terminal with <C-t>
 nnoremap <C-t> :tab term<CR>
 " Doom terminal
-inoremap ` <ESC>:tab term<CR>
 nnoremap ` :tab term<CR>
 " Open the Quickfix List
 nnoremap q :call ToggleQuickFix()<CR>
-"nnoremap ,q :call ToggleQuickFix()<CR>
 " Open the location list
 nnoremap <leader>l :lopen 5<CR>:echo<CR>
 " Open command line window
@@ -59,12 +54,11 @@ nnoremap <leader>c :<C-F>
 nnoremap <leader>/ /<C-F>
 " Open reverse search history
 nnoremap <leader>? ?<C-F>
-
 " Go to tag for word under cursor
 nnoremap <S-K> :tag <C-r><C-W><CR>
 " Manual (man) for word under cursor
 nnoremap <C-K> :!man <C-r><C-W><CR>
-" Escape and q removes unwanted windows
+" Escape removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
 
 " Move between windows
@@ -72,38 +66,41 @@ nnoremap <leader>h <C-W>h
 nnoremap <leader>j <C-W>j
 nnoremap <leader>k <C-W>k
 nnoremap <leader>l <C-W>l
+nnoremap ,h <C-W>h 
+nnoremap ,j <C-W>j
+nnoremap ,k <C-W>k
+nnoremap ,l <C-W>l
 
-" Transform numbers in place
-"nnoremap <leader>bin :call ToBin()<CR>
-"nnoremap <leader>oct :call ToOct()<CR>
-"nnoremap <leader>dec :call ToDec()<CR>
-"nnoremap <leader>hex :call ToHex()<CR>
 
-" Do a 8 bit color demo
-"nnoremap <leader>color :call ColorDemo()<CR>
 " Complete file name with <C-f>
-inoremap <C-F> <C-x><C-F> 
+inoremap <C-F> <C-x><C-f> 
 " Complete line
 inoremap  <C-L> <C-x><C-L>
 
-
 " These default key combos do too many suprise deletes
 nnoremap dn <NOP>
-nnoremap cn :cnext<CR>
-nnoremap cp :cprevious<CR>
+nnoremap cc <NOP>
+" quickfix stuff 
+nnoremap cn :silent cnext<CR>
+nnoremap cp :silent cprevious<CR>
+nnoremap cq :copen 5<CR>
 
-" Close command history window in several ways.
+" Close command history window 
 " This also closes search history windows
 autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
-" Close search history window in several ways
+" Close search history window
 autocmd CmdWinEnter * nnoremap <buffer> \/ :q<CR>
-" Close reverse search history in several ways
+" Close reverse search history
 autocmd CmdWinEnter * nnoremap <buffer> \? :q<CR>
 
 " Full screen help
 autocmd BufEnter * if &bt=='help' | execute ":only" | endif
 " Return to previous help topic with 'H
 autocmd BufLeave * if &bt=='help' | mark H | endif
+
+" Makefile help gcc.txt
+autocmd BufRead ~/.vim/dict/gcc.txt setlocal nomodifiable
+autocmd BufRead ~/.vim/dict/gcc.txt setlocal filetype=help
 
 " Zighelp zighelp
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal nomodifiable
@@ -141,7 +138,7 @@ autocmd BufLeave * let b:winview = winsaveview()
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
 
-tnoremap <ESC> <C-\><C-N><CR>
+tnoremap <ESC> <C-\><C-N>
 " Close terminal with 2 escapes
 tnoremap <ESC><ESC> exit<CR>
 " Close terminal Doom style
@@ -151,7 +148,7 @@ syntax on
 colorscheme pastel256
 
 let loaded_matchparen=1
-set errorformat=%f:%l:%c:\ %m,%f:%l:%c:%m
+set errorformat=%f:%l:%m,%f:%l:%c:\ %m,%f:%l:%c:%m
 set tags=~/.vim/doc/**/tags
 set shortmess+=I
 set ruler
@@ -174,7 +171,7 @@ set ttimeoutlen=10
 filetype plugin on
 
 let g:loaded_matchparen=1
-
+let g:grep_search_string=""
 let s:quickfixsize = 5
 let s:runpopup = 0
 let s:runoutputtext = []
@@ -321,8 +318,6 @@ function! VinGrepJobFunction(channel,msg)
   cbottom
 endfunction
 
-command! -nargs=+ VinGrep call VinGrep(<f-args>)
-  
 " Default parameters in Vim 8xx only
 function VinGrep(pattern,directory=".",depth=1)
   silent wall
@@ -335,8 +330,9 @@ function VinGrep(pattern,directory=".",depth=1)
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
+  "let l:command = 'bash -c "for FILE in $(ls -a); do grep ' . '-niIsHR' . ' ' . a:pattern . ' ' . '"$FILE";done"'
   let l:command = 'vingrep ' . a:pattern . ' ' . a:directory .' ' . a:depth
-  echo l:command
+  let g:grep_search_string = a:pattern
   let s:grepjob = job_start(l:command,l:joboptions)
 endfunction
 
@@ -377,7 +373,8 @@ function! AssemblyOutput()
   let l:joboptions["out_name"] = "assemblyoutput"
   let s:assemblyjob = job_start(l:command,l:joboptions)
   let l:assemblyfile = expand('%:r') . '.s'
-  execute "botright vsplit assemblyoutput"
+  execute "vsplit assemblyoutput"
+  execute "only"
   execute "set filetype=asm"
 endfunction
 
@@ -403,7 +400,7 @@ endfunction
 function! WordUnderCursor() abort
   return expand("<cword>")
 endfunction
-
+00100101
 function! BinaryToDecimal(word)
   return str2nr(a:word,2)
 endfunction
@@ -488,7 +485,7 @@ function! BufferMenuSelect(id,result) abort
   " Menu selection result is 1 based.
   " Remove any space or asterisks at the beginning of buffer name
   let l:buffername = trim(s:listedbuffers[a:result -1],"* ",1)
-  execute "buffer " . l:buffername
+  execute "buffer! " . l:buffername
   unlet s:listedbuffers
 endfunction
 
@@ -551,6 +548,6 @@ function! ToggleQuickFix() abort
   if QuickFixVisible()
     cclose
   else
-    copen 5
+    execute "copen " . s:quickfixsize
   endif
 endfunction
