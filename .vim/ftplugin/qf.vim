@@ -27,10 +27,12 @@ nnoremap <buffer> <silent> <S-j> :resize -2<CR>
 "nnoremap <buffer> cp :cprevious<CR>
 "nnoremap <buffer> <localleader>p :bd<CR>:cprev<CR>
 
+
 nnoremap <buffer> <localleader>e :bd<CR>:edit ~/.vim/ftplugin/qf.vim<CR>
+nnoremap <buffer> <localleader>es :bd<CR>:edit ~/.vim/syntax/qf.vim<CR>
 nnoremap <buffer> <localleader>s :unlet b:did_ftplugin<CR>:source ~/.vim/ftplugin/qf.vim<CR>
 nnoremap <buffer> m :call DialogCentered(getline('.'))<CR>
-nnoremap <buffer> co <C-w>p
+nnoremap <buffer> cq <C-w>p
 
 function! s:AddItemFunction(item)
   caddexpr(a:item)

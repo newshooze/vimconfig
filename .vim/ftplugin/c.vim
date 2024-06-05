@@ -2,53 +2,28 @@
 " Maintainer: Vinny
 " Revision: 2024-5-13
 
-"if exists("b:did_ftplugin")
-"  finish
-"endif
+if exists("b:did_ftplugin")
+  finish
+endif
 
-set errorformat=%f:%l:%c:%m
+set grepprg=
+set errorformat=%f:%l:%c:%m,%f:%l:%m,%f:%l:\ %m
 
 setlocal tags=~/.vim/doc/c/**/tags
 setlocal complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
 
 let maplocalleader = ","
-nnoremap <buffer> ( <Nop>
-nnoremap <buffer> ) <Nop>
 
 " Edit this file
 nnoremap <silent> <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
-" Browse Xlib source
-nnoremap <silent> <buffer> <localleader>x :view /usr/include/X11/Xlib.h<CR>
 " Edit makefile in ./
 nnoremap <silent> <buffer> <localleader>m :e makefile<CR>
-" Execute a REPL on the current line
-nnoremap <silent> <buffer> <localleader>r :.w !sh<CR>
-" Vimgrep word under cursor
-nnoremap <silent> <buffer> <localleader>vg :vimgrep /<C-R><C-W>/ ./* <CR>:copen 5<CR>
-" grep
-nnoremap <silent> <buffer> <localleader>vg :call Grep(WordUnderCursor(),getcwd())<CR>
-" Open quickfix list
-"nnoremap <silent> <buffer> <localleader>q :copen 5<CR>
-" Open command line history
-nnoremap <silent> <buffer> <localleader>c :<C-F>
-" Open forward search history
-nnoremap <silent> <buffer> <localleader>/ /<C-F>
-" Open reverse search history
-nnoremap <silent> <buffer> <localleader>? ?<C-F>
 " Window navigation
-nnoremap <silent> <buffer> <localleader>h <C-W>h
-nnoremap <silent> <buffer> <localleader>j <C-W>j
-nnoremap <silent> <buffer> <localleader>k <C-W>k
-nnoremap <silent> <buffer> <localleader>l <C-W>l
 
-nnoremap <buffer> cn :cnext<CR>
-nnoremap <buffer> cp :cprevious<CR>
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
-" Source this file
-nnoremap <buffer> <F3> <ESC>:unlet b:did_c_ftplugin<CR>:source ~/.vim/ftplugin/c.vim<CR>
 
-" Switch to header or source
+" Switch to header or source - TODO: Fix this
 nnoremap <buffer> <F4> <ESC>:e %:r.h<CR>
 nnoremap <buffer> <S-F4> <ESC>:e %:r.c<CR>
 " Compile current filename.c and link to executable
