@@ -400,7 +400,7 @@ endfunction
 function! WordUnderCursor() abort
   return expand("<cword>")
 endfunction
-00100101
+
 function! BinaryToDecimal(word)
   return str2nr(a:word,2)
 endfunction
