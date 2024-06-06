@@ -22,11 +22,11 @@ nnoremap <leader>e :edit ~/.vimrc<CR>
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
 " (vin)grep word under cursor (v:count1 sets search depth to 1)
 " Precede command with a number for further search depth (subdirectories)
-" Example: 3VinGrep(WordUnderCursor(),getcwd(),v:count1)
+" Example: 3Grep(WordUnderCursor(),getcwd(),v:count1)
 "          will search the current dir and 2 below it
-nnoremap <silent> <leader>g :<C-U>call VinGrep(WordUnderCursor(),getcwd(),v:count1)<CR>
+nnoremap <silent> <leader>g :<C-U>call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
-nnoremap <leader>gr :call VinGrep(WordUnderCursor(),getcwd(),-1)<CR>
+nnoremap <leader>gr :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
 " grep this file only (use vimgrep (not async))
 nnoremap <leader>gf :vimgrep! <cword> **/*<CR>:copen 5<CR>
 " Edit makefile
@@ -95,6 +95,16 @@ autocmd BufEnter * if &bt=='help' | execute ":only" | endif
 " Return to previous help topic with 'H
 autocmd BufLeave * if &bt=='help' | mark H | endif
 
+" Highlight the search term inside the quickfix window
+function! SearchHighlight(color=132) abort
+  let l:color = len(a:color) ? a:color : 132
+  execute "highlight SearchMatch ctermfg=" . l:color
+  if len(g:grepsearchstring)
+    execute 'syntax match SearchMatch ' . '/' . g:grepsearchstring . '/'
+  endif
+endfunction
+
+autocmd BufWinEnter quickfix call SearchHighlight()
 " Makefile help gcc.txt
 autocmd BufRead ~/.vim/dict/gcc.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/dict/gcc.txt setlocal filetype=help
@@ -148,7 +158,7 @@ syntax on
 colorscheme pastel256
 
 let loaded_matchparen=1
-set errorformat=%f:%l:%m,%f:%l:%c:\ %m,%f:%l:%c:%m
+set errorformat=%f:%l:%c:%m
 set tags=~/.vim/doc/**/tags
 set shortmess+=I
 set ruler
@@ -179,6 +189,7 @@ let s:makewarningcount = 0
 let s:makeerrorcount = 0
 let s:grepjob = 0
 let s:grepresults = 0
+let g:grepsearchstring = ""
 
 function! KillOutputWindows()
   silent lclose " Close location list
@@ -309,46 +320,53 @@ function! Make() abort
 endfunction
 
 " This doesn't work
-function! KillGrepJob()
+function! KillGrepJob() abort
   if job_status(s:grepjob) == "run"
     call job_stop(s:grepjob,"kill")
   endif
   unlet s:grepjob
 endfunction
 
-function! VinGrepExitFunction(job,status)
+function! GrepExitFunction(job,status) abort
 endfunction
 
-function! VinGrepJobFunction(channel,msg)
+function! GrepJobFunction(channel,msg) abort
   let s:grepresults = s:grepresults + 1
   caddexpr a:msg
-  cbottom
 endfunction
 
 " Default parameters in Vim 8xx only
-function VinGrep(pattern,directory=".",depth=1)
+function Grep(pattern,directory=".",depth=1) abort
   silent wall
   call KillOutputWindows()
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
   let l:joboptions["err_msg"] = "0"
-  let l:joboptions["callback"] = function('VinGrepJobFunction')
-  let l:joboptions["exit_cb"] = function('VinGrepExitFunction')
+  let l:joboptions["callback"] = function('GrepJobFunction')
+  let l:joboptions["exit_cb"] = function('GrepExitFunction')
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
-  "let l:command = 'bash -c "for FILE in $(ls -a); do grep ' . '-niIsHR' . ' ' . a:pattern . ' ' . '"$FILE";done"'
-  let l:command = 'vingrep ' . a:pattern . ' ' . a:directory .' ' . a:depth
+  if executable("vingrep")
+    set errorformat=%f:%l:%c:%m
+    let l:command = 'vingrep ' . a:pattern . ' ' . a:directory .' ' . a:depth
+  else
+    set errorformat=%f:%l:%m
+    " This is slow
+    let l:command = ["find",a:directory,"-type","f","-maxdepth",a:depth,"-exec","grep","-niIHF",a:pattern,"{}","\;" ]
+    "let l:command = 'bash -c "for FILE in $(ls -a); do grep ' . '-niIsHRF' . ' ' . a:pattern . ' ' . '"$FILE";done"'
+  endif
+  let g:grepsearchstring = a:pattern
   let s:grepjob = job_start(l:command,l:joboptions)
 endfunction
 
-function! ObjDump(objectfile)
+function! ObjDump(objectfile) abort
   enew
   read !objdump -d a:objectfile
   set ft=asm
 endfunction
 
-function! AssemblyOutput()
+function! AssemblyOutput() abort
   silent wall
   " Close any existing quickfix and make buffers
   call KillOutputWindows()
@@ -362,6 +380,7 @@ function! AssemblyOutput()
   \ l:compiler,
   \ "-S",
   \ "-O3",
+  \ "-mavx",
   \ "-Wall",
   \ "-Wextra",
   \ "-fno-rtti",
