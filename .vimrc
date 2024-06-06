@@ -6,11 +6,11 @@ nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
 " Control q begins a macro
 nnoremap <C-q> q
-" default leader key is "\"
+" default leader key is '\'
 " Source vimrc
 nnoremap <leader>s :source ~/.vimrc<CR>
 " Show a file menu
-nnoremap <silent> <leader>f :silent! call FileMenu()<CR>
+nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 " Toggle line numbers
@@ -22,8 +22,7 @@ nnoremap <leader>e :edit ~/.vimrc<CR>
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
 " (vin)grep word under cursor (v:count1 sets search depth to 1)
 " Precede command with a number for further search depth (subdirectories)
-" Example: 3Grep(WordUnderCursor(),getcwd(),v:count1)
-"          will search the current dir and 2 below it
+" Example: Typing '3<leader>g will search the current dir and 2 below it
 nnoremap <silent> <leader>g :<C-U>call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
 nnoremap <leader>gr :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
@@ -91,16 +90,16 @@ autocmd CmdWinEnter * nnoremap <buffer> \/ :q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> \? :q<CR>
 
 " Full screen help
-autocmd BufEnter * if &bt=='help' | execute ":only" | endif
+autocmd BufEnter * if &bt=="help" | execute ":only" | endif
 " Return to previous help topic with 'H
-autocmd BufLeave * if &bt=='help' | mark H | endif
+autocmd BufLeave * if &bt=="help" | mark H | endif
 
 " Highlight the search term inside the quickfix window
 function! SearchHighlight(color=132) abort
-  let l:color = len(a:color) ? a:color : 132
+  let l:color = a:color
   execute "highlight SearchMatch ctermfg=" . l:color
   if len(g:grepsearchstring)
-    execute 'syntax match SearchMatch ' . '/' . g:grepsearchstring . '/'
+    execute "syntax match SearchMatch " . "/" . g:grepsearchstring . "/"
   endif
 endfunction
 
@@ -141,7 +140,7 @@ autocmd BufEnter makeoutput nnoremap <silent> <buffer> <ESC> :bwipeout!<CR>
 " Go to the bottom on entry
 autocmd BufEnter makeoutput normal G
 
-autocmd BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif 
+autocmd BufEnter * if(exists("b:winview")) | call winrestview(b:winview) | endif 
 autocmd BufLeave * let b:winview = winsaveview() 
 
 " Move through command line history
@@ -197,7 +196,7 @@ function! KillOutputWindows()
   call popup_close(s:runpopup)
   " Close ALL popups (popup_clear)
   call popup_clear(1)
-  silent! execute "bwipeout! makeoutput" 
+  silent! execute "bwipeout! makeoutput"
   silent! execute "bwipeout! runoutput"
   silent! execute "bwipeout! assemblyoutput"
   silent! execute "bwipeout! grepoutput"
@@ -225,8 +224,8 @@ function! RunAsync(arglist,optionsdictionary={}) abort
   let l:joboptions["err_io"] = "buffer"
   let l:joboptions["out_name"] = "runoutput"
   let l:joboptions["err_name"] = "runoutput"
-  let l:joboptions["callback"] = function('RunAsyncJobFunction')
-  let l:joboptions["exit_cb"] = function('RunAsyncExitFunction')
+  let l:joboptions["callback"] = function("RunAsyncJobFunction")
+  let l:joboptions["exit_cb"] = function("RunAsyncExitFunction")
   let s:runasyncjob = job_start(l:programargs,l:joboptions)
   let l:position = get(a:optionsdictionary,"position","botright")
   let l:windowheight =  get(a:optionsdictionary,"windowheight","5")
@@ -242,7 +241,7 @@ endfunction
 function! RunAsyncInPopupFunction(channel,msg) abort
   call add(s:popupoutputtext,a:msg)
   call popup_settext(s:runpopup,s:popupoutputtext)
-  silent call win_execute(s:runpopup,'normal G0')
+  silent call win_execute(s:runpopup,"normal G0")
 endfunction
 
 " TODO - Implement command! -range for popup height
@@ -252,10 +251,10 @@ function! RunAsyncInPopup(arglist,optionsdictionary) abort
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
   let l:joboptions["err_msg"] = "0"
-  let l:joboptions["callback"] = function('RunAsyncInPopupFunction')
+  let l:joboptions["callback"] = function("RunAsyncInPopupFunction")
   let s:runpopup = popup_create('', #{
-  \ pos: 'botleft',
-  \ title: '',
+  \ pos: "botleft",
+  \ title: "",
   \ border: [0,0,0,0],
   \ padding: [0,0,0,0],
   \ line: &lines,
@@ -265,8 +264,8 @@ function! RunAsyncInPopup(arglist,optionsdictionary) abort
   \ scrollbar: 1,
   \ minwidth: &columns,
   \ maxwidth: &columns,
-  \ close: 'none',
-  \ wrap: 'FALSE',
+  \ close: "none",
+  \ wrap: "FALSE",
   \ })
   let s:runinpopupjob = job_start(l:programargs,l:joboptions)
   let s:popupoutputtext = []
@@ -328,11 +327,13 @@ function! KillGrepJob() abort
 endfunction
 
 function! GrepExitFunction(job,status) abort
+  "cbottom
 endfunction
 
 function! GrepJobFunction(channel,msg) abort
   let s:grepresults = s:grepresults + 1
   caddexpr a:msg
+  echo a:msg
 endfunction
 
 " Default parameters in Vim 8xx only
@@ -342,18 +343,18 @@ function Grep(pattern,directory=".",depth=1) abort
   let l:joboptions = {}
   let l:joboptions["out_msg"] = "0"
   let l:joboptions["err_msg"] = "0"
-  let l:joboptions["callback"] = function('GrepJobFunction')
-  let l:joboptions["exit_cb"] = function('GrepExitFunction')
+  let l:joboptions["callback"] = function("GrepJobFunction")
+  let l:joboptions["exit_cb"] = function("GrepExitFunction")
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
   if executable("vingrep")
     set errorformat=%f:%l:%c:%m
-    let l:command = 'vingrep ' . a:pattern . ' ' . a:directory .' ' . a:depth
+    let l:command = ["vingrep",a:pattern,a:directory,a:depth]
   else
     set errorformat=%f:%l:%m
     " This is slow
-    let l:command = ["find",a:directory,"-type","f","-maxdepth",a:depth,"-exec","grep","-niIHF",a:pattern,"{}","\;" ]
+    let l:command = ["find",a:directory,"-type","f","-maxdepth",a:depth,"-exec","grep","-niIHF",a:pattern,"{}","\;"]
     "let l:command = 'bash -c "for FILE in $(ls -a); do grep ' . '-niIsHRF' . ' ' . a:pattern . ' ' . '"$FILE";done"'
   endif
   let g:grepsearchstring = a:pattern
@@ -370,8 +371,8 @@ function! AssemblyOutput() abort
   silent wall
   " Close any existing quickfix and make buffers
   call KillOutputWindows()
-  let l:sourcefile = expand('%:t')
-  let l:sourcefileextension = expand('%:e')
+  let l:sourcefile = expand("%:t")
+  let l:sourcefileextension = expand("%:e")
   let l:compiler = "gcc"
   if l:sourcefileextension == "cpp"
     let l:compiler = "g++"
@@ -405,13 +406,13 @@ endfunction
 
 function! EatSpace() abort
   let c = nr2char(getchar(0))
-  return (c =~ '\s') ? '' : c
+  return (c =~ "\s") ? "" : c
 endfunction
 
 " Used for completion in c/c++ files
 function! Abbreviation(text) abort
-  let l:line = getline('.')
-  call setline('.',strpart(line,0,col('.')-1) . a:text . strpart(line,col('.') -1))
+  let l:line = getline(".")
+  call setline(".",strpart(line,0,col(".")-1) . a:text . strpart(line,col(".") -1))
   call EatSpace()
   normal f(ll
   stopinsert
@@ -494,10 +495,10 @@ endfunction
 
 function! ColorDemo() abort
   for n in range(0,255)
-    execute 'hi ColorDemo ctermfg='.n.' ctermbg='.n
+    execute "hi ColorDemo ctermfg=".n." ctermbg=".n
     echon printf("%3d",n)
     echohl ColorDemo
-    echon 'XXX'
+    echon "XXX"
     echohl NONE
     if (n+1) % 16 == 0
       echo ""
@@ -505,33 +506,82 @@ function! ColorDemo() abort
   endfor
 endfunction
 
-function! FileMenuSelect(id,result)
+function! FileMenuCD(newroot="..") abort
+  let l:cwd = getcwd()
+  call chdir(s:filemenuroot)
+  call chdir(a:newroot)
+  let s:filemenuroot = getcwd()
+  call chdir(l:cwd)
+endfunction
+
+function! FileMenuSelect(id,result) abort
   if a:result < 1
     return
   endif
   " Menu selection is result is ONE based
-  let l:file = "" . s:cwdfiles[a:result - 1]
+  let l:file = "" . s:filemenufiles[a:result - 1]
+  if isdirectory(l:file)
+    if l:file == ".."
+      " Go up one directory (..)
+      call FileMenuCD()
+    else
+      " Go down one directory (l:file)
+      call FileMenuCD(l:file)
+    endif
+    call FileMenu(s:filemenuroot)
+    return
+  endif
   execute "edit " . l:file
-  unlet s:cwdfiles
+  unlet s:filemenufiles
 endfunction
 
-function! FileMenu()
-  let l:command = "find " . getcwd() . " -type f -maxdepth 1"
-  let s:cwdfiles = systemlist(l:command)
+function! FileMenuKeyInputFilter(windowid,keystring) abort
+  echo a:keystring
+  if a:keystring == "\<ESC>"
+    call popup_close(a:windowid,-1)
+  endif
+  if a:keystring == "\<CR>"
+    call popup_close(a:windowid,line('.',a:windowid))
+  endif
+  if a:keystring == "j" || a:keystring == "k"
+    let l:normalcommand = "normal! " . a:keystring
+    call win_execute(a:windowid,l:normalcommand)
+    return 1
+  endif
+  return 1 
+endfunction
+
+function! FileMenu(directory,menuoptions={}) abort
+  let s:filemenuroot = a:directory
+  let l:command = "find " . a:directory . " -maxdepth 1"
+  let s:filemenufiles= systemlist(l:command)
+  call insert(s:filemenufiles,"..")
+  let l:index = 0
+  for s:filemenufile in s:filemenufiles
+    if s:filemenufile == s:filemenuroot
+      call remove(s:filemenufiles,l:index)
+    endif
+    let l:index = l:index + 1
+  endfor
   let l:maxfilepathlength = 0
-  for l:file in s:cwdfiles
+  for l:file in s:filemenufiles
     let l:filepathlength = strlen(l:file) 
     if l:filepathlength > l:maxfilepathlength
       let l:maxfilepathlength = l:filepathlength
     endif
   endfor
   let l:menuoptions = {}
-  let l:menuoptions["callback"] = function('FileMenuSelect')
+  let l:menuoptions["callback"] = function("FileMenuSelect")
   let l:menuoptions["maxheight"] = &lines - 4 
   let l:menuoptions["minheight"] = 1
   let l:menuoptions["minwidth"] = l:maxfilepathlength + 2
-  if len(s:cwdfiles)
-    call popup_menu(s:cwdfiles,l:menuoptions)
+  let l:menuoptions["title"] = s:filemenuroot
+  let l:menuoptions["filtermode"] = "a"
+  let l:menuoptions["filter"] = function("FileMenuKeyInputFilter")
+  let l:menuoptions["mapping"] = 0
+  if len(s:filemenufiles)
+    call sort(s:filemenufiles)
+    call popup_menu(s:filemenufiles,l:menuoptions)
   endif
 endfunction
 
@@ -593,7 +643,7 @@ function! EvaluateLine() abort
 endfunction
 
 function! QuickFixVisible() abort
-  let wins = filter(getwininfo(), 'v:val.quickfix && !v:val.loclist')
+  let wins = filter(getwininfo(), "v:val.quickfix && !v:val.loclist")
   return empty(wins) ? 0 : 1
 endfunction
 
