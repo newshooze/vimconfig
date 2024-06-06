@@ -7,9 +7,9 @@ if exists("b:did_ftplugin")
 endif
 
 set grepprg=
-set errorformat=%f:%l:%c:%m,%f:%l:%m,%f:%l:\ %m
+setlocal errorformat=%f:%l:%c:%m,%f:%l:%m,%f:%l:\ %m
 
-setlocal tags=~/.vim/doc/c/**/tags
+setlocal tags=~/.vim/doc/**/tags
 setlocal complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
 
 let maplocalleader = ","
@@ -54,10 +54,11 @@ command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
 command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
 command! -buffer Make :call Make()
-command! -buffer MakeRun :call RunAsync(["make","run"],"")
-command! -buffer MakeClean :call RunAsync(["make","clean"],"")
-command! -buffer -nargs=+ Run :call RunAsync([<f-args>],"")
-command! -buffer -nargs=+ RunPop :call RunAsyncInPopup([<f-args>],"")
+command! -buffer MakeZenMode :call RunAsync(["make"],{"only":"1"})
+command! -buffer MakeRun :call RunAsync(["make","run"],{})
+command! -buffer MakeClean :call RunAsync(["make","clean"],{})
+command! -buffer -nargs=+ Run :call RunAsync([<f-args>],{})
+command! -buffer -nargs=+ RunPop :call RunAsyncInPopup([<f-args>],{})
 command! -buffer AssemblyOutput :call AssemblyOutput()
 
 
