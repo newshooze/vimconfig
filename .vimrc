@@ -9,6 +9,8 @@ nnoremap <C-q> q
 " default leader key is "\"
 " Source vimrc
 nnoremap <leader>s :source ~/.vimrc<CR>
+" Show a file menu
+nnoremap <silent> <leader>f :silent! call FileMenu()<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 " Toggle line numbers
@@ -34,8 +36,10 @@ nnoremap <leader>X :call HexfileToText()<CR>
 nnoremap <leader>t :tab term<CR>
 " Start python3
 nnoremap <leader>p :!python3<CR>
-" Do a REPL on visual selection (shell command)
-vnoremap <leader>vr :w !sh<CR>
+" Do a REPL on line (shell command)
+nnoremap <leader>R :call RunAsync(getline('.'),{"only":"0","windowheight":"5"})<CR>
+" Do a REPL full screen (shell command)
+nnoremap <leader>Ro :call RunAsync(getline('.'),{"only":"1"})<CR>
 " Execute vimscript REPL on a line
 nnoremap <leader>repl :exe getline(".")<CR>
 " Select line
@@ -54,27 +58,15 @@ nnoremap <leader>c :<C-F>
 nnoremap <leader>/ /<C-F>
 " Open reverse search history
 nnoremap <leader>? ?<C-F>
+" Go to help for word under cursor
+nnoremap <leader>h :help <C-R><C-W><CR>
 " Go to tag for word under cursor
-nnoremap <S-K> :tag <C-r><C-W><CR>
+nnoremap <S-K> :tag <C-R><C-W><CR>
 " Manual (man) for word under cursor
 nnoremap <C-K> :!man <C-r><C-W><CR>
 " Escape removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
 
-" Move between windows
-nnoremap <leader>h <C-W>h 
-nnoremap <leader>j <C-W>j
-nnoremap <leader>k <C-W>k
-nnoremap <leader>l <C-W>l
-nnoremap ,h <C-W>h 
-nnoremap ,j <C-W>j
-nnoremap ,k <C-W>k
-nnoremap ,l <C-W>l
-
-
-" Complete file name with <C-f>
-inoremap <C-F> <C-x><C-f> 
-" Complete line
 inoremap  <C-L> <C-x><C-L>
 
 " These default key combos do too many suprise deletes
@@ -118,8 +110,11 @@ autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
 autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
 " Close most docs easily
-autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal nomodifiable
-autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal filetype=help
+"autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal nomodifiable
+"autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal filetype=help
+
+autocmd BufRead ~/.vim/doc/**/*.txt setlocal nomodifiable
+autocmd BufRead ~/.vim/doc/**/*.txt setlocal filetype=help
 
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
 
@@ -204,7 +199,7 @@ endfunction
 function! RunAsyncExitFunction(job,status) abort
 endfunction
 
-function! RunAsync(arglist,optionsdictionary) abort
+function! RunAsync(arglist,optionsdictionary={}) abort
   wall
   call KillOutputWindows()
   let l:programargs = a:arglist 
@@ -218,8 +213,15 @@ function! RunAsync(arglist,optionsdictionary) abort
   let l:joboptions["callback"] = function('RunAsyncJobFunction')
   let l:joboptions["exit_cb"] = function('RunAsyncExitFunction')
   let s:runasyncjob = job_start(l:programargs,l:joboptions)
-  botright 5split runoutput
-  execute "wincmd p"
+  let l:position = get(a:optionsdictionary,"position","botright")
+  let l:windowheight =  get(a:optionsdictionary,"windowheight","5")
+  let l:only = get(a:optionsdictionary,"only","0")
+  execute l:position . " " . l:windowheight . "split runoutput"
+  if l:only
+    execute "only"
+  else
+    execute "wincmd p"
+  endif
 endfunction
 
 function! RunAsyncInPopupFunction(channel,msg) abort
@@ -279,6 +281,7 @@ function! MakeJobFunction(channel,msg) abort
 endfunction
 
 " Run make (or makeprg) in the current directory
+" TODO: add options dictionary
 function! Make() abort
   silent wall
   " Close any existing quickfix and make buffers
@@ -404,9 +407,11 @@ endfunction
 function! BinaryToDecimal(word)
   return str2nr(a:word,2)
 endfunction
+
 function! OctalToDecimal(word)
   return str2nr(a:word,8)
 endfunction
+
 function! HexToDecimal(word)
   return str2nr(a:word,16)
 endfunction
@@ -478,21 +483,47 @@ function! ColorDemo() abort
   endfor
 endfunction
 
-function! BufferMenuSelect(id,result) abort
-  if(a:result < 1)
+function! FileMenuSelect(id,result)
+  if a:result < 1
     return
   endif
-  " Menu selection result is 1 based.
+  " Menu selection is result is ONE based
+  let l:file = "" . s:cwdfiles[a:result - 1]
+  execute "edit " . l:file
+  unlet s:cwdfiles
+endfunction
+
+function! FileMenu()
+  let l:command = "find " . getcwd() . " -type f -maxdepth 1"
+  let s:cwdfiles = systemlist(l:command)
+  let l:maxfilepathlength = 0
+  for l:file in s:cwdfiles
+    let l:filepathlength = strlen(l:file) 
+    if l:filepathlength > l:maxfilepathlength
+      let l:maxfilepathlength = l:filepathlength
+    endif
+  endfor
+  let l:menuoptions = {}
+  let l:menuoptions["callback"] = function('FileMenuSelect')
+  let l:menuoptions["maxheight"] = &lines - 4 
+  let l:menuoptions["minheight"] = 1
+  let l:menuoptions["minwidth"] = l:maxfilepathlength + 2
+  if len(s:cwdfiles)
+    call popup_menu(s:cwdfiles,l:menuoptions)
+  endif
+endfunction
+
+function! BufferMenuSelect(id,result) abort
+  if a:result < 1
+    return
+  endif
+  " Menu selection result is ONE based.
   " Remove any space or asterisks at the beginning of buffer name
   let l:buffername = trim(s:listedbuffers[a:result -1],"* ",1)
   execute "buffer! " . l:buffername
   unlet s:listedbuffers
 endfunction
 
-" TODO make this list files in a directory
-function! FileMenu()
-  
-endfunction
 
 function! BufferMenu() abort
   let s:listedbuffers = []
