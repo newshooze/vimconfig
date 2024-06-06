@@ -8,8 +8,8 @@ first: all
 
 all: $(TARGET)
 
-$(TARGET): vingrep.c vgthreaded.c makefile
-	$(CC) -g -O3 -Wall -march=native -mtune=native vingrep.c -o vingrep	
+$(TARGET): vingrep.c makefile
+	$(CC) $(CFLAGS) vingrep.c -o vingrep	
 	cp vingrep ~/bin
 
 clean:
