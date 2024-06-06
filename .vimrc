@@ -57,7 +57,7 @@ nnoremap <leader>l :lopen 5<CR>:echo<CR>
 " Open command line window
 nnoremap <leader>c :<C-F>
 " Show the current time
-nnoremap <leader>C :echo strftime("%c")<CR>
+nnoremap <leader>C :call Notify(strftime("%c"))<CR>
 " Open search history
 nnoremap <leader>/ /<C-F>
 " Open reverse search history
@@ -633,6 +633,16 @@ function! DialogCentered(message) abort
   let l:dialogoptions = {}
   let l:dialogoptions["moved"] = "any"
   call popup_dialog(a:message,l:dialogoptions)
+endfunction
+
+function! Notify(message,notifyoptions={}) abort
+  let l:messagewidth = len(a:message)
+  let l:notifyoptions = {}
+  let l:notifyoptions["time"] = 4000
+  let l:notifyoptions["minwidth"] = l:messagewidth
+  let l:notifyoptions["col"] = &columns - l:messagewidth - 20
+  let l:notifyoptions["line"] = 8
+  call popup_notification(a:message,l:notifyoptions)
 endfunction
 
 function! EvaluateLine() abort
