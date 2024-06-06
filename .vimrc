@@ -20,9 +20,12 @@ nnoremap <leader>e :edit ~/.vimrc<CR>
 " Evaluate a buffer line 
 " Example: Hit <leader>= on a line that contains '2+2'
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
-" grep word under cursor
+" (vin)grep word under cursor (v:count1 sets search depth to 1)
+" Precede command with a number for further search depth (subdirectories)
+" Example: 3VinGrep(WordUnderCursor(),getcwd(),v:count1)
+"          will search the current dir and 2 below it
 nnoremap <silent> <leader>g :<C-U>call VinGrep(WordUnderCursor(),getcwd(),v:count1)<CR>
-" grep word under cursor ( All files recursivly (-1 means recursive ))
+" (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
 nnoremap <leader>gr :call VinGrep(WordUnderCursor(),getcwd(),-1)<CR>
 " grep this file only (use vimgrep (not async))
 nnoremap <leader>gf :vimgrep! <cword> **/*<CR>:copen 5<CR>
@@ -54,6 +57,8 @@ nnoremap q :call ToggleQuickFix()<CR>
 nnoremap <leader>l :lopen 5<CR>:echo<CR>
 " Open command line window
 nnoremap <leader>c :<C-F>
+" Show the current time
+nnoremap <leader>C :echo strftime("%c")<CR>
 " Open search history
 nnoremap <leader>/ /<C-F>
 " Open reverse search history
@@ -166,7 +171,6 @@ set ttimeoutlen=10
 filetype plugin on
 
 let g:loaded_matchparen=1
-let g:grep_search_string=""
 let s:quickfixsize = 5
 let s:runpopup = 0
 let s:runoutputtext = []
@@ -335,7 +339,6 @@ function VinGrep(pattern,directory=".",depth=1)
   wincmd p
   "let l:command = 'bash -c "for FILE in $(ls -a); do grep ' . '-niIsHR' . ' ' . a:pattern . ' ' . '"$FILE";done"'
   let l:command = 'vingrep ' . a:pattern . ' ' . a:directory .' ' . a:depth
-  let g:grep_search_string = a:pattern
   let s:grepjob = job_start(l:command,l:joboptions)
 endfunction
 
@@ -458,13 +461,13 @@ function! AVXmm256setepi8(word)
   execute "normal i" . l:output
 endfunction
 
-function! s:EchoWarningMessage(msg) abort
+function! EchoWarningMessage(msg) abort
   echohl WarningMsg
   echo a:msg
   echohl None
 endfunction
 
-function! s:EchoErrorMessage(msg) abort
+function! EchoErrorMessage(msg) abort
   echohl ErrorMsg
   echo a:msg
   echohl None 
