@@ -543,11 +543,18 @@ function! FileMenuKeyInputFilter(windowid,keystring) abort
   if a:keystring == "\<CR>"
     call popup_close(a:windowid,line('.',a:windowid))
   endif
-  if a:keystring == "j" || a:keystring == "k"
-    let l:normalcommand = "normal! " . a:keystring
-    call win_execute(a:windowid,l:normalcommand)
-    return 1
+  if a:keystring == "\<BS>"
+    call popup_close(a:windowid,-1)
+    call FileMenuCD()
+    call FileMenu(s:filemenuroot)
   endif
+  let l:validkeys = ["j","k","\<UP>","\<DOWN>","\<C-N>","\<C-P>"]
+  for l:validkey in l:validkeys
+    if a:keystring == l:validkey
+      let l:normalcommand = "normal! " . a:keystring
+      call win_execute(a:windowid,l:normalcommand)
+    endif
+  endfor
   return 1 
 endfunction
 
