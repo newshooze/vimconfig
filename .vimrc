@@ -30,18 +30,18 @@ nnoremap <leader>gr :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
 nnoremap <leader>gf :vimgrep! <cword> **/*<CR>:copen 5<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
-" Switch to hex mode
-nnoremap <leader>x :call TextfileToHex()<CR>
-" Switch to text mode
-nnoremap <leader>X :call HexfileToText()<CR>
 " Launch terminal with \t ( <leader>t )
 nnoremap <leader>t :tab term<CR>
 " Start python3
 nnoremap <leader>p :!python3<CR>
-" Do a REPL on line (shell command)
-nnoremap <leader>R :call RunAsync(getline('.'),{"only":"0","windowheight":"5"})<CR>
-" Do a REPL full screen (shell command)
+" Do a REPL on current line (shell command)
+nnoremap <leader>R :call RunAsync(getline('.'),{"windowheight":"5"})<CR>
+" Do a REPL on visual selection (shell command)
+vnoremap <leader>R :<C-U>call RunAsync(GetVisualText(),{"windowheight":"5"})<CR>
+" Do a REPL on current line (full screen shell command)
 nnoremap <leader>Ro :call RunAsync(getline('.'),{"only":"1"})<CR>
+" Do a REPL on visual selection (full screen shell command)
+vnoremap <leader>Ro :<C-U>call RunAsync(GetVisualText(),{"only":"1"})<CR>
 " Execute vimscript REPL on a line
 nnoremap <leader>repl :exe getline(".")<CR>
 " Select line
@@ -88,7 +88,6 @@ autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
 autocmd CmdWinEnter * nnoremap <buffer> \/ :q<CR>
 " Close reverse search history
 autocmd CmdWinEnter * nnoremap <buffer> \? :q<CR>
-
 " Full screen help
 autocmd BufEnter * if &bt=="help" | execute ":only" | endif
 " Return to previous help topic with 'H
@@ -190,6 +189,16 @@ let s:grepjob = 0
 let s:grepresults = 0
 let g:grepsearchstring = ""
 
+" This doesn't work right
+function! GetVisualText()
+  let l:savedtext = @a
+  normal! gv"aygv
+  let l:regtext = @a
+  let l:regtext = trim(l:regtext)
+  let @a = l:savedtext
+  return l:regtext
+endfunction
+
 function! KillOutputWindows()
   silent lclose " Close location list
   silent cclose " Close quickfix window
@@ -212,7 +221,6 @@ endfunction
 
 function! RunAsyncExitFunction(job,status) abort
 endfunction
-
 function! RunAsync(arglist,optionsdictionary={}) abort
   wall
   call KillOutputWindows()
@@ -327,13 +335,12 @@ function! KillGrepJob() abort
 endfunction
 
 function! GrepExitFunction(job,status) abort
-  "cbottom
 endfunction
 
 function! GrepJobFunction(channel,msg) abort
   let s:grepresults = s:grepresults + 1
   caddexpr a:msg
-  echo a:msg
+  cbottom
 endfunction
 
 " Default parameters in Vim 8xx only
@@ -348,9 +355,9 @@ function Grep(pattern,directory=".",depth=1) abort
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
-  if executable("vingrep")
+  if executable("ts")
     set errorformat=%f:%l:%c:%m
-    let l:command = ["vingrep",a:pattern,a:directory,a:depth]
+    let l:command = ["ts",a:pattern,a:directory,a:depth]
   else
     set errorformat=%f:%l:%m
     " This is slow
@@ -518,7 +525,7 @@ function! FileMenuSelect(id,result) abort
   if a:result < 1
     return
   endif
-  " Menu selection is result is ONE based
+  " Menu selection result is ONE based
   let l:file = "" . s:filemenufiles[a:result - 1]
   if isdirectory(l:file)
     if l:file == ".."
@@ -581,7 +588,7 @@ function! FileMenu(directory,menuoptions={}) abort
   let l:menuoptions["callback"] = function("FileMenuSelect")
   let l:menuoptions["maxheight"] = &lines - 4 
   let l:menuoptions["minheight"] = 1
-  let l:menuoptions["minwidth"] = l:maxfilepathlength + 2
+  let l:menuoptions["minwidth"] = l:maxfilepathlength + 4
   let l:menuoptions["title"] = s:filemenuroot
   let l:menuoptions["filtermode"] = "a"
   let l:menuoptions["filter"] = function("FileMenuKeyInputFilter")
