@@ -119,22 +119,10 @@ autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal filetype=help
 autocmd BufRead  ~/.vim/doc/zig/zigmanual.txt setlocal iskeyword+=-
 
-" Close most docs easily
-"autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal nomodifiable
-"autocmd BufRead ~/.vim/doc/c/**/*.txt setlocal filetype=help
-
 autocmd BufRead ~/.vim/doc/**/*.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/**/*.txt setlocal filetype=help
 
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
-
-autocmd BufEnter runoutput nnoremap <silent> <buffer> <ESC> :bwipeout!<CR>
-" Go to the bottom on entry
-autocmd BufEnter runoutput normal G
-
-autocmd BufEnter makeoutput nnoremap <silent> <buffer> <ESC> :bwipeout!<CR>
-" Go to the bottom on entry
-autocmd BufEnter makeoutput normal G
 
 autocmd BufEnter * if(exists("b:winview")) | call winrestview(b:winview) | endif 
 autocmd BufLeave * let b:winview = winsaveview() 
@@ -142,8 +130,6 @@ autocmd BufLeave * let b:winview = winsaveview()
 " Move through command line history
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
-
-
 
 syntax on
 colorscheme pastel256
@@ -222,6 +208,7 @@ endfunction
 
 function! RunAsyncExitFunction(job,status) abort
 endfunction
+
 function! RunAsync(arglist,optionsdictionary={}) abort
   wall
   call KillOutputWindows()
