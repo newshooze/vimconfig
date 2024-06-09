@@ -23,11 +23,13 @@ nnoremap <leader>= :silent! call EvaluateLine()<CR>
 " (vin)grep word under cursor (v:count1 sets search depth to 1)
 " Precede command with a number for further search depth (subdirectories)
 " Example: Typing '3<leader>g will search the current dir and 2 below it
-nnoremap <silent> <leader>g :<C-U>call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
+nnoremap <silent> <leader>g :call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
 nnoremap <leader>gr :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
-" grep this file only (use vimgrep (not async))
-nnoremap <leader>gf :vimgrep! <cword> **/*<CR>:copen 5<CR>
+" (vin)grep visual selection (current directory)
+vnoremap <silent> <leader>g :<C-U>call Grep(GetVisualText(),getcwd(),v:count1)<CR>
+" (vin)grep visual selection (recursive)
+vnoremap <silent> <leader>gr :<C-U>call Grep(GetVisualText(),getcwd(),-1)<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Launch terminal with \t ( <leader>t )
@@ -46,10 +48,9 @@ vnoremap <leader>Ro :<C-U>call RunAsync(GetVisualText(),{"only":"1"})<CR>
 nnoremap <leader>repl :exe getline(".")<CR>
 " Select line
 nnoremap vv 0v$o
-" Launch terminal with <C-t>
-nnoremap <C-t> :tab term<CR>
-" Doom terminal
-nnoremap ` :tab term<CR>
+
+
+nnoremap ` :silent call ToggleTerm()<CR>
 " Open the Quickfix List
 nnoremap q :call ToggleQuickFix()<CR>
 " Open the location list
@@ -63,15 +64,11 @@ nnoremap <leader>/ /<C-F>
 " Open reverse search history
 nnoremap <leader>? ?<C-F>
 " Go to help for word under cursor
-nnoremap <leader>h :help <C-R><C-W><CR>
-" Go to tag for word under cursor
-nnoremap <S-K> :tag <C-R><C-W><CR>
+nnoremap <S-K> :help <C-R><C-W><CR>
 " Manual (man) for word under cursor
 nnoremap <C-K> :!man <C-r><C-W><CR>
 " Escape removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
-
-inoremap  <C-L> <C-x><C-L>
 
 " These default key combos do too many suprise deletes
 nnoremap dn <NOP>
@@ -81,13 +78,13 @@ nnoremap cn :silent cnext<CR>
 nnoremap cp :silent cprevious<CR>
 nnoremap cq :copen 5<CR>
 
+tnoremap <ESC> <C-\><C-N>
+" Close terminal Doom style
+tnoremap ` <C-\><C-N>:bdelete!<CR>
+
 " Close command history window 
 " This also closes search history windows
 autocmd CmdWinEnter * nnoremap <buffer> <ESC> <ESC>:q<CR>
-" Close search history window
-autocmd CmdWinEnter * nnoremap <buffer> \/ :q<CR>
-" Close reverse search history
-autocmd CmdWinEnter * nnoremap <buffer> \? :q<CR>
 " Full screen help
 autocmd BufEnter * if &bt=="help" | execute ":only" | endif
 " Return to previous help topic with 'H
@@ -146,11 +143,7 @@ autocmd BufLeave * let b:winview = winsaveview()
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
 
-tnoremap <ESC> <C-\><C-N>
-" Close terminal with 2 escapes
-tnoremap <ESC><ESC> exit<CR>
-" Close terminal Doom style
-tnoremap ` exit<CR>
+
 
 syntax on
 colorscheme pastel256
@@ -188,6 +181,14 @@ let s:makeerrorcount = 0
 let s:grepjob = 0
 let s:grepresults = 0
 let g:grepsearchstring = ""
+
+function! ToggleTerm() abort
+  if &buftype == "terminal"
+    bdelete!
+  else
+    tab term 
+  endif
+endfunction
 
 " This doesn't work right
 function! GetVisualText()
@@ -355,9 +356,12 @@ function Grep(pattern,directory=".",depth=1) abort
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
-  if executable("ts")
+  if executable("ts2")
     set errorformat=%f:%l:%c:%m
-    let l:command = ["ts",a:pattern,a:directory,a:depth]
+    let l:command = ["ts2",a:pattern,a:directory,a:depth]
+  elseif executable("vingrep")
+    set errorformat=%f:%l:%c:%m
+    let l:command = ["vingrep",a:pattern,a:directory,a:depth]
   else
     set errorformat=%f:%l:%m
     " This is slow
@@ -388,10 +392,12 @@ function! AssemblyOutput() abort
   \ l:compiler,
   \ "-S",
   \ "-O3",
-  \ "-mavx",
   \ "-Wall",
+  \ "-mavx",
   \ "-Wextra",
   \ "-fno-rtti",
+  \ "-march=native",
+  \ "-mtune=native",
   \ "-fverbose-asm",
   \ "-fno-exceptions",
   \ "-fno-asynchronous-unwind-tables",
@@ -470,24 +476,6 @@ endfunction
 
 command! TabsToTwoSpaces call TabsToTwoSpaces()
 
-function! AVXmm256setepi8(word)
-  " Put a string in a 256 bit register variable
-  let l:output = "_mm256_set_epi8("
-  let l:wordlength = len(a:word)
-  for index in range(0,32)
-    if index < l:wordlength
-      let l:output = l:output . "'" . a:word[index] . "'"  
-    else
-      let l:output = l:output . "'" . "\\0" . "'"
-    endif
-    if index < 32
-      let l:output = l:output . ","
-    endif
-  endfor
-  let l:output = l:output . ");"
-  execute "normal i" . l:output
-endfunction
-
 function! EchoWarningMessage(msg) abort
   echohl WarningMsg
   echo a:msg
@@ -543,7 +531,7 @@ function! FileMenuSelect(id,result) abort
 endfunction
 
 function! FileMenuKeyInputFilter(windowid,keystring) abort
-  echo a:keystring
+  "echo a:keystring
   if a:keystring == "\<ESC>"
     call popup_close(a:windowid,-1)
   endif
@@ -609,7 +597,6 @@ function! BufferMenuSelect(id,result) abort
   execute "buffer! " . l:buffername
   unlet s:listedbuffers
 endfunction
-
 
 function! BufferMenu() abort
   let s:listedbuffers = []
