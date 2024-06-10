@@ -9,7 +9,7 @@ endif
 set grepprg=
 setlocal errorformat=%f:%l:%c:%m,%f:%l:%m,%f:%l:\ %m
 
-setlocal tags=~/.vim/doc/**/tags
+setlocal tags=~/.vim/doc/c/**/tags
 setlocal complete+=k/~/.vim/ftplugin/c.vim,k~/.vim/doc/c/mantovimhelp/tags
 
 let maplocalleader = ","
@@ -64,7 +64,7 @@ command! -buffer AssemblyOutput :call AssemblyOutput()
 
 function AVX() abort
   source ~/.vim/ftplugin/simd/xmmabbreviations.vim
-  set dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
+  setlocal dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
 endfunction
 
 command! -buffer AVX :call AVX()

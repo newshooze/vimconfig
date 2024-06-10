@@ -10,41 +10,30 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-set errorformat=error\s%m\sfrom\sfile\s%f\s,line\s%l:%s%m
-set helpfile=~/.vim/doc/csound/csound.txt
-"set dict=~/.vim/ftplugin/csound.vim
-set complete+=k~/.vim/doc/csound/csound.txt,k~/.vim/ftplugin/csound.vim
-set hidden
+setlocal errorformat=error\s%m\sfrom\sfile\s%f\s,line\s%l:%s%m
+setlocal helpfile=~/.vim/doc/csound/csound.txt
+setlocal complete+=k~/.vim/doc/csound/csound.txt,k~/.vim/ftplugin/csound.vim
+setlocal hidden
 let maplocalleader = ","
 
 " Shift k for help at cursor (:view used for read only)
-nnoremap <buffer> <S-K> :silent! :view +/[*]<C-R><C-W>[*] ~/.vim/doc/csound/csound.txt<CR>:echo ''<CR>
-" Control k for man page at cursor
-nnoremap <buffer> <C-K> :!man <C-r><C-W><CR> 
+nnoremap <buffer> <S-K> :silent! :view +/[*]<C-R><C-W>[*] ~/.vim/doc/csound/csound.txt<CR>:echo ''<CR>0
 
-nnoremap <buffer> <F3> :unlet b:did_ftplugin<CR>:source ~/.vim/ftplugin/csound.vim<CR>
-inoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
-nnoremap <buffer> <F5> <ESC>:!csound %<CR><CR>
-inoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
-nnoremap <buffer> <F6> <ESC>:!csound 1.csd<CR><CR>
-nnoremap <buffer> <F8> <ESC>:RunCsoundAsync<CR>
-inoremap <buffer> <F8> <ESC>:RunCsoundAsync<CR>
+nnoremap <buffer> <F6> <ESC>:RunCsoundAsync<CR>
+inoremap <buffer> <F6> <ESC>:RunCsoundAsync<CR>
+nnoremap <buffer> <F7> <ESC>:RunCsoundAsyncInPopup<CR>
+inoremap <buffer> <F7> <ESC>:RunCsoundAsyncInPopup<CR>
 
 nnoremap <buffer> <F12> <ESC>:source ~/.vim/template/csound.vim<CR>gg^
-nnoremap <buffer> <LocalLeader>q :copen 5<CR>
 nnoremap <buffer> <LocalLeader>e :e ~/.vim/ftplugin/csound.vim<CR>
-nnoremap <buffer> <LocalLeader>b :<C-U>InsertScoreBlock<CR>
+nnoremap <buffer> <LocalLeader>b :InsertScoreBlock<CR>
 " Align score columns
-nnoremap <buffer> <LocalLeader>f :<C-U>AlignColumns<CR>
+nnoremap <buffer> <LocalLeader>f :AlignColumns<CR>
 " Align score columns for visual selection
-vnoremap <buffer> <LocalLeader>f :<C-U>'<,'>AlignColumns<CR>
-nnoremap <buffer> <LocalLeader>i :<C-U>InsertScoreBlock<CR>
-nnoremap <buffer> <LocalLeader>t :<C-U>AddColumnValue 3 1<CR>
-vnoremap <buffer> <LocalLeader>t :<C-U>'<,'>AddColumnValue 3 1<CR>
-
-nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
-nnoremap <silent> <buffer> q <ESC> :silent call <SID>KillOutputWindows()<CR>
-
+vnoremap <buffer> <LocalLeader>f :AlignColumns<CR>
+nnoremap <buffer> <LocalLeader>i :InsertScoreBlock<CR>
+nnoremap <buffer> <LocalLeader>t :AddColumnValue 3 1<CR>
+vnoremap <buffer> <LocalLeader>t :AddColumnValue 3 1<CR>
 
 let s:formatscoreindex = 1
 while s:formatscoreindex < 10
@@ -70,7 +59,8 @@ command! -range=% -nargs=+ DivideColumnValue <line1>,<line2> call ModifyColumnVa
 command! -range=% -nargs=+ MultiplyColumnValue <line1>,<line2> call ModifyColumnValueFunction(<f-args>,"*")
 command! -range=% -nargs=+ ShiftColumnValue <line1>,<line2> call ShiftColumnValueFunction(<f-args>)
 command! -range=% -nargs=* -complete=custom,AlignColumnsCompletionFunction AlignColumns <line1>,<line2> call AlignColumnsFunction(<args>)
-command! -buffer RunCsoundAsync :call <SID>RunCsoundAsync(["csound",bufname()],"")
+command! -buffer RunCsoundAsync :call RunAsync(["csound",bufname()])
+command! -buffer RunCsoundAsyncInPopup :call RunAsyncInPopup(["csound",bufname()])
 
 function! InsertScoreBlockFunction(...)
   if a:0 > 0 && a:1 =~ "[0-9]" && a:1 > 0
@@ -226,60 +216,6 @@ function! AlignColumnsFunction(...) range
       execute ":" . linenum . "s/^.*$/" . newline . "/g"  
     endif
   endfor
-endfunction
-
-function s:KillOutputWindows()
-  if !empty(job_info())
-    if job_status(s:runasyncjob) != "dead"
-      call job_stop(s:runasyncjob,"kill")
-    endif
-  endif
-  if bufexists("csoundrunoutput")
-    execute "bwipeout! csoundrunoutput"
-  endif
-endfunction
-
-autocmd BufEnter csoundrunoutput nnoremap <silent> <buffer> <ESC> :silent call <SID>KillOutputWindows()<CR>
-autocmd BufEnter csoundrunoutput nnoremap <silent> <buffer> q :silent call <SID>KillOutputWindows()<CR>
-
-function! s:RunCsoundAsyncJobFunction(channel,msg) abort
-  if bufexists("csoundrunoutput")
-    let l:textline = substitute(a:msg,'\[[0-9;]*m',"","g")
-    if l:textline =~ "WARNING: " || l:textline =~ "error: "
-      caddexpr l:textline
-      echo l:textline
-    else
-      let l:runwindownumber = bufwinnr("csoundrunoutput")
-      let l:runwindowid = win_getid(l:runwindownumber)
-      call appendbufline("csoundrunoutput","$",l:textline)
-      silent call win_execute(l:runwindowid,'normal G0')
-    endif
-  endif
-endfunction
-
-function! s:RunCsoundAsyncExitFunction(job,status) abort
-  if bufexists("csoundrunoutput")
-    execute "bwipeout! csoundrunoutput"
-  endif
-  let s:runoutputtext = ""
-endfunction
-
-function! s:RunCsoundAsync(arglist,optionsdictionary) abort
-  wall
-  cexpr ""
-  let l:programargs = a:arglist 
-  let l:joboptions = {}
-  let l:joboptions["out_msg"] = "0"
-  let l:joboptions["err_msg"] = "0"
-  " csound writes to stderr
-  let l:joboptions["err_io"] = "pipe"
-  let l:joboptions["err_mode"] = "nl"
-  let l:joboptions["callback"] = function('<SID>RunCsoundAsyncJobFunction')
-  let l:joboptions["exit_cb"] = function('<SID>RunCsoundAsyncExitFunction')
-  let s:runasyncjob = job_start(l:programargs,l:joboptions)
-  botright 5split csoundrunoutput
-  " Switch to previous workspace
-  execute "wincmd p"
 endfunction
 
 abbr <buffer>  ftgensine gisine ftgen 1,0,gitablesize,10,1<ESC>:normal^

@@ -9,10 +9,12 @@ endif
 
 let maplocalleader = ","
 
+setlocal hidden
 " Delete the current line in the quickfix list
 nnoremap <buffer> <silent> dd :call <SID>DeleteLineFunction(line('.'))<CR>
 nnoremap <buffer> <silent> dG :DeleteToEnd<CR>
 nnoremap <buffer> <silent> da :call <SID>DeleteAllLinesFunction()<CR>
+nnoremap <buffer> <silent> gf :call <SID>OpenFileAtCursor()<CR>
 nnoremap <buffer> <silent> <C-k> :resize +2<CR>
 nnoremap <buffer> <silent> <C-j> :resize -2<CR>
 nnoremap <buffer> <silent> <S-k> :resize +2<CR>
@@ -29,7 +31,6 @@ nnoremap <buffer> <silent> <S-j> :resize -2<CR>
 
 
 nnoremap <buffer> <localleader>e :bd<CR>:edit ~/.vim/ftplugin/qf.vim<CR>
-nnoremap <buffer> <localleader>es :bd<CR>:edit ~/.vim/syntax/qf.vim<CR>
 nnoremap <buffer> <localleader>s :unlet b:did_ftplugin<CR>:source ~/.vim/ftplugin/qf.vim<CR>
 nnoremap <buffer> m :call DialogCentered(getline('.'))<CR>
 nnoremap <buffer> cq <C-w>p
@@ -53,6 +54,17 @@ function! s:DeleteLineFunction(line) abort
   let l:cursorpos = getpos('.')
   call setqflist(filter(getqflist(),{idx -> idx != a:line -1}),'r')
   call setpos('.',l:cursorpos)
+endfunction
+
+" TODO: fix this
+function! s:OpenFileAtCursor()
+  let l:qfline = getline('.')
+  let l:parsed = split(l:qfline,"|")
+  let l:filename = l:parsed[0]
+  if len(l:filename)
+    wincmd p
+    "edit l:filename
+  endif 
 endfunction
 
 function! s:DeleteLinesFunction(first,last) abort

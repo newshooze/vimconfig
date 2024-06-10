@@ -120,9 +120,6 @@ function! s:FindTagUnderCursor(word) abort
   call popup_menu(menuitems, #{callback: 'SelectTagFromMenu',line:'cursor',col:'cursor',maxheight: &lines -5})
 endfunction
 
-set tags=~/.vim/doc/zig/**/tags
-set complete+=t
-
 " Shift K goes to zig function reference
 nnoremap <silent> <buffer> <S-K> :silent! call <SID>FindTagUnderCursor("<cword>")<CR>
 " Control k for zig manual
@@ -139,7 +136,6 @@ nnoremap <buffer> <localleader>c :<C-F>
 nnoremap <buffer> <localleader>e :edit ~/.vim/ftplugin/zig.vim<CR>
 nnoremap <expr> q pumvisible() ? '<ESC>' : '<CR>'
 
-" Sourcing doesn't seem to work
 inoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/zig.vim<CR>
 nnoremap <buffer> <F3> <ESC>:source ~/.vim/ftplugin/zig.vim<CR>
 
@@ -169,7 +165,9 @@ setlocal shiftwidth=2
 setlocal formatoptions+=croql
 setlocal formatoptions-=t
 setlocal suffixesadd=.zig,.zir
-
+setlocal tags=~/.vim/doc/zig/**/tags
+setlocal complete+=t
+setlocal syntax=zig
 " Compiler error format
 set efm=\%f:%l:%c:\ %t%.%#:\ %m,
   \%Z%p^,
