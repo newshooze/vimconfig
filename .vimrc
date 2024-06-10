@@ -6,9 +6,6 @@ nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
 " Control q begins a macro
 nnoremap <C-q> q
-" default leader key is '\'
-" Source vimrc
-nnoremap <leader>s :source ~/.vimrc<CR>
 " Show a file menu
 nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
 " Show a buffer menu
@@ -27,9 +24,9 @@ nnoremap <silent> <leader>g :call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
 nnoremap <leader>gr :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
 " (vin)grep visual selection (current directory)
-vnoremap <silent> <leader>g :<C-U>call Grep(GetVisualText(),getcwd(),v:count1)<CR>
+vnoremap <silent> <leader>g :<C-U>call Grep(trim(GetVisualText()),getcwd(),v:count1)<CR>
 " (vin)grep visual selection (recursive)
-vnoremap <silent> <leader>gr :<C-U>call Grep(GetVisualText(),getcwd(),-1)<CR>
+vnoremap <silent> <leader>gr :<C-U>call Grep(trim(GetVisualText()),getcwd(),-1)<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Launch terminal with \t ( <leader>t )
@@ -39,18 +36,15 @@ nnoremap <leader>p :!python3<CR>
 " Do a REPL on current line (shell command)
 nnoremap <leader>R :call RunAsync(getline('.'),{"windowheight":"5"})<CR>
 " Do a REPL on visual selection (shell command)
-vnoremap <leader>R :<C-U>call RunAsync(GetVisualText(),{"windowheight":"5"})<CR>
+vnoremap <leader>R :<C-U>call RunAsync(trim(GetVisualText()),{"windowheight":"5"})<CR>
 " Do a REPL on current line (full screen shell command)
 nnoremap <leader>Ro :call RunAsync(getline('.'),{"only":"1"})<CR>
 " Do a REPL on visual selection (full screen shell command)
-vnoremap <leader>Ro :<C-U>call RunAsync(GetVisualText(),{"only":"1"})<CR>
+vnoremap <leader>Ro :<C-U>call RunAsync(trim(GetVisualText()),{"only":"1"})<CR>
 " Execute vimscript REPL on a line
 nnoremap <leader>repl :exe getline(".")<CR>
 " Select line
 nnoremap vv 0v$o
-
-
-nnoremap ` :silent call ToggleTerm()<CR>
 " Open the Quickfix List
 nnoremap q :call ToggleQuickFix()<CR>
 " Open the location list
@@ -79,6 +73,8 @@ nnoremap cp :silent cprevious<CR>
 nnoremap cq :copen 5<CR>
 
 tnoremap <ESC> <C-\><C-N>
+" Doom style terminal
+nnoremap ` :silent call ToggleTerm()<CR>
 " Close terminal Doom style
 tnoremap ` <C-\><C-N>:bdelete!<CR>
 
@@ -136,7 +132,6 @@ colorscheme pastel256
 
 let loaded_matchparen=1
 set errorformat=%f:%l:%c:%m
-set tags=~/.vim/doc/**/tags
 set shortmess+=I
 set ruler
 set nobackup
@@ -176,14 +171,14 @@ function! ToggleTerm() abort
   endif
 endfunction
 
-" This doesn't work right
 function! GetVisualText()
-  let l:savedtext = @a
-  normal! gv"aygv
-  let l:regtext = @a
-  let l:regtext = trim(l:regtext)
-  let @a = l:savedtext
-  return l:regtext
+  " Enter normal mode
+  " Go to the previous selection
+  " Paste the selection into register 'v'
+  " Go to the previous selection
+  " This clobbers the 'v' register
+  normal! gv"vygv
+  return @v
 endfunction
 
 function! KillOutputWindows()
@@ -241,7 +236,7 @@ function! RunAsyncInPopupFunction(channel,msg) abort
 endfunction
 
 " TODO - Implement command! -range for popup height
-function! RunAsyncInPopup(arglist,optionsdictionary) abort
+function! RunAsyncInPopup(arglist,optionsdictionary={}) abort
   call KillOutputWindows()
   let l:programargs = a:arglist
   let l:joboptions = {}
@@ -332,7 +327,7 @@ function! GrepJobFunction(channel,msg) abort
 endfunction
 
 " Default parameters in Vim 8xx only
-function Grep(pattern,directory=".",depth=1) abort
+function! Grep(pattern,directory=".",depth=1) abort
   silent wall
   call KillOutputWindows()
   let l:joboptions = {}
@@ -343,10 +338,7 @@ function Grep(pattern,directory=".",depth=1) abort
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
-  if executable("ts2")
-    set errorformat=%f:%l:%c:%m
-    let l:command = ["ts2",a:pattern,a:directory,a:depth]
-  elseif executable("vingrep")
+  if executable("vingrep")
     set errorformat=%f:%l:%c:%m
     let l:command = ["vingrep",a:pattern,a:directory,a:depth]
   else
@@ -361,7 +353,7 @@ endfunction
 
 function! ObjDump(objectfile) abort
   enew
-  read !objdump -d a:objectfile
+  execute "read !objdump -d " . a:objectfile
   set ft=asm
 endfunction
 
