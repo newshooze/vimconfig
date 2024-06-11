@@ -59,8 +59,8 @@ command! -range=% -nargs=+ DivideColumnValue <line1>,<line2> call ModifyColumnVa
 command! -range=% -nargs=+ MultiplyColumnValue <line1>,<line2> call ModifyColumnValueFunction(<f-args>,"*")
 command! -range=% -nargs=+ ShiftColumnValue <line1>,<line2> call ShiftColumnValueFunction(<f-args>)
 command! -range=% -nargs=* -complete=custom,AlignColumnsCompletionFunction AlignColumns <line1>,<line2> call AlignColumnsFunction(<args>)
-command! -buffer RunCsoundAsync :call RunAsync(["csound",bufname()])
-command! -buffer RunCsoundAsyncInPopup :call RunAsyncInPopup(["csound",bufname()])
+command! -buffer RunCsoundAsync :call RunAsync(["csound",expand("%")])
+command! -buffer RunCsoundAsyncInPopup :call RunAsyncInPopup(["csound",expand("%")])
 
 function! InsertScoreBlockFunction(...)
   if a:0 > 0 && a:1 =~ "[0-9]" && a:1 > 0
