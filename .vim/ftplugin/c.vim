@@ -6,7 +6,6 @@ if exists("b:did_ftplugin")
   finish
 endif
 
-set grepprg=
 setlocal errorformat=%f:%l:%c:%m,%f:%l:%m,%f:%l:\ %m
 
 setlocal tags=~/.vim/doc/c/**/tags
@@ -18,7 +17,6 @@ let maplocalleader = ","
 nnoremap <silent> <buffer> <localleader>e :edit ~/.vim/ftplugin/c.vim<CR>
 " Edit makefile in ./
 nnoremap <silent> <buffer> <localleader>m :e makefile<CR>
-" Window navigation
 
 nnoremap <buffer> <S-K> :tag <C-r><C-W><CR>
 nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
@@ -33,7 +31,7 @@ inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
 inoremap <buffer> <F6> <ESC>:MakeRun<CR>
 nnoremap <buffer> <F6> <ESC>:MakeRun<CR>
 " make
-inoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
+inoremap <buffer> <F7> :wall<CR>:RunPop make <CR>
 nnoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
 
 nnoremap <buffer> <S-F7> :RunPop make clean<CR>
@@ -63,8 +61,8 @@ command! -buffer AssemblyOutput :call AssemblyOutput()
 
 
 function AVX() abort
-  source ~/.vim/ftplugin/simd/xmmabbreviations.vim
-  setlocal dict+=~/.vim/ftplugin/simd/xmmabbreviations.vim
+  source ~/.vim/ftplugin/intrin/xmmabbreviations.vim
+  setlocal dict+=~/.vim/ftplugin/intrin/xmmabbreviations.vim
 endfunction
 
 command! -buffer AVX :call AVX()
