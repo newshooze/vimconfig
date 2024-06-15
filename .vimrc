@@ -11,7 +11,7 @@ nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 " Toggle line numbers
-nnoremap <leader>n :set number!<CR>
+nnoremap <leader>n :call CycleNumber()<CR>
 " edit .vimrc
 nnoremap <leader>e :edit ~/.vimrc<CR>
 " Evaluate a buffer line 
@@ -19,18 +19,16 @@ nnoremap <leader>e :edit ~/.vimrc<CR>
 nnoremap <leader>= :silent! call EvaluateLine()<CR>
 " (vin)grep word under cursor (v:count1 sets search depth to 1)
 " Precede command with a number for further search depth (subdirectories)
-" Example: Typing '3<leader>g will search the current dir and 2 below it
+" Example: Typing '3<leader>v will search the current dir and 2 below it
 nnoremap <silent> <leader>g :call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
-nnoremap <leader>gr :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
+nnoremap <leader>G :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
 " (vin)grep visual selection (current directory)
 vnoremap <silent> <leader>g :<C-U>call Grep(trim(GetVisualText()),getcwd(),v:count1)<CR>
 " (vin)grep visual selection (recursive)
-vnoremap <silent> <leader>gr :<C-U>call Grep(trim(GetVisualText()),getcwd(),-1)<CR>
+vnoremap <silent> <leader>G :<C-U>call Grep(trim(GetVisualText()),getcwd(),-1)<CR>
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
-" Launch terminal with \t ( <leader>t )
-nnoremap <leader>t :tab term<CR>
 " Start python3
 nnoremap <leader>p :!python3<CR>
 " Do a REPL on current line (shell command)
@@ -47,8 +45,6 @@ nnoremap <leader>repl :exe getline(".")<CR>
 nnoremap vv 0v$o
 " Open the Quickfix List
 nnoremap q :call ToggleQuickFix()<CR>
-" Open the location list
-nnoremap <leader>l :lopen 5<CR>:echo<CR>
 " Open command line window
 nnoremap <leader>c :<C-F>
 " Show the current time
@@ -70,13 +66,14 @@ nnoremap cc <NOP>
 " quickfix stuff 
 nnoremap cn :silent cnext<CR>
 nnoremap cp :silent cprevious<CR>
-nnoremap cq :copen 5<CR>
+nnoremap cq :call GoToQuickfix()<CR>
 
 tnoremap <ESC> <C-\><C-N>
 " Doom style terminal
-nnoremap ` :silent call ToggleTerm()<CR>
+nnoremap ` :silent call ToggleTerminal()<CR>
 " Close terminal Doom style
 tnoremap ` <C-\><C-N>:bdelete!<CR>
+
 
 " Close command history window 
 " This also closes search history windows
@@ -96,6 +93,9 @@ function! SearchHighlight(color=132) abort
 endfunction
 
 autocmd BufWinEnter quickfix call SearchHighlight()
+" This fixes a bug in quickfix placemant
+autocmd BufWinEnter quickfix resize+1 | resize-1
+
 " Makefile help gcc.txt
 autocmd BufRead ~/.vim/dict/gcc.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/dict/gcc.txt setlocal filetype=help
@@ -126,6 +126,7 @@ autocmd BufLeave * let b:winview = winsaveview()
 " Move through command line history
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
+cabbrev az a-zA-Z0-9
 
 syntax on
 colorscheme pastel256
@@ -147,6 +148,7 @@ set autowriteall
 set incsearch
 set nofoldenable
 set nopaste
+set switchbuf=useopen
 " Make escape work instantly
 set ttimeoutlen=10
 
@@ -154,6 +156,7 @@ filetype plugin on
 
 let g:loaded_matchparen=1
 let s:quickfixsize = 5
+let s:locationlistsize = 5
 let s:runpopup = 0
 let s:runoutputtext = []
 let s:popupoutputtext = []
@@ -163,11 +166,22 @@ let s:grepjob = 0
 let s:grepresults = 0
 let g:grepsearchstring = ""
 
-function! ToggleTerm() abort
+function! CycleNumber() abort
+  if !&number && !&relativenumber
+    set number
+  elseif !&relativenumber
+    set relativenumber
+  else
+    set nonumber
+    set norelativenumber
+  endif
+endfunction
+
+function! ToggleTerminal() abort
   if &buftype == "terminal"
     bdelete!
   else
-    tab term 
+    tab terminal
   endif
 endfunction
 
@@ -182,8 +196,7 @@ function! GetVisualText()
 endfunction
 
 function! KillOutputWindows()
-  silent lclose " Close location list
-  silent cclose " Close quickfix window
+  call KillQuickfix()
   call popup_close(s:runpopup)
   " Close ALL popups (popup_clear)
   call popup_clear(1)
@@ -244,19 +257,19 @@ function! RunAsyncInPopup(arglist,optionsdictionary={}) abort
   let l:joboptions["err_msg"] = "0"
   let l:joboptions["callback"] = function("RunAsyncInPopupFunction")
   let s:runpopup = popup_create('', #{
-  \ pos: "botleft",
-  \ title: "",
-  \ border: [0,0,0,0],
-  \ padding: [0,0,0,0],
-  \ line: &lines,
-  \ col: 0,
-  \ minheight: 5,
-  \ maxheight: 5,
-  \ scrollbar: 1,
-  \ minwidth: &columns,
-  \ maxwidth: &columns,
-  \ close: "none",
-  \ wrap: "FALSE",
+  \ pos: get(a:optionsdictionary,"pos","botleft"),
+  \ title: get(a:optionsdictionary,"title",""),
+  \ border: get(a:optionsdictionary,"border",[0,0,0,0]),
+  \ padding: get(a:optionsdictionary,"padding",[0,0,0,0]),
+  \ line: get(a:optionsdictionary,"line",&lines),
+  \ col: get(a:optionsdictionary,"col",0),
+  \ minheight: get(a:optionsdictionary,"minheight",5),
+  \ maxheight: get(a:optionsdictionary,"maxheight",5),
+  \ scrollbar: get(a:optionsdictionary,"scrollbar",1),
+  \ minwidth: get(a:optionsdictionary,"minwidth",&columns),
+  \ maxwidth: get(a:optionsdictionary,"maxwidth",&columns),
+  \ close: get(a:optionsdictionary,"close","none"),
+  \ wrap: get(a:optionsdictionary,"wrap","FALSE")
   \ })
   let s:runinpopupjob = job_start(l:programargs,l:joboptions)
   let s:popupoutputtext = []
@@ -338,9 +351,9 @@ function! Grep(pattern,directory=".",depth=1) abort
   cexpr ""
   silent execute "copen " s:quickfixsize
   wincmd p
-  if executable("vingrep")
+  if executable("vingrep3")
     set errorformat=%f:%l:%c:%m
-    let l:command = ["vingrep",a:pattern,a:directory,a:depth]
+    let l:command = ["vingrep3",a:pattern,a:directory,a:depth]
   else
     set errorformat=%f:%l:%m
     " This is slow
@@ -354,7 +367,7 @@ endfunction
 function! ObjDump(objectfile) abort
   enew
   execute "read !objdump -d " . a:objectfile
-  set ft=asm
+  set filetype=asm
 endfunction
 
 function! AssemblyOutput() abort
@@ -391,9 +404,8 @@ function! AssemblyOutput() abort
   let l:joboptions["out_name"] = "assemblyoutput"
   let s:assemblyjob = job_start(l:command,l:joboptions)
   let l:assemblyfile = expand('%:r') . '.s'
-  execute "vsplit assemblyoutput"
-  execute "only"
-  execute "set filetype=asm"
+  botright vsplit assemblyoutput
+  set filetype=asm
 endfunction
 
 function! EatSpace() abort
@@ -618,10 +630,10 @@ endfunction
 function! Notify(message,notifyoptions={}) abort
   let l:messagewidth = len(a:message)
   let l:notifyoptions = {}
-  let l:notifyoptions["time"] = 4000
-  let l:notifyoptions["minwidth"] = l:messagewidth
-  let l:notifyoptions["col"] = &columns - l:messagewidth - 20
-  let l:notifyoptions["line"] = 8
+  let l:notifyoptions["time"] = get(a:notifyoptions,"time",4000)
+  let l:notifyoptions["minwidth"] = get(a:notifyoptions,"minwidth",l:messagewidth)
+  let l:notifyoptions["col"] = get(a:notifyoptions,"col",&columns - l:messagewidth - 20)
+  let l:notifyoptions["line"] = get(a:notifyoptions,"line",2)
   call popup_notification(a:message,l:notifyoptions)
 endfunction
 
@@ -632,6 +644,16 @@ function! EvaluateLine() abort
   call DialogAtCursor(l:message)
 endfunction
 
+function! KillQuickfix() abort
+  if &buftype ==# "quickfix"
+    if winnr("$") < 2
+      quit!
+    endif
+  else
+    silent cclose
+  endif
+endfunction
+
 function! QuickFixVisible() abort
   let wins = filter(getwininfo(), "v:val.quickfix && !v:val.loclist")
   return empty(wins) ? 0 : 1
@@ -639,8 +661,17 @@ endfunction
 
 function! ToggleQuickFix() abort
   if QuickFixVisible()
-    cclose
+    call KillQuickfix()
   else
     execute "copen " . s:quickfixsize
+  endif
+endfunction
+
+function! GoToQuickfix() abort
+  if QuickFixVisible()
+    call KillQuickfix()
+    call ToggleQuickFix()
+  else
+    call ToggleQuickFix()
   endif
 endfunction
