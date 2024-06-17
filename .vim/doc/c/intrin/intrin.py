@@ -1,4 +1,9 @@
 #!/usr/bin/python3 -c
+'''
+    This will create a vim help file for simd routines.
+    The data file is inside the Intel Intrinsics Guide.
+    https://cdrdv2.intel.com/v1/dl/getContent/671338
+'''
 import sys
 import shutil
 import textwrap
