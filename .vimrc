@@ -8,6 +8,7 @@ nnoremap <buffer> ) <NOP>
 nnoremap <C-q> q
 " Show a file menu
 nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
+nnoremap <silent> <leader><S-F> :call ShowVimFunctionDefinition(WordUnderCursor())<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 " Toggle line numbers
@@ -30,7 +31,7 @@ vnoremap <silent> <leader>G :<C-U>call Grep(trim(GetVisualText()),getcwd(),-1)<C
 " Edit makefile
 nnoremap <leader>m :edit makefile<CR>
 " Start python3
-nnoremap <leader>p :!python3<CR>
+nnoremap <leader>p :tab term python3<CR>
 " Do a REPL on current line (shell command)
 nnoremap <leader>R :call RunAsync(getline('.'),{"windowheight":"5"})<CR>
 " Do a REPL on visual selection (shell command)
@@ -59,6 +60,11 @@ nnoremap <S-K> :help <C-R><C-W><CR>
 nnoremap <C-K> :!man <C-r><C-W><CR>
 " Escape removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
+
+nnoremap <C-UP> :resize +1<CR>
+nnoremap <C-DOWN> :resize -1<CR>
+nnoremap <C-LEFT> :vertical resize -1<CR>
+nnoremap <C-RIGHT> :vertical resize +1<CR>
 
 " These default key combos do too many suprise deletes
 nnoremap dn <NOP>
@@ -93,7 +99,7 @@ function! SearchHighlight(color=132) abort
 endfunction
 
 autocmd BufWinEnter quickfix call SearchHighlight()
-" This fixes a bug in quickfix placemant
+" This fixes a bug/feature in quickfix placemant
 autocmd BufWinEnter quickfix resize+1 | resize-1
 
 " Makefile help gcc.txt
@@ -126,10 +132,11 @@ autocmd BufLeave * let b:winview = winsaveview()
 " Move through command line history
 cnoremap <C-N> <Up>
 cnoremap <C-P> <Down>
-cabbrev az a-zA-Z0-9
+cabbrev az a-zA-Z0-9_-
 
 syntax on
 colorscheme pastel256
+
 
 let loaded_matchparen=1
 set errorformat=%f:%l:%c:%m
@@ -160,8 +167,6 @@ let s:locationlistsize = 5
 let s:runpopup = 0
 let s:runoutputtext = []
 let s:popupoutputtext = []
-let s:makewarningcount = 0
-let s:makeerrorcount = 0
 let s:grepjob = 0
 let s:grepresults = 0
 let g:grepsearchstring = ""
@@ -222,19 +227,25 @@ function! RunAsync(arglist,optionsdictionary={}) abort
   call KillOutputWindows()
   let l:programargs = a:arglist 
   let l:joboptions = {}
-  let l:joboptions["out_msg"] = "0"
-  let l:joboptions["err_msg"] = "0"
-  let l:joboptions["out_io"] = "buffer"
-  let l:joboptions["err_io"] = "buffer"
-  let l:joboptions["out_name"] = "runoutput"
-  let l:joboptions["err_name"] = "runoutput"
-  let l:joboptions["callback"] = function("RunAsyncJobFunction")
-  let l:joboptions["exit_cb"] = function("RunAsyncExitFunction")
+  let l:joboptions["out_msg"] = get(a:optionsdictionary,"out_msg","0")
+  let l:joboptions["err_msg"] = get(a:optionsdictionary,"err_msg","0")
+  let l:joboptions["out_io"] = get(a:optionsdictionary,"out_io","buffer")
+  let l:joboptions["err_io"] = get(a:optionsdictionary,"err_io","buffer")
+  let l:joboptions["out_name"] = get(a:optionsdictionary,"out_name","runoutput")
+  let l:joboptions["err_name"] = get(a:optionsdictionary,"err_name","runoutput")
+  let l:joboptions["callback"] = get(a:optionsdictionary,"callback",function("RunAsyncJobFunction"))
+  let l:joboptions["exit_cb"] = get(a:optionsdictionary,"exit_cp",function("RunAsyncExitFunction"))
   let s:runasyncjob = job_start(l:programargs,l:joboptions)
+  let l:filetype = get(a:optionsdictionary,"filetype","")
+  let l:syntax = get(a:optionsdictionary,"syntax","text")
   let l:position = get(a:optionsdictionary,"position","botright")
   let l:windowheight =  get(a:optionsdictionary,"windowheight","5")
   let l:only = get(a:optionsdictionary,"only","0")
   execute l:position . " " . l:windowheight . "split runoutput"
+  if len(l:filetype)
+    execute "set filetype=" . l:filetype
+  endif
+  execute "setlocal syntax=" . l:syntax
   if l:only
     execute "only"
   else
@@ -248,14 +259,13 @@ function! RunAsyncInPopupFunction(channel,msg) abort
   silent call win_execute(s:runpopup,"normal G0")
 endfunction
 
-" TODO - Implement command! -range for popup height
 function! RunAsyncInPopup(arglist,optionsdictionary={}) abort
   call KillOutputWindows()
   let l:programargs = a:arglist
   let l:joboptions = {}
-  let l:joboptions["out_msg"] = "0"
-  let l:joboptions["err_msg"] = "0"
-  let l:joboptions["callback"] = function("RunAsyncInPopupFunction")
+  let l:joboptions["out_msg"] = get(a:optionsdictionary,"out_msg","0")
+  let l:joboptions["err_msg"] = get(a:optionsdictionary,"err_msg","0")
+  let l:joboptions["callback"] = get(a:optionsdictionary,"callback",function("RunAsyncInPopupFunction"))
   let s:runpopup = popup_create('', #{
   \ pos: get(a:optionsdictionary,"pos","botleft"),
   \ title: get(a:optionsdictionary,"title",""),
@@ -275,52 +285,6 @@ function! RunAsyncInPopup(arglist,optionsdictionary={}) abort
   let s:popupoutputtext = []
 endfunction
 
-function! MakeExitFunction(job,status) abort
-  if bufexists("makeoutput")
-    if s:makewarningcount > 0 ||  s:makeerrorcount > 0
-      silent execute "bwipeout! makeoutput" 
-      silent execute "copen " s:quickfixsize
-      execute "wincmd p"
-    endif
-  endif
-  let s:makewarningcount = 0
-  let s:makeerrorcount = 0
-endfunction
-
-function! MakeJobFunction(channel,msg) abort
-  if a:msg =~ " warning: "
-    caddexpr a:msg
-    let s:makewarningcount = s:makewarningcount + 1
-  endif
-  if a:msg =~ " error: "
-    caddexpr a:msg
-    let s:makeerrorcount = s:makeerrorcount + 1
-  endif
-endfunction
-
-" Run make (or makeprg) in the current directory
-" TODO: add options dictionary
-function! Make() abort
-  silent wall
-  " Close any existing quickfix and make buffers
-  call KillOutputWindows()
-  let l:joboptions = {}
-  let l:joboptions["out_msg"] = "0"
-  let l:joboptions["err_msg"] = "0"
-  let l:joboptions["out_io"] = "buffer"
-  let l:joboptions["err_io"] = "buffer"
-  let l:joboptions["out_name"] = "makeoutput"
-  let l:joboptions["err_name"] = "makeoutput"
-  let l:joboptions["callback"] = function('MakeJobFunction')
-  let l:joboptions["exit_cb"] = function('MakeExitFunction')
-  let s:makejob = job_start(&makeprg,l:joboptions)
-  " Clear the quickfix window
-  cexpr ""
-  " Create the scrolling output buffer
-  execute "botright 5split makeoutput" 
-  " Switch back to previous workspace
-  execute "wincmd p"
-endfunction
 
 " This doesn't work
 function! KillGrepJob() abort
@@ -367,44 +331,6 @@ endfunction
 function! ObjDump(objectfile) abort
   enew
   execute "read !objdump -d " . a:objectfile
-  set filetype=asm
-endfunction
-
-function! AssemblyOutput() abort
-  silent wall
-  " Close any existing quickfix and make buffers
-  call KillOutputWindows()
-  let l:sourcefile = expand("%:t")
-  let l:sourcefileextension = expand("%:e")
-  let l:compiler = "gcc"
-  if l:sourcefileextension == "cpp"
-    let l:compiler = "g++"
-  endif
-  let l:command = [
-  \ l:compiler,
-  \ "-S",
-  \ "-O3",
-  \ "-Wall",
-  \ "-mavx",
-  \ "-Wextra",
-  \ "-fno-rtti",
-  \ "-march=native",
-  \ "-mtune=native",
-  \ "-fverbose-asm",
-  \ "-fno-exceptions",
-  \ "-fno-asynchronous-unwind-tables",
-  \ l:sourcefile,
-  \ "-o-"
-  \ ]
-  let l:joboptions = {}
-  let l:joboptions["out_msg"] = "0"
-  let l:joboptions["err_msg"] = "0"
-  let l:joboptions["out_io"] = "buffer"
-  let l:joboptions["err_io"] = "null"
-  let l:joboptions["out_name"] = "assemblyoutput"
-  let s:assemblyjob = job_start(l:command,l:joboptions)
-  let l:assemblyfile = expand('%:r') . '.s'
-  botright vsplit assemblyoutput
   set filetype=asm
 endfunction
 
@@ -544,7 +470,7 @@ function! FileMenuKeyInputFilter(windowid,keystring) abort
   return 1 
 endfunction
 
-function! FileMenu(directory,menuoptions={}) abort
+function! FileMenu(directory,optionsdictionary={}) abort
   let s:filemenuroot = a:directory
   let l:command = "find " . a:directory . " -maxdepth 1"
   let s:filemenufiles= systemlist(l:command)
@@ -564,14 +490,14 @@ function! FileMenu(directory,menuoptions={}) abort
     endif
   endfor
   let l:menuoptions = {}
-  let l:menuoptions["callback"] = function("FileMenuSelect")
-  let l:menuoptions["maxheight"] = &lines - 4 
-  let l:menuoptions["minheight"] = 1
-  let l:menuoptions["minwidth"] = l:maxfilepathlength + 4
-  let l:menuoptions["title"] = s:filemenuroot
-  let l:menuoptions["filtermode"] = "a"
-  let l:menuoptions["filter"] = function("FileMenuKeyInputFilter")
-  let l:menuoptions["mapping"] = 0
+  let l:menuoptions["callback"] = get(a:optionsdictionary,"callback",function("FileMenuSelect"))
+  let l:menuoptions["maxheight"] = get(a:optionsdictionary,"maxheight",&lines - 4)
+  let l:menuoptions["minheight"] = get(a:optionsdictionary,"minheight",1)
+  let l:menuoptions["minwidth"] = get(a:optionsdictionary,"minwidth",l:maxfilepathlength + 4)
+  let l:menuoptions["title"] = get(a:optionsdictionary,"title",s:filemenuroot)
+  let l:menuoptions["filtermode"] = get(a:optionsdictionary,"filtermode","a")
+  let l:menuoptions["filter"] = get(a:optionsdictionary,"filter",function("FileMenuKeyInputFilter"))
+  let l:menuoptions["mapping"] = get(a:optionsdictionary,"mapping",0)
   if len(s:filemenufiles)
     call sort(s:filemenufiles)
     call popup_menu(s:filemenufiles,l:menuoptions)
@@ -615,13 +541,13 @@ function! BufferMenu() abort
   call popup_menu(s:listedbuffers,l:menuoptions)
 endfunction
 
-function! DialogAtCursor(message) abort
+function! DialogAtCursor(message,dialogoptions={}) abort
   let l:dialogoptions = {}
   let l:dialogoptions["moved"] = "any"
   call popup_atcursor(a:message,l:dialogoptions) 
 endfunction
 
-function! DialogCentered(message) abort
+function! DialogCentered(message,dialogoptions={}) abort
   let l:dialogoptions = {}
   let l:dialogoptions["moved"] = "any"
   call popup_dialog(a:message,l:dialogoptions)
@@ -674,4 +600,63 @@ function! GoToQuickfix() abort
   else
     call ToggleQuickFix()
   endif
+endfunction
+
+function! CenterBuffer() abort
+  let l:linelist = []
+  let l:linelist = GetBufferAsList()
+  call CenterListText(l:linelist)
+  call SetBufferWithList(l:linelist)
+endfunction
+
+function! SetBufferWithList(linelist=[]) abort
+  let l:index = 1
+  for l:line in a:linelist
+    call setline(l:index,l:line)
+    let l:index = l:index + 1
+  endfor
+endfunction
+
+function! GetBufferAsList() abort
+  let l:index = 1
+  let l:linelist = getline(1,&lines)
+  return l:linelist
+endfunction
+
+function! CenterListText(lines=[''],columns=&columns) abort
+  let l:maxline = 0
+  let l:columns = a:columns
+  let l:lines = []
+  let l:lines = a:lines
+  for l:line in a:lines
+    let l:linelen = len(l:line)
+    if l:linelen > l:maxline
+      let l:maxline = l:linelen
+      if l:maxline > l:columns
+        return a:lines
+      endif
+    endif
+  endfor
+  let l:indent = (l:columns / 2) - (l:maxline / 2)
+  let l:index = 0
+  for l:line in a:lines
+    let l:line = repeat(' ',l:indent) . l:line
+    let l:lines[l:index] = l:line
+    let l:index = l:index + 1
+  endfor
+  return l:lines
+endfunction
+
+function! ShowVimFunctionDefinition(functionstring) abort
+  let functiondef = execute("function " . a:functionstring,"silent!")
+  enew 
+  setlocal nomodified
+  setlocal syntax=vim
+  nnoremap <buffer> <ESC> :bd!<CR>
+  let l:index = 1
+  let l:lines = split(functiondef,'\n')
+  for l:line in l:lines
+    call setline(l:index,l:line)
+    let l:index = l:index + 1
+  endfor
 endfunction
