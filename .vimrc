@@ -648,13 +648,13 @@ function! CenterListText(lines=[''],columns=&columns) abort
 endfunction
 
 function! ShowVimFunctionDefinition(functionstring) abort
-  let functiondef = execute("function " . a:functionstring,"silent!")
+  let l:functiondef = execute("function " . a:functionstring,"silent!")
   enew 
   setlocal nomodified
   setlocal syntax=vim
   nnoremap <buffer> <ESC> :bd!<CR>
   let l:index = 1
-  let l:lines = split(functiondef,'\n')
+  let l:lines = split(l:functiondef,'\n')
   for l:line in l:lines
     call setline(l:index,l:line)
     let l:index = l:index + 1
