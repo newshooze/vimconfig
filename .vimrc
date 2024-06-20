@@ -8,7 +8,8 @@ nnoremap <buffer> ) <NOP>
 nnoremap <C-q> q
 " Show a file menu
 nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
-nnoremap <silent> <leader><S-F> :call ShowVimFunctionDefinition(WordUnderCursor())<CR>
+" Show a vimscript function definition
+nnoremap <silent> <leader>F :call ShowVimFunctionDefinition(WordUnderCursor())<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
 " Toggle line numbers
@@ -647,8 +648,13 @@ function! CenterListText(lines=[''],columns=&columns) abort
   return l:lines
 endfunction
 
+let s:lastsetfromregex = "^.*Last set from.*line.*[0-9]*$"
+
 function! ShowVimFunctionDefinition(functionstring) abort
-  let l:functiondef = execute("function " . a:functionstring,"silent!")
+  let l:functiondef = execute("verbose function " . a:functionstring,"silent!")
+  if !len(l:functiondef)
+    return
+  endif
   enew 
   setlocal nomodified
   setlocal syntax=vim
@@ -656,7 +662,14 @@ function! ShowVimFunctionDefinition(functionstring) abort
   let l:index = 1
   let l:lines = split(l:functiondef,'\n')
   for l:line in l:lines
-    call setline(l:index,l:line)
+    let l:match = match(l:line,s:lastsetfromregex)
+    if l:match > -1
+      call append(0,"")
+      call append(0,"  " . l:line)
+      let l:index = l:index + 1
+    else
+      call setline(l:index,l:line)
+    endif
     let l:index = l:index + 1
   endfor
 endfunction
