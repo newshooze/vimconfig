@@ -24,12 +24,15 @@ nnoremap <buffer> <C-K> :!man <C-r><C-W><CR>
 " Switch to header or source - TODO: Fix this
 nnoremap <buffer> <F4> <ESC>:e %:r.h<CR>
 nnoremap <buffer> <S-F4> <ESC>:e %:r.c<CR>
-" Compile current filename.c and link to executable
-nnoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
-inoremap <buffer> <F5> <ESC>:!gcc %:t -o %:r -lm<CR>
+
+"
+nnoremap <buffer> <F5> <ESC>:Termdebug<CR>
+
 " run
 inoremap <buffer> <F6> <ESC>:MakeRun<CR>
 nnoremap <buffer> <F6> <ESC>:MakeRun<CR>
+inoremap <buffer> <S-F6> <ESC>:MakeRunFullScreen<CR>
+nnoremap <buffer> <S-F6> <ESC>:MakeRunFullScreen<CR>
 " make
 inoremap <buffer> <F7> :wall<CR>:RunPop make <CR>
 nnoremap <buffer> <F7> :wall<CR>:RunPop make<CR>
@@ -44,20 +47,107 @@ nnoremap <buffer> <S-F8> <ESC>:MakeClean<CR>
 
 nnoremap <buffer> <F9> :AssemblyOutput<CR>
 
-nnoremap <buffer> <F10> :read ~/.vim/template/SDL2.vim<CR>gg^
-nnoremap <buffer> <F11> :read ~/.vim/template/x11.vim<CR>gg^
+" X11 uses F11
 nnoremap <buffer> <F12> :read ~/.vim/template/c.vim<CR>gg^
 
-command! -buffer TemSDL2 :read ~/.vim/template/SDL2.vim
-command! -buffer Temx11 :read ~/.vim/template/x11.vim
 command! -buffer Tem :read ~/.vim/template/c.vim
-command! -buffer Make :call Make()
-command! -buffer MakeZenMode :call RunAsync(["make"],{"only":"1"})
+command! -buffer Make :call <SID>Make()
+command! -buffer MakeFullScreen :call RunAsync(["make"],{"only":"1"})
 command! -buffer MakeRun :call RunAsync(["make","run"],{})
+command! -buffer MakeRunFullScreen :call RunAsync(["make","run"],{"only":"1"})
 command! -buffer MakeClean :call RunAsync(["make","clean"],{})
 command! -buffer -nargs=+ Run :call RunAsync([<f-args>],{})
 command! -buffer -nargs=+ RunPop :call RunAsyncInPopup([<f-args>],{})
-command! -buffer AssemblyOutput :call AssemblyOutput()
+command! -buffer AssemblyOutput :call <SID>AssemblyOutput()
+
+let s:makewarningcount = 0
+let s:makeerrorcount = 0
+let s:quickfixsize = 5
+
+function! s:MakeExitFunction(job,status) abort
+  if bufexists("makeoutput")
+    if s:makewarningcount > 0 ||  s:makeerrorcount > 0
+      silent execute "bwipeout! makeoutput" 
+      silent execute "copen " s:quickfixsize
+      execute "wincmd p"
+    endif
+  endif
+  let s:makewarningcount = 0
+  let s:makeerrorcount = 0
+endfunction
+
+function! s:MakeJobFunction(channel,msg) abort
+  if a:msg =~ " warning: "
+    caddexpr a:msg
+    let s:makewarningcount = s:makewarningcount + 1
+  endif
+  if a:msg =~ " error: "
+    caddexpr a:msg
+    let s:makeerrorcount = s:makeerrorcount + 1
+  endif
+endfunction
+
+" Run make (or makeprg) in the current directory
+" TODO: add options dictionary
+function! s:Make() abort
+  silent wall
+  " Close any existing quickfix and make buffers
+  call KillOutputWindows()
+  let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
+  let l:joboptions["out_io"] = "buffer"
+  let l:joboptions["err_io"] = "buffer"
+  let l:joboptions["out_name"] = "makeoutput"
+  let l:joboptions["err_name"] = "makeoutput"
+  let l:joboptions["callback"] = function('<SID>MakeJobFunction')
+  let l:joboptions["exit_cb"] = function('<SID>MakeExitFunction')
+  let s:makejob = job_start(&makeprg,l:joboptions)
+  " Clear the quickfix window
+  cexpr ""
+  " Create the scrolling output buffer
+  execute "botright 5split makeoutput" 
+  " Switch back to previous workspace
+  execute "wincmd p"
+endfunction
+
+function! s:AssemblyOutput() abort
+  silent wall
+  " Close any existing quickfix and make buffers
+  call KillOutputWindows()
+  let l:sourcefile = expand("%:t")
+  let l:sourcefileextension = expand("%:e")
+  let l:compiler = "gcc"
+  if l:sourcefileextension == "cpp"
+    let l:compiler = "g++"
+  endif
+  let l:command = [
+  \ l:compiler,
+  \ "-S",
+  \ "-O3",
+  \ "-Wall",
+  \ "-mavx",
+  \ "-Wextra",
+  \ "-fno-rtti",
+  \ "-march=native",
+  \ "-mtune=native",
+  \ "-fverbose-asm",
+  \ "-fno-exceptions",
+  \ "-fno-asynchronous-unwind-tables",
+  \ l:sourcefile,
+  \ "-o-"
+  \ ]
+  let l:joboptions = {}
+  let l:joboptions["out_msg"] = "0"
+  let l:joboptions["err_msg"] = "0"
+  let l:joboptions["out_io"] = "buffer"
+  let l:joboptions["err_io"] = "null"
+  let l:joboptions["out_name"] = "assemblyoutput"
+  let s:assemblyjob = job_start(l:command,l:joboptions)
+  let l:assemblyfile = expand('%:r') . '.s'
+  botright vsplit assemblyoutput
+  set filetype=asm
+endfunction
 
 
 function AVX() abort
@@ -66,6 +156,8 @@ function AVX() abort
 endfunction
 
 command! -buffer AVX :call AVX()
+
+inoreabbrev <silent> <buffer> for( for(i=0; i< i++)<ESC>hhhhi
 " stdio.h
 "
 inoreabbrev <silent> <buffer> fgets <C-r>=Abbreviation("fgets(char*,size,FILE);")<CR>
