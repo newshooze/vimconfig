@@ -4,82 +4,79 @@ nnoremap <silent> <S-T> :bprevious!<CR>
 " These are annoying
 nnoremap <buffer> ( <NOP>
 nnoremap <buffer> ) <NOP>
-" Control q begins a macro
-nnoremap <C-q> q
-" Show a file menu
-nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
-" Show a vimscript function definition
-nnoremap <silent> <leader>F :call ShowVimFunctionDefinition(WordUnderCursor())<CR>
 " Show a buffer menu
 nnoremap <silent> <leader>b :silent! call BufferMenu()<CR>
-" Toggle line numbers
-nnoremap <leader>n :call CycleNumber()<CR>
+" Open command line window
+nnoremap <silent> <leader>c :<C-F>
+" Show the current time
+nnoremap <silent> <leader>C :silent! call Notify(strftime("%c"))<CR>
 " edit .vimrc
-nnoremap <leader>e :edit ~/.vimrc<CR>
-" Evaluate a buffer line 
-" Example: Hit <leader>= on a line that contains '2+2'
-nnoremap <leader>= :silent! call EvaluateLine()<CR>
+nnoremap <silent> <leader>e :edit ~/.vimrc<CR>
+" Show a file menu
+nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
 " (vin)grep word under cursor (v:count1 sets search depth to 1)
 " Precede command with a number for further search depth (subdirectories)
 " Example: Typing '3<leader>v will search the current dir and 2 below it
-nnoremap <silent> <leader>g :call Grep(WordUnderCursor(),getcwd(),v:count1)<CR>
+nnoremap <silent> <leader>g :call Grep(expand("<cword>"),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
-nnoremap <leader>G :call Grep(WordUnderCursor(),getcwd(),-1)<CR>
+nnoremap <silent> <leader>G :call Grep(expand("<cword>"),getcwd(),-1)<CR>
 " (vin)grep visual selection (current directory)
 vnoremap <silent> <leader>g :<C-U>call Grep(trim(GetVisualText()),getcwd(),v:count1)<CR>
 " (vin)grep visual selection (recursive)
 vnoremap <silent> <leader>G :<C-U>call Grep(trim(GetVisualText()),getcwd(),-1)<CR>
 " Edit makefile
-nnoremap <leader>m :edit makefile<CR>
+nnoremap <silent> <leader>m :edit makefile<CR>
+" Toggle line numbers
+nnoremap <silent> <leader>n :silent! call CycleNumber()<CR>
 " Start python3
-nnoremap <leader>p :tab term python3<CR>
+nnoremap <silent> <leader>p :tab term python3<CR>
+" Open the Quickfix List
+nnoremap <silent> q :silent! call ToggleQuickFix()<CR>
+" Control q begins a macro
+nnoremap <silent> <C-q> q
 " Do a REPL on current line (shell command)
-nnoremap <leader>R :call RunAsync(getline('.'),{"windowheight":"5"})<CR>
+nnoremap <silent> <leader>R :silent! call RunAsync(getline('.'),{"windowheight":"5"})<CR>
 " Do a REPL on visual selection (shell command)
-vnoremap <leader>R :<C-U>call RunAsync(trim(GetVisualText()),{"windowheight":"5"})<CR>
+vnoremap <silent> <leader>R :<C-U>call RunAsync(trim(GetVisualText()),{"windowheight":"5"})<CR>
 " Do a REPL on current line (full screen shell command)
-nnoremap <leader>Ro :call RunAsync(getline('.'),{"only":"1"})<CR>
+nnoremap <silent> <leader>Ro :silent! call RunAsync(getline('.'),{"only":"1"})<CR>
 " Do a REPL on visual selection (full screen shell command)
-vnoremap <leader>Ro :<C-U>call RunAsync(trim(GetVisualText()),{"only":"1"})<CR>
+vnoremap <silent> <leader>Ro :<C-U>call RunAsync(trim(GetVisualText()),{"only":"1"})<CR>
 " Execute vimscript REPL on a line
-nnoremap <leader>repl :exe getline(".")<CR>
+nnoremap <silent> <leader>repl :execute getline(".")<CR>
 " Select line
 nnoremap vv 0v$o
-" Open the Quickfix List
-nnoremap q :call ToggleQuickFix()<CR>
-" Open command line window
-nnoremap <leader>c :<C-F>
-" Show the current time
-nnoremap <leader>C :call Notify(strftime("%c"))<CR>
 " Open search history
-nnoremap <leader>/ /<C-F>
+nnoremap <silent> <leader>/ /<C-F>
 " Open reverse search history
-nnoremap <leader>? ?<C-F>
+nnoremap <silent> <leader>? ?<C-F>
 " Go to help for word under cursor
-nnoremap <S-K> :help <C-R><C-W><CR>
+nnoremap <silent> <S-K> :help <C-R><C-W><CR>
 " Manual (man) for word under cursor
-nnoremap <C-K> :!man <C-r><C-W><CR>
+nnoremap <silent> <C-K> :!man <C-r><C-W><CR>
 " Escape removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
-
-nnoremap <C-UP> :resize +1<CR>
-nnoremap <C-DOWN> :resize -1<CR>
-nnoremap <C-LEFT> :vertical resize -1<CR>
-nnoremap <C-RIGHT> :vertical resize +1<CR>
+" Evaluate a buffer line 
+" Example: Hit <leader>= on a line that contains '2+2'
+nnoremap <silent> <leader>= :silent! call EvaluateLine()<CR>
+nnoremap <silent> <C-UP> :resize +1<CR>
+nnoremap <silent> <C-DOWN> :resize -1<CR>
+nnoremap <silent> <C-LEFT> :vertical resize -1<CR>
+nnoremap <silent> <C-RIGHT> :vertical resize +1<CR>
 
 " These default key combos do too many suprise deletes
 nnoremap dn <NOP>
 nnoremap cc <NOP>
 " quickfix stuff 
-nnoremap cn :silent cnext<CR>
-nnoremap cp :silent cprevious<CR>
-nnoremap cq :call GoToQuickfix()<CR>
+nnoremap <silent> cn :silent! cnext<CR>
+nnoremap <silent> cp :silent! cprevious<CR>
+nnoremap <silent> cq :silent! call GoToQuickfix()<CR>
 
 tnoremap <ESC> <C-\><C-N>
 " Doom style terminal
-nnoremap ` :silent call ToggleTerminal()<CR>
+nnoremap <silent> ` :silent call ToggleTerminal()<CR>
 " Close terminal Doom style
-tnoremap ` <C-\><C-N>:bdelete!<CR>
+tnoremap <silent> ` <C-\><C-N>:bdelete!<CR>
 
 
 " Close command history window 
@@ -624,6 +621,7 @@ function! GetBufferAsList() abort
   return l:linelist
 endfunction
 
+" Center a list of strings based on the longest line
 function! CenterListText(lines=[''],columns=&columns) abort
   let l:maxline = 0
   let l:columns = a:columns
@@ -646,30 +644,4 @@ function! CenterListText(lines=[''],columns=&columns) abort
     let l:index = l:index + 1
   endfor
   return l:lines
-endfunction
-
-let s:lastsetfromregex = "^.*Last set from.*line.*[0-9]*$"
-
-function! ShowVimFunctionDefinition(functionstring) abort
-  let l:functiondef = execute("verbose function " . a:functionstring,"silent!")
-  if !len(l:functiondef)
-    return
-  endif
-  enew 
-  setlocal nomodified
-  setlocal syntax=vim
-  nnoremap <buffer> <ESC> :bd!<CR>
-  let l:index = 1
-  let l:lines = split(l:functiondef,'\n')
-  for l:line in l:lines
-    let l:match = match(l:line,s:lastsetfromregex)
-    if l:match > -1
-      call append(0,"")
-      call append(0,"  " . l:line)
-      let l:index = l:index + 1
-    else
-      call setline(l:index,l:line)
-    endif
-    let l:index = l:index + 1
-  endfor
 endfunction
