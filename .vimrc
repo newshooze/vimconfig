@@ -34,6 +34,8 @@ nnoremap <silent> <leader>p :tab term python3<CR>
 nnoremap <silent> q :silent! call ToggleQuickFix()<CR>
 " Control q begins a macro
 nnoremap <silent> <C-q> q
+" Execute vimscript REPL on a line
+nnoremap <silent> <leader>repl :execute getline(".")<CR>
 " Do a REPL on current line (shell command)
 nnoremap <silent> <leader>R :silent! call RunAsync(getline('.'),{"windowheight":"5"})<CR>
 " Do a REPL on visual selection (shell command)
@@ -42,8 +44,6 @@ vnoremap <silent> <leader>R :<C-U>call RunAsync(trim(GetVisualText()),{"windowhe
 nnoremap <silent> <leader>Ro :silent! call RunAsync(getline('.'),{"only":"1"})<CR>
 " Do a REPL on visual selection (full screen shell command)
 vnoremap <silent> <leader>Ro :<C-U>call RunAsync(trim(GetVisualText()),{"only":"1"})<CR>
-" Execute vimscript REPL on a line
-nnoremap <silent> <leader>repl :execute getline(".")<CR>
 " Select line
 nnoremap vv 0v$o
 " Open search history
@@ -54,6 +54,9 @@ nnoremap <silent> <leader>? ?<C-F>
 nnoremap <silent> <S-K> :help <C-R><C-W><CR>
 " Manual (man) for word under cursor
 nnoremap <silent> <C-K> :!man <C-r><C-W><CR>
+" Go to next tab
+nnoremap <silent> <C-L> :tabnext<CR>
+nnoremap <silent> <C-H> :tabprevious<CR>
 " Escape removes unwanted windows
 nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
 " Evaluate a buffer line 
@@ -66,11 +69,11 @@ nnoremap <silent> <C-RIGHT> :vertical resize +1<CR>
 
 " These default key combos do too many suprise deletes
 nnoremap dn <NOP>
-nnoremap cc <NOP>
 " quickfix stuff 
 nnoremap <silent> cn :silent! cnext<CR>
 nnoremap <silent> cp :silent! cprevious<CR>
 nnoremap <silent> cq :silent! call GoToQuickfix()<CR>
+nnoremap <silent> cc :silent! call GoToQuickfix()<CR>
 
 tnoremap <ESC> <C-\><C-N>
 " Doom style terminal
@@ -78,6 +81,8 @@ nnoremap <silent> ` :silent call ToggleTerminal()<CR>
 " Close terminal Doom style
 tnoremap <silent> ` <C-\><C-N>:bdelete!<CR>
 
+" Complete words using Enter without inserting a new line
+inoremap <expr> <CR> ((pumvisible()) ? ("\<C-Y>") : ("\<CR>"))
 
 " Close command history window 
 " This also closes search history windows
@@ -123,6 +128,7 @@ autocmd BufRead ~/.vim/doc/**/*.txt setlocal nomodifiable
 autocmd BufRead ~/.vim/doc/**/*.txt setlocal filetype=help
 
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
+autocmd BufEnter /usr/lib/gcc/** nnoremap <buffer> <ESC> :bwipeout!<CR>
 
 autocmd BufEnter * if(exists("b:winview")) | call winrestview(b:winview) | endif 
 autocmd BufLeave * let b:winview = winsaveview() 
@@ -134,7 +140,6 @@ cabbrev az a-zA-Z0-9_-
 
 syntax on
 colorscheme pastel256
-
 
 let loaded_matchparen=1
 set errorformat=%f:%l:%c:%m
@@ -232,7 +237,7 @@ function! RunAsync(arglist,optionsdictionary={}) abort
   let l:joboptions["out_name"] = get(a:optionsdictionary,"out_name","runoutput")
   let l:joboptions["err_name"] = get(a:optionsdictionary,"err_name","runoutput")
   let l:joboptions["callback"] = get(a:optionsdictionary,"callback",function("RunAsyncJobFunction"))
-  let l:joboptions["exit_cb"] = get(a:optionsdictionary,"exit_cp",function("RunAsyncExitFunction"))
+  let l:joboptions["exit_cb"] = get(a:optionsdictionary,"exit_cb",function("RunAsyncExitFunction"))
   let s:runasyncjob = job_start(l:programargs,l:joboptions)
   let l:filetype = get(a:optionsdictionary,"filetype","")
   let l:syntax = get(a:optionsdictionary,"syntax","text")
@@ -548,13 +553,14 @@ endfunction
 function! DialogCentered(message,dialogoptions={}) abort
   let l:dialogoptions = {}
   let l:dialogoptions["moved"] = "any"
-  call popup_dialog(a:message,l:dialogoptions)
+  let l:popup = popup_dialog(a:message,l:dialogoptions)
+  return l:popup
 endfunction
 
 function! Notify(message,notifyoptions={}) abort
   let l:messagewidth = len(a:message)
   let l:notifyoptions = {}
-  let l:notifyoptions["time"] = get(a:notifyoptions,"time",4000)
+  let l:notifyoptions["time"] = get(a:notifyoptions,"time",14000)
   let l:notifyoptions["minwidth"] = get(a:notifyoptions,"minwidth",l:messagewidth)
   let l:notifyoptions["col"] = get(a:notifyoptions,"col",&columns - l:messagewidth - 20)
   let l:notifyoptions["line"] = get(a:notifyoptions,"line",2)
@@ -600,6 +606,8 @@ function! GoToQuickfix() abort
   endif
 endfunction
 
+" This is different from :center in that
+" it preserves indentation
 function! CenterBuffer() abort
   let l:linelist = []
   let l:linelist = GetBufferAsList()
@@ -644,4 +652,22 @@ function! CenterListText(lines=[''],columns=&columns) abort
     let l:index = l:index + 1
   endfor
   return l:lines
+endfunction
+
+function! ShowJobInfo(job)
+  let l:jobinfo = {}
+  let l:jobinfo = job_info(a:job)
+  if job_status(a:job) != "run"
+    call DialogCentered("Job failed or is not running")
+    return
+  endif
+  let l:popup = DialogCentered("Job Info")
+  let l:bufnr = winbufnr(l:popup)
+  call appendbufline(l:bufnr,0,"exit_cb: " . jobinfo["exit_cb"])
+  call appendbufline(l:bufnr,0,"exitval: " . jobinfo["exitval"])
+  call appendbufline(l:bufnr,0,"process: " . jobinfo["process"])
+  call appendbufline(l:bufnr,0,"channel: " . string(jobinfo["channel"]))
+  call appendbufline(l:bufnr,0,"tty_in:  " . jobinfo["tty_in"])
+  call appendbufline(l:bufnr,0,"status:  " . jobinfo["status"])
+  call appendbufline(l:bufnr,0,"cmd:     " . join(jobinfo["cmd"]))
 endfunction
