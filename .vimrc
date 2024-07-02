@@ -189,7 +189,7 @@ function! ToggleTerminal() abort
   if &buftype == "terminal"
     bdelete!
   else
-    tab terminal
+    terminal ++curwin
   endif
 endfunction
 
