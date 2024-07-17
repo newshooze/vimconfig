@@ -16,7 +16,7 @@ nnoremap <silent> <leader>e :edit ~/.vimrc<CR>
 nnoremap <silent> <leader>f :silent! call FileMenu(getcwd())<CR>
 " (vin)grep word under cursor (v:count1 sets search depth to 1)
 " Precede command with a number for further search depth (subdirectories)
-" Example: Typing '3<leader>v will search the current dir and 2 below it
+" Example: Typing '3<leader>g will search the current dir and 2 below it
 nnoremap <silent> <leader>g :call Grep(expand("<cword>"),getcwd(),v:count1)<CR>
 " (vin)grep word under cursor ( All files recursivly (-1 means recursive ))
 nnoremap <silent> <leader>G :call Grep(expand("<cword>"),getcwd(),-1)<CR>
@@ -24,10 +24,15 @@ nnoremap <silent> <leader>G :call Grep(expand("<cword>"),getcwd(),-1)<CR>
 vnoremap <silent> <leader>g :<C-U>call Grep(trim(GetVisualText()),getcwd(),v:count1)<CR>
 " (vin)grep visual selection (recursive)
 vnoremap <silent> <leader>G :<C-U>call Grep(trim(GetVisualText()),getcwd(),-1)<CR>
+" Toggle cursor line highlighting
+nnoremap <silent> <leader>l :set cursorline!<CR>
+" TODO Get rid of this
 " Edit makefile
 nnoremap <silent> <leader>m :edit makefile<CR>
 " Toggle line numbers
 nnoremap <silent> <leader>n :silent! call CycleNumber()<CR>
+" Single window
+nnoremap <silent> <leader>o :only<CR>
 " Start python3
 nnoremap <silent> <leader>p :tab term python3<CR>
 " Open the Quickfix List
@@ -44,6 +49,8 @@ vnoremap <silent> <leader>R :<C-U>call RunAsync(trim(GetVisualText()),{"windowhe
 nnoremap <silent> <leader>Ro :silent! call RunAsync(getline('.'),{"only":"1"})<CR>
 " Do a REPL on visual selection (full screen shell command)
 vnoremap <silent> <leader>Ro :<C-U>call RunAsync(trim(GetVisualText()),{"only":"1"})<CR>
+" Vertical split
+nnoremap <silent> <leader>v :vsplit<CR>
 " Select line
 nnoremap vv 0v$o
 " Open search history
@@ -62,9 +69,15 @@ nnoremap <silent> <ESC> :silent! call KillOutputWindows()<CR>
 " Evaluate a buffer line 
 " Example: Hit <leader>= on a line that contains '2+2'
 nnoremap <silent> <leader>= :silent! call EvaluateLine()<CR>
+" Evaluate visual selection
+vnoremap <silent> <leader>= :silent! call EvaluateText(GetVisualText())<CR>
+inoremap <silent> <C-UP> <ESC>:resize +1<CR>
 nnoremap <silent> <C-UP> :resize +1<CR>
+inoremap <silent> <C-DOWN> <ESC>:resize -1<CR>
 nnoremap <silent> <C-DOWN> :resize -1<CR>
+inoremap <silent> <C-LEFT> <ESC>:vertical resize -1<CR>
 nnoremap <silent> <C-LEFT> :vertical resize -1<CR>
+inoremap <silent> <C-RIGHT> <ESC>:vertical resize +1<CR>
 nnoremap <silent> <C-RIGHT> :vertical resize +1<CR>
 
 " These default key combos do too many suprise deletes
@@ -83,6 +96,8 @@ tnoremap <silent> ` <C-\><C-N>:bdelete!<CR>
 
 " Complete words using Enter without inserting a new line
 inoremap <expr> <CR> ((pumvisible()) ? ("\<C-Y>") : ("\<CR>"))
+" Toggle modifiable
+nnoremap <F2> <ESC>:set modifiable!<CR>
 
 " Close command history window 
 " This also closes search history windows
@@ -129,6 +144,7 @@ autocmd BufRead ~/.vim/doc/**/*.txt setlocal filetype=help
 
 autocmd BufEnter /usr/include/* nnoremap <buffer> <ESC> :bwipeout!<CR>
 autocmd BufEnter /usr/lib/gcc/** nnoremap <buffer> <ESC> :bwipeout!<CR>
+autocmd BufEnter /usr/src/** nnoremap <buffer> <ESC> :bwipeout!<CR>
 
 autocmd BufEnter * if(exists("b:winview")) | call winrestview(b:winview) | endif 
 autocmd BufLeave * let b:winview = winsaveview() 
@@ -567,11 +583,16 @@ function! Notify(message,notifyoptions={}) abort
   call popup_notification(a:message,l:notifyoptions)
 endfunction
 
-function! EvaluateLine() abort
-  let l:result = eval(getline("."))
-  let l:message = getline(".") . " = " . l:result
+function! EvaluateText(text)
+  let l:result = eval(a:text)
+  let l:message = a:text . " = " . l:result
   let l:message = trim(l:message)
   call DialogAtCursor(l:message)
+endfunction
+
+function! EvaluateLine() abort
+  let l:text = getline(".")
+  call EvaluateText(l:text)
 endfunction
 
 function! KillQuickfix() abort
