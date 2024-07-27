@@ -29,6 +29,10 @@ nnoremap <silent> <leader>l :set cursorline!<CR>
 " TODO Get rid of this
 " Edit makefile
 nnoremap <silent> <leader>m :edit makefile<CR>
+" Center search word
+nnoremap <silent> * *zz
+nnoremap <silent> n nzz
+nnoremap <silent> N Nzz
 " Toggle line numbers
 nnoremap <silent> <leader>n :silent! call CycleNumber()<CR>
 " Single window
@@ -49,10 +53,14 @@ vnoremap <silent> <leader>R :<C-U>call RunAsync(trim(GetVisualText()),{"windowhe
 nnoremap <silent> <leader>Ro :silent! call RunAsync(getline('.'),{"only":"1"})<CR>
 " Do a REPL on visual selection (full screen shell command)
 vnoremap <silent> <leader>Ro :<C-U>call RunAsync(trim(GetVisualText()),{"only":"1"})<CR>
+" Redo (undo an undo)
+nnoremap U <C-R>
 " Vertical split
 nnoremap <silent> <leader>v :vsplit<CR>
 " Select line
 nnoremap vv 0v$o
+" Next window
+nnoremap <silent> <leader>w <C-W>w
 " Open search history
 nnoremap <silent> <leader>/ /<C-F>
 " Open reverse search history
@@ -61,7 +69,7 @@ nnoremap <silent> <leader>? ?<C-F>
 nnoremap <silent> <S-K> :help <C-R><C-W><CR>
 " Manual (man) for word under cursor
 nnoremap <silent> <C-K> :!man <C-r><C-W><CR>
-" Go to next tab
+" Go to next tab TODO: make this something else
 nnoremap <silent> <C-L> :tabnext<CR>
 nnoremap <silent> <C-H> :tabprevious<CR>
 " Escape removes unwanted windows
@@ -133,6 +141,11 @@ autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
 autocmd BufRead /usr/lib/zig/**/*.zig setlocal nomodifiable
 autocmd BufRead /usr/lib/zig/**/*.zig setlocal filetype=zighelp
 autocmd BufRead ~/.vim/doc/zig/**/*.zig setlocal syntax=zig
+
+" Zig Trunk
+autocmd BufRead ~/Downloads/zig-linux-x86_64-0.13.0/**/*.zig setlocal nomodifiable
+autocmd BufRead ~/Downloads/zig-linux-x86_64-0.13.0/**/*.zig setlocal filetype=zighelp
+autocmd BufRead ~/Downloads/zig-linux-x86_64-0.13.0/**/*.zig setlocal syntax=zig
 
 " Zig manual
 autocmd BufRead ~/.vim/doc/zig/zigmanual.txt setlocal nomodifiable
